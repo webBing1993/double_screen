@@ -19,58 +19,50 @@
         <!--</div>-->
         <div class="doSthLists" v-if="changeTabString == 1">
           <div class="list" v-for="item in doSthLists">
-            <div v-if="item.title='发卡失败'">
-              <div class="list_header">
-                <div>
-                  <span class="title">{{item.title}}</span>
-                  <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
-                </div>
-              </div>
-              <div class="list_content">
-                <div class="list_fl">
-                  <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                  <div class="roomIn" v-if="item.type == 'QUEKA'"><span>失败原因：</span>缺卡</div>
-                  <div class="roomIn" v-else-if="item.type == 'FAKA'"><span>失败原因：</span>发卡失败</div>
-                  <div class="roomIn" v-else-if="item.type == 'WUKA'"><span>失败原因：</span>无卡</div>
-                  <div class="roomIn" v-else><span>失败原因：</span>回收卡槽已满</div>
-                </div>
-                <div class="list_fr">
-                  <span @click="faka(item.id)">处理完成</span>
-                </div>
+            <div class="list_header">
+              <div>
+                <span class="title">{{item.title}}</span>
+                <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
               </div>
             </div>
-            <div v-else-if="item.title='PMS入住失败'">
-              <div class="list_header">
-                <div>
-                  <span class="title">{{item.title}}</span>
-                  <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
-                </div>
+            <div class="list_content" v-if="item.title='发卡失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn" v-if="item.type == 'QUEKA'"><span>失败原因：</span>缺卡</div>
+                <div class="roomIn" v-else-if="item.type == 'FAKA'"><span>失败原因：</span>发卡失败</div>
+                <div class="roomIn" v-else-if="item.type == 'WUKA'"><span>失败原因：</span>无卡</div>
+                <div class="roomIn" v-else><span>失败原因：</span>回收卡槽已满</div>
               </div>
-              <div class="list_content">
-                <div class="list_fl">
-                  <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                  <div class="roomIn"><span>住客信息：</span><span v-for="i in item.guestList">【{{i.name/i.idCard/i.address }}】</span></div>
-                </div>
-                <div class="list_fr">
-                  <span @click="pmsCheckIn(item.id)">处理完成</span>
-                </div>
+              <div class="list_fr">
+                <span @click="faka(item.id)">处理完成</span>
               </div>
             </div>
-            <div v-else-if="item.title='PMS入账失败'">
-              <div class="list_header">
-                <div>
-                  <span class="title">{{item.title}}</span>
-                  <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
-                </div>
+            <div class="list_content" v-else-if="item.title='PMS入住失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>住客信息：</span><span v-for="i in item.guestList">【{{i.name/i.idCard/i.address }}】</span></div>
               </div>
-              <div class="list_content">
-                <div class="list_fl">
-                  <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                  <div class="roomIn"><span>住客信息：</span><span v-for="i in item.guestList">【{{i.name/i.idCard/i.address }}】</span></div>
-                </div>
-                <div class="list_fr">
-                  <span @click="pmsCheckIn(item.id)">处理完成</span>
-                </div>
+              <div class="list_fr">
+                <span @click="pmsCheckIn(item.id)">处理完成</span>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.title='PMS入账失败'">
+              <div class="list_fl">
+                <div class="roomIn"><span>PMS订单号：</span>{{item.pmsOrderNo}}</div>
+                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
+                <div class="roomIn"><span>入账金额：</span>{{item.totalFeeStr}}</div>
+              </div>
+              <div class="list_fr">
+                <span @click="pmsPay(item.id)">处理完成</span>
+              </div>
+            </div>
+            <div class="list_content" v-else>
+              <div class="list_fl">
+                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
+                <div class="roomIn"><span>入账金额：</span>{{item.totalFeeStr}}</div>
+              </div>
+              <div class="list_fr">
+                <span @click="nativepay(item.id)">处理完成</span>
               </div>
             </div>
           </div>
@@ -181,6 +173,7 @@
               let faka = [];   // 发卡代办
               let pmscheckin = [];  // pms入住失败代办
               let pmspay = [];   // pms入账失败
+              let nativepay = [];  // 前台支付
               body.data.data.faka.forEach(item => {
                 item.title = '发卡失败';
               });
@@ -190,12 +183,16 @@
               body.data.data.pmspay.forEach(item => {
                 item.title = 'PMS入账失败';
               });
+              body.data.data.nativepay.forEach(item => {
+                item.title = '前台支付';
+              });
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
-              this.doSthLists = faka.concat(pmscheckin, pmspay);
+              nativepay = body.data.data.nativepay;
+              this.doSthLists = faka.concat(pmscheckin, pmspay, nativepay);
               this.doSthLists.sort(this.compare(this.doSthLists.createTime));
-              console.log('this.doSthLists', this.doSthLists);
+              console.log(' this.doSthLists', this.doSthLists);
             }
           }
         })
@@ -248,6 +245,11 @@
           },
           onfail: body => {}
         });
+      },
+
+      // 前台支付
+      nativepay(id){
+
       },
     },
 
