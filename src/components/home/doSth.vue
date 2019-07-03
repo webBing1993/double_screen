@@ -21,11 +21,11 @@
           <div class="list" v-for="item in doSthLists">
             <div class="list_header">
               <div>
-                <span class="title">{{item.title}}</span>
+                <span class="title">{{item.doSthTitle}}</span>
                 <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
               </div>
             </div>
-            <div class="list_content" v-if="item.title='发卡失败'">
+            <div class="list_content" v-if="item.doSthTitle=='发卡失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
                 <div class="roomIn" v-if="item.type == 'QUEKA'"><span>失败原因：</span>缺卡</div>
@@ -37,16 +37,16 @@
                 <span @click="faka(item.id)">处理完成</span>
               </div>
             </div>
-            <div class="list_content" v-else-if="item.title='PMS入住失败'">
+            <div class="list_content" v-else-if="item.doSthTitle=='PMS入住失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn"><span>住客信息：</span><span v-for="i in item.guestList">【{{i.name/i.idCard/i.address }}】</span></div>
+                <div class="roomIn"><span>住客信息：</span><span v-if="item.guestList" v-for="i in item.guestList">【{{i.name}}/{{i.idCard}}/{{i.address}} 】</span></div>
               </div>
               <div class="list_fr">
                 <span @click="pmsCheckIn(item.id)">处理完成</span>
               </div>
             </div>
-            <div class="list_content" v-else-if="item.title='PMS入账失败'">
+            <div class="list_content" v-else-if="item.doSthTitle=='PMS入账失败'">
               <div class="list_fl">
                 <div class="roomIn"><span>PMS订单号：</span>{{item.pmsOrderNo}}</div>
                 <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
@@ -168,31 +168,30 @@
       doSthList() {
         this.getTodoList({
           onsuccess: body => {
-              console.log('body.data1111',body.data.data);
             if (body.data.code == 0) {
               let faka = [];   // 发卡代办
               let pmscheckin = [];  // pms入住失败代办
               let pmspay = [];   // pms入账失败
               let nativepay = [];  // 前台支付
-              body.data.data.faka.forEach(item => {
-                item.title = '发卡失败';
-              });
-              body.data.data.pmscheckin.forEach(item => {
-                item.title = 'PMS入住失败';
-              });
-              body.data.data.pmspay.forEach(item => {
-                item.title = 'PMS入账失败';
-              });
-              body.data.data.nativepay.forEach(item => {
-                item.title = '前台支付';
-              });
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
+              faka.forEach(item => {
+                item.doSthTitle = '发卡失败';
+              });
+              pmscheckin.forEach(item => {
+                item.doSthTitle = 'PMS入住失败';
+              });
+              pmspay.forEach(item => {
+                item.doSthTitle = 'PMS入账失败';
+              });
+              nativepay.forEach(item => {
+                item.doSthTitle = '前台支付';
+              });
               this.doSthLists = faka.concat(pmscheckin, pmspay, nativepay);
-              this.doSthLists.sort(this.compare(this.doSthLists.createTime));
-              console.log(' this.doSthLists', this.doSthLists);
+              this.doSthLists.sort(this.compare('createTime'));
+              console.log('this.doSthLists',this.doSthLists);
             }
           }
         })
@@ -203,7 +202,7 @@
         return function(a,b){
           let val1 = a[attr];
           let val2 = b[attr];
-          return val1 - val2;
+          return val2 - val1;
         }
       },
 
@@ -377,7 +376,14 @@
                 font-size: 12px;
                 color: #000;
                 margin-top: 5px;
-                span {
+                span:first-of-type {
+                  width: 80px;
+                  display: inline-block;
+                }
+                span:last-of-type {
+                  width: auto;
+                }
+                span:only-child {
                   width: 80px;
                   display: inline-block;
                 }

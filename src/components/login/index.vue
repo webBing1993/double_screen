@@ -60,6 +60,7 @@
           show: false,
           sourceDom: ''
         },
+        getTimer: null,
       }
     },
     methods: {
@@ -200,6 +201,7 @@
                   sessionStorage.setItem('avatar',body.data.data.avatar);
                   sessionStorage.setItem('name',body.data.data.name);
                   sessionStorage.session_id = body.data.data.token;
+                  sessionStorage.hotel_id = body.data.data.hotelId;
                   this.goto('/home');
                 }else {
                   this.$message.error(body.data.msg);
@@ -216,6 +218,13 @@
 
     mounted () {
        this.nowTime = this.getDateTime();
+       this.getTimer = setInterval(() => {
+         this.nowTime = this.getDateTime();
+       },1000)
+    },
+    beforeRouteLeave(to,from,next) {
+      clearInterval(this.getTimer);
+      next();
     }
   }
 </script>

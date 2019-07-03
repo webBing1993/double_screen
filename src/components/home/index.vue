@@ -13,9 +13,9 @@
           </div>
         </div>
         <div class="header_fr">
-          <div class="newTig" @click="goto('/doSth')">
+          <div class="newTig" @click="goto('/doSth')" v-if="speakShow">
             <img src="../../assets/xiaoxi.png" alt="">
-            <span>您有一笔交易待处理，点击查看</span>
+            <span>您有一笔待办待处理，点击查看</span>
             <img src="../../assets/gengduo.png" alt="">
           </div>
           <div class="myInfo" @click="quit=true;">
@@ -45,8 +45,6 @@
 </template>
 <script>
   import {mapState,mapActions} from 'vuex';
-  let timer = null;  // 设置定时器
-
   export default {
     name: 'home',
     data () {
@@ -57,6 +55,9 @@
           name: sessionStorage.getItem('name')
         },      // 获取个人头像和姓名
         quit: false,     // 是否退出弹框
+        speakShow: false,  // 判断是否有新代办来了
+        websock: null,
+        timer: null,
       }
     },
     methods: {
@@ -80,9 +81,6 @@
         let n = new Audio(url);
         n.src = url;
         n.play();
-        timer = setInterval(() => {
-          n.play();
-        },3000)
       },
 
       // 退出事件
@@ -93,18 +91,49 @@
 
       OpenExternalScreen(type) {
         document.title = new Date().getSeconds() + "@" + type;
-      }
+      },
+
+      //初始化weosocket
+      initWebSocket(){
+        //ws地址
+        let mymessage = encodeURIComponent(sessionStorage.session_id+sessionStorage.hotel_id);
+        let wsuri = '';
+        wsuri = "wss://qa.fortrun.cn/todolistws?wsCode=" + mymessage;  // qa
+        this.websock = new WebSocket(wsuri);
+        this.websock.onopen = this.websocketonopen;
+        this.websock.onmessage = this.websocketonmessage;
+        this.websock.onclose = this.websocketclose;
+      },
+      websocketonopen(e){ //建立通道
+        // let redata = e;
+        console.log('============websocket建立链接==============')
+      },
+      websocketonmessage(e){ //数据接收
+        console.log('============websocket数据接收成功==============');
+        console.log(e);
+        let date = e.data;
+        if (date == '"refresh"') {
+          this.speakShow = true;
+          this.speckText('您有一笔待办待处理，点击查看');
+        }
+      },
+      websocketsend(agentData){//数据发送
+        console.log('============websocket数据发送成功==============')
+        this.websock.send(agentData);
+      },
+      websocketclose(e){  //关闭通道
+        console.log("关闭通道connection closed (" + e.code + ")");
+      },
 
     },
 
     mounted () {
       this.tabClick(1);
-      this.speckText('您有一笔交易待处理，点击查看');
+      this.initWebSocket();
+      this.timer = setInterval(() => {
+        this.websocketsend(88888);
+      },1500)
     },
-    beforeRouteLeave(to,from,next) {
-      clearInterval(timer);
-      next();
-    }
   }
 </script>
 
