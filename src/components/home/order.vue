@@ -473,8 +473,9 @@
             width: 30%;
             display: inline-table;
             font-size: 20px;
-            color: rgba(0, 0, 0, .4);
+            color: rgba(0, 0, 0, 1);
             text-align: left;
+            font-weight: bold;
           }
           .table_cell:last-of-type {
             width: 38%;
@@ -499,6 +500,7 @@
                 p {
                   font-size: 20px;
                   color: #000;
+                  margin-bottom: 5px;
                 }
               }
               .list_cell:last-of-type {
@@ -557,6 +559,7 @@
           color: #909399;
           font-size: 24px;
           cursor: pointer;
+          font-weight: bold;
         }
         span.active {
           color: #1AAD19;
@@ -860,7 +863,7 @@
   }
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
-    color: #999;
+    color: #fff;
     margin: 0 10px;
     font-size: 20px;
     height: 44px;

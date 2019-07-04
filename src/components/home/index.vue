@@ -152,6 +152,7 @@
       width: 100vw;
       left: 0;
       top: 0;
+      z-index: 1;
       .header_fl {
         display: flex;
         justify-content: space-between;

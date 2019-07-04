@@ -17,7 +17,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: #f7f7f7;
+  background-color: #e2e2e2;
   min-height: 100vh;
 }
 h1, h2 {

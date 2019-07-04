@@ -778,7 +778,7 @@
   }
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
-    color: #999;
+    color: #fff;
     margin: 0 10px;
     font-size: 20px;
     height: 44px;
