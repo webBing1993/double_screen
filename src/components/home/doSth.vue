@@ -352,10 +352,10 @@
             div:first-of-type {
               span {
                 color: #909399;
-                font-size: 14px;
+                font-size: 20px;
               }
               .title {
-                font-size: 20px;
+                font-size: 24px;
                 color: #000;
                 font-weight: bold;
                 margin-right: 30px;
@@ -367,24 +367,24 @@
             }
           }
           .list_content {
-            padding: 10px 0;
+            padding: 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             .list_fl {
               div {
-                font-size: 14px;
+                font-size: 20px;
                 color: #000;
                 margin-top: 10px;
                 span:first-of-type {
-                  width: 80px;
+                  width: 110px;
                   display: inline-block;
                 }
                 span:last-of-type {
                   width: auto;
                 }
                 span:only-child {
-                  width: 80px;
+                  width: 110px;
                   display: inline-block;
                 }
               }
@@ -392,11 +392,11 @@
             .list_fr {
               span {
                 cursor: pointer;
-                width: 94px;
-                height: 38px;
-                line-height: 38px;
+                width: 110px;
+                height: 44px;
+                line-height: 44px;
                 background-color: #1AAD19;
-                font-size: 14px;
+                font-size: 20px;
                 color: #fff;
                 text-align: center;
                 display: inline-block;

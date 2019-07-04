@@ -31,7 +31,7 @@
               <div class="roomIn"><span>入住人：</span>{{item.contactName}}</div>
             </div>
             <div class="list_fr">
-              <p>冻结金额： <span class="green">{{item.totalFeeStr}}</span></p>
+              <p>交易金额： <span class="green">{{item.totalFeeStr}}</span></p>
               <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'退款':item.resultCode=='FAILED'?'收款失败':'收款'}}</span>
               <span v-if="item.channel == 6" class="red">取消授权</span>
               <span v-if="item.channel == 4" class="blue">快速结算</span>
@@ -435,7 +435,7 @@
       text-align: left;
       span {
         color: #303133;
-        font-size: 20px;
+        font-size: 24px;
       }
       .change_item {
         background: #FFFFFF;
@@ -466,7 +466,7 @@
           padding: 20px 0;
           span {
             color: #909399;
-            font-size: 16px;
+            font-size: 20px;
             margin-right: 35px;
           }
         }
@@ -477,13 +477,13 @@
           align-items: center;
           .list_fl {
             .title {
-              font-size: 20px;
+              font-size: 24px;
               color: #000;
               font-weight: bold;
               margin-bottom: 20px;
             }
             div {
-              font-size: 16px;
+              font-size: 20px;
               color: #000;
               margin-bottom: 10px;
               span {
@@ -498,7 +498,7 @@
           .list_fr {
             text-align: right;
             p, span {
-              font-size: 16px;
+              font-size: 20px;
               color: #000;
             }
             span.green {
@@ -523,7 +523,7 @@
             }
             img {
               display: inline-block;
-              width: 12px;
+              width: 10px;
             }
           }
         }
@@ -739,24 +739,25 @@
     background-color: #FFFFFF;
     border-radius: 40px;
     box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
-    width: 340px;
+    width: 385px;
     height: 50px;
     margin: 0 30px;
     padding: 3px 20px;
   }
 
   /deep/ .el-date-editor .el-range__icon {
-    font-size: 20px;
+    font-size: 24px;
     line-height: 42px;
   }
 
   /deep/ .el-date-editor .el-range-separator {
     line-height: 42px;
-    font-size: 20px;
+    font-size: 24px;
   }
 
   /deep/ .el-date-editor .el-range-input, .el-date-editor .el-range-separator {
-    font-size: 20px;
+    font-size: 24px;
+    font-family: '黑色';
   }
 
   .noMsg {
@@ -779,14 +780,23 @@
     background: rgba(0, 0, 0, .3);
     color: #999;
     margin: 0 10px;
-    font-size: 16px;
+    font-size: 20px;
+    height: 44px;
+    line-height: 44px;
+    min-width: 44px;
+    font-family: '黑体';
   }
   /deep/ .el-pagination__total {
-    font-size: 16px !important;
+    font-size: 20px !important;
+    line-height: 44px !important;
+    height: 44px !important;
   }
   /deep/ .el-pager li.active {
     background-color: #1AAD19;
     color: #fff;
+  }
+  /deep/ .el-pagination button {
+    height: 44px;
   }
 
 </style>

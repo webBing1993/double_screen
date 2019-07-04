@@ -185,6 +185,7 @@
             font-size: 26px;
             display: inline-flex;
             align-items: center;
+            font-weight: bold;
           }
           .active {
             color: #303133;

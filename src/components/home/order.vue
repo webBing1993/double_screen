@@ -433,6 +433,7 @@
             color: #303133;
             font-size: 20px;
             margin-right: 30px;
+            font-weight: bold;
           }
           .active {
             color: #1AAD19;
@@ -455,6 +456,7 @@
           span {
             color: #1AAD19;
             font-size: 20px;
+            font-weight: bold;
           }
         }
       }
@@ -470,7 +472,7 @@
           .table_cell {
             width: 30%;
             display: inline-table;
-            font-size: 18px;
+            font-size: 20px;
             color: rgba(0, 0, 0, .4);
             text-align: left;
           }
@@ -489,13 +491,13 @@
             position: relative;
             .list_content {
               border-bottom: 1px solid #E5E5E5;
-              padding: 10px 0 30px;
+              padding: 20px 0 30px;
               .list_cell {
                 width: 30%;
                 display: inline-table;
                 text-align: left;
                 p {
-                  font-size: 18px;
+                  font-size: 20px;
                   color: #000;
                 }
               }
@@ -506,7 +508,7 @@
             }
             .remark {
               color: rgba(0, 0, 0, .5);
-              font-size: 15px;
+              font-size: 16px;
               padding: 10px 0;
               text-align: left;
             }
@@ -518,7 +520,7 @@
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               padding: 10px 20px;
-              font-size: 15px;
+              font-size: 20px;
               color: #fff;
               cursor: pointer;
             }
@@ -532,9 +534,10 @@
       .fast_title {
         position: relative;
         margin: 40px 0;
-        font-size: 26px;
+        font-size: 28px;
         color: #303133;
         text-align: center;
+        font-weight: bold;
         img {
           position: absolute;
           left: 30px;
@@ -552,7 +555,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 20px;
+          font-size: 24px;
           cursor: pointer;
         }
         span.active {
@@ -579,7 +582,7 @@
               border: 1px solid #9A9A9A;
               border-radius: 44px;
               padding-left: 30px;
-              font-size: 16px;
+              font-size: 20px;
               color: #333;
               height: 64px;
               line-height: 64px;
@@ -587,19 +590,19 @@
               outline: none;
             }
             input:-moz-placeholder {
-              font-size: 16px;
+              font-size: 20px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 16px;
+              font-size: 20px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 16px;
+              font-size: 20px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 16px;
+              font-size: 20px;
               color: #606266;
             }
             img {
@@ -618,7 +621,8 @@
       .keyBoard {
         span {
           display: inline-block;
-          border: 1px solid #C0C4CC;
+          border: 1px solid #dcdcdc;
+          background-color: #f0f0f0;
           border-radius: 12px;
           width: 78px;
           height: 56px;
@@ -640,7 +644,7 @@
           justify-content: center;
           img {
             width: 50px;
-            height: 24px;
+            height: 28px;
             display: inline-block;
           }
         }
@@ -671,7 +675,7 @@
           justify-content: center;
           img {
             width: 50px;
-            height: 24px;
+            height: 28px;
             display: inline-block;
           }
         }
@@ -858,13 +862,22 @@
     background: rgba(0, 0, 0, .3);
     color: #999;
     margin: 0 10px;
-    font-size: 16px;
+    font-size: 20px;
+    height: 44px;
+    line-height: 44px;
+    min-width: 44px;
+    font-family: '黑体';
   }
   /deep/ .el-pagination__total {
-    font-size: 16px !important;
+    font-size: 20px !important;
+    line-height: 44px !important;
+    height: 44px !important;
   }
   /deep/ .el-pager li.active {
     background-color: #1AAD19;
     color: #fff;
+  }
+  /deep/ .el-pagination button {
+    height: 44px;
   }
 </style>
