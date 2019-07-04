@@ -234,8 +234,8 @@
 
       // 键盘清除事件
       clear () {
-        this.searchString2 == '';
-        this.searchString == '';
+        this.searchString2 = '';
+        this.searchString = '';
         this.getPreOrder(1);
       },
 
