@@ -298,7 +298,7 @@
             border: none;
             font-size: 20px;
             line-height: 30px;
-            background-color: #e2e2e2 !important;
+            background-color: #cfcfcf !important;
             color: #606266;
             width: calc(100% - 200px);
           }

@@ -449,7 +449,7 @@
         cursor: pointer;
       }
       .change_item.active {
-        color: #1AAD19;
+        background-color: #C8E1C8;
         border: 1px solid #1AAD19;
       }
     }

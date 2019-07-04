@@ -436,7 +436,7 @@
             font-weight: bold;
           }
           .active {
-            color: #1AAD19;
+            background-color: #C8E1C8;
             border: 1px solid #1AAD19;
           }
         }
@@ -704,7 +704,7 @@
       .tigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 426px;
+        width: 500px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -760,7 +760,7 @@
                 line-height: 45px;
                 width: 116px;
                 text-align: center;
-                margin-right: 15px;
+                margin-right: 42px;
                 img {
                   position: absolute;
                   z-index: -1;
@@ -882,5 +882,11 @@
   }
   /deep/ .el-pagination button {
     height: 44px;
+  }
+  /deep/ .el-pagination .btn-next .el-icon, .el-pagination .btn-prev .el-icon {
+    font-size: 20px;
+  }
+  /deep/ .el-pagination .btn-prev .el-icon {
+    font-size: 20px;
   }
 </style>

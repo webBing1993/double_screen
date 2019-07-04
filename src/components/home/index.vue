@@ -174,6 +174,7 @@
           span {
             font-size: 26px;
             color: #fff;
+            font-family: "Microsoft Himalaya";
           }
         }
         .tabs {
