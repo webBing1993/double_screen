@@ -78,11 +78,11 @@
         <div class="detail">
           <div class="title" v-if="detailVal.channel == 4">
             授权信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
           </div>
           <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
             授权信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
           </div>
           <div class="lists">
             <div class="list">
@@ -110,7 +110,6 @@
           </div>
           <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
             结算信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
           </div>
           <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
             <div class="list">
@@ -132,7 +131,6 @@
           </div>
           <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
             解冻信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
           </div>
           <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
             <div class="list">
@@ -165,11 +163,11 @@
         <div class="detail">
           <div class="title"  v-if="detailVal.tradeType == 'JSAPI'">
             支付信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
           </div>
           <div class="title1 title"  v-if="detailVal.tradeType=='refund'">
             支付信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
           </div>
           <div class="lists">
             <div class="list">
@@ -431,22 +429,22 @@
 <style scoped lang="less">
 
   .paymentIndex {
-    margin-top: 60px;
+    padding-top: 100px;
     .changeItem {
-      padding: 20px;
+      padding: 40px;
       text-align: left;
       span {
         color: #303133;
-        font-size: 13px;
+        font-size: 20px;
       }
       .change_item {
         background: #FFFFFF;
         box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
         border-radius: 40px;
-        height: 40px;
-        line-height: 40px;
-        padding: 0 20px;
-        margin-right: 15px;
+        height: 54px;
+        line-height: 54px;
+        padding: 0 40px;
+        margin-right: 30px;
         display: inline-block;
         cursor: pointer;
       }
@@ -457,46 +455,50 @@
     }
     .paymentLists {
       .list {
-        padding: 0 20px;
+        padding: 0 40px;
         background: #FFFFFF;
         box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
         border-radius: 6px;
         text-align: left;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         .list_header {
           border-bottom: 1px solid #E5E5E5;
-          padding: 10px 0;
+          padding: 20px 0;
           span {
             color: #909399;
-            font-size: 12px;
+            font-size: 16px;
             margin-right: 35px;
           }
         }
         .list_content {
-          padding: 8px 0;
+          padding: 15px 0;
           display: flex;
           justify-content: space-between;
           align-items: center;
           .list_fl {
             .title {
-              font-size: 15px;
+              font-size: 20px;
               color: #000;
               font-weight: bold;
-              margin-bottom: 10px;
+              margin-bottom: 20px;
             }
             div {
-              font-size: 12px;
+              font-size: 16px;
               color: #000;
+              margin-bottom: 10px;
               span {
-                width: 64px;
+                width: 80px;
                 display: inline-block;
               }
+            }
+            div:last-of-type {
+              margin-bottom: 0;
             }
           }
           .list_fr {
             text-align: right;
             p, span {
-              font-size: 12px;
+              font-size: 16px;
               color: #000;
             }
             span.green {
@@ -516,12 +518,12 @@
               font-weight: normal;
             }
             p {
-              margin-bottom: 10px;
+              margin-bottom: 20px;
               font-weight: bold;
             }
             img {
               display: inline-block;
-              width: 7px;
+              width: 12px;
             }
           }
         }
@@ -548,7 +550,7 @@
         transform: translate(-50%, -50%);
         .payTig_title {
           color: #303133;
-          font-size: 20px;
+          font-size: 26px;
           position: relative;
           padding: 20px 30px;
           img {
@@ -557,8 +559,8 @@
             top: 50%;
             transform: translateY(-50%);
             display: block;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             cursor: pointer;
           }
         }
@@ -571,7 +573,7 @@
               border: 1px solid #979797;
               outline: none;
               text-align: center;
-              font-size: 14px;
+              font-size: 18px;
               height: 44px;
               line-height: 44px;
             }
@@ -583,19 +585,19 @@
               -moz-appearance: textfield;
             }
             input:-moz-placeholder {
-              font-size: 14px;
+              font-size: 18px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 14px;
+              font-size: 18px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 14px;
+              font-size: 18px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 14px;
+              font-size: 18px;
               color: #606266;
             }
           }
@@ -654,8 +656,8 @@
       .detail {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 340px;
-        padding: 0 30px 15px;
+        width: 410px;
+        padding: 0 30px 30px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -663,9 +665,9 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 20px;
+          font-size: 30px;
           position: relative;
-          padding: 20px 0;
+          padding: 30px 0;
           font-weight: bold;
           border-bottom: 1px solid #D8D8D8;
           img {
@@ -674,18 +676,18 @@
             top: 50%;
             transform: translateY(-50%);
             display: block;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             cursor: pointer;
           }
         }
         .title1 {
-          font-size: 18px;
+          font-size: 26px;
           text-align: left;
         }
         .lists {
           .list {
-            margin-top: 8px;
+            margin-top: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -693,13 +695,13 @@
               color:#F5222D;
             }
             span {
-              font-size: 14px;
+              font-size: 18px;
               color: #000;
             }
           }
         }
         .btns {
-          margin: 25px 0 0;
+          margin: 30px 0 0;
           display: flex;
           justify-content: space-around;
           align-items: center;
@@ -707,20 +709,20 @@
             border: 1px solid #F5222D;
             border-radius: 44px;
             width: 132px;
-            height: 44px;
+            height: 56px;
             text-align: center;
-            line-height: 44px;
-            font-size: 15px;
+            line-height: 56px;
+            font-size: 20px;
             color:#F5222D;
           }
           span:last-of-type {
             background: #1AAD19;
             border-radius: 44px;
             width: 132px;
-            height: 44px;
+            height: 56px;
             text-align: center;
-            line-height: 44px;
-            font-size: 15px;
+            line-height: 56px;
+            font-size: 20px;
             color: #fff;
           }
           span.refund {
@@ -737,12 +739,37 @@
     background-color: #FFFFFF;
     border-radius: 40px;
     box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
-    width: 226px;
-    margin: 0 15px;
+    width: 340px;
+    height: 50px;
+    margin: 0 30px;
+    padding: 3px 20px;
+  }
+
+  /deep/ .el-date-editor .el-range__icon {
+    font-size: 20px;
+    line-height: 42px;
+  }
+
+  /deep/ .el-date-editor .el-range-separator {
+    line-height: 42px;
+    font-size: 20px;
+  }
+
+  /deep/ .el-date-editor .el-range-input, .el-date-editor .el-range-separator {
+    font-size: 20px;
   }
 
   .noMsg {
     margin-top: 150px;
+    img {
+      display: block;
+      width: 180px;
+      margin: 0 auto;
+    }
+    p {
+      font-size: 26px;
+      margin-top: 20px;
+    }
   }
 
   /deep/ .el-pagination {
@@ -751,7 +778,11 @@
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
     color: #999;
-    margin: 0 5px;
+    margin: 0 10px;
+    font-size: 16px;
+  }
+  /deep/ .el-pagination__total {
+    font-size: 16px !important;
   }
   /deep/ .el-pager li.active {
     background-color: #1AAD19;

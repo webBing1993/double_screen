@@ -144,7 +144,7 @@
     .header {
       background: #FFFFFF;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
-      height: 60px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -166,23 +166,23 @@
           margin-right: 60px;
           img {
             display: inline-block;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             margin-right: 10px;
           }
           span {
-            font-size: 18px;
+            font-size: 26px;
             color: #fff;
           }
         }
         .tabs {
           height: 100%;
           .tab {
-            margin-right: 40px;
+            margin-right: 60px;
             height: 100%;
             position: relative;
             color: #909399;
-            font-size: 18px;
+            font-size: 26px;
             display: inline-flex;
             align-items: center;
           }
@@ -212,35 +212,35 @@
           height: 100%;
           cursor: pointer;
           img:first-of-type {
-            width: 20px;
+            width: 40px;
             display: inline-block;
           }
           span {
             color: #303133;
-            font-size: 14px;
-            margin: 0 5px;
+            font-size: 18px;
+            margin: 0 10px;
           }
           img:last-of-type {
             display: inline-block;
-            width: 7px;
+            width: 12px;
           }
         }
         .myInfo {
-          margin: 0 30px 0 50px;
+          margin: 0 60px 0 80px;
           display: flex;
           align-items: center;
           height: 100%;
           cursor: pointer;
           img {
             display: inline-block;
-            width: 35px;
-            height: 35px;
+            width: 68px;
+            height: 68px;
             margin-right: 15px;
             border-radius: 50%;
           }
           span {
             color: #4A4A4A;
-            font-size: 14px;
+            font-size: 18px;
           }
         }
       }
@@ -265,10 +265,10 @@
         top: 50%;
         transform: translate(-50%, -50%);
         .quit_title {
-          padding: 30px 10px;
+          padding: 50px 30px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 18px;
+          font-size: 26px;
           text-align: center;
           font-weight: bold;
         }
@@ -279,8 +279,8 @@
             display: inline-block;
             width: 50%;
             position: relative;
-            padding: 15px 0;
-            font-size: 16px;
+            padding: 30px 0;
+            font-size: 24px;
             text-align: center;
           }
           span:first-of-type {
@@ -294,7 +294,7 @@
             display: block;
             background-color: #D8D8D8;
             width: 1px;
-            height: 36px;
+            height: 64px;
             position: absolute;
             right: 0;
             top: 50%;

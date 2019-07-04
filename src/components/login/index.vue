@@ -250,14 +250,14 @@
       }
       .timer {
         color: #909399;
-        font-size: 26px;
+        font-size: 34px;
       }
     }
     .content {
       padding: 70px 70px 0;
       .content_fl {
         p {
-          font-size: 44px;
+          font-size: 48px;
           color: #606266;
           margin: 0;
           text-align: left;
@@ -285,8 +285,8 @@
           border-bottom: 1px solid #C0C4CC ;
           margin: 60px 0;
           i {
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
             margin-right: 30px;
             img {
               display: inline-block;
@@ -296,7 +296,7 @@
           }
           input {
             border: none;
-            font-size: 15px;
+            font-size: 20px;
             line-height: 30px;
             background-color: #fff !important;
             color: #606266;
@@ -326,7 +326,7 @@
             border: none;
             box-shadow: none;
             color: #1AAD19;
-            font-size: 15px;
+            font-size: 20px;
             cursor: pointer;
           }
         }

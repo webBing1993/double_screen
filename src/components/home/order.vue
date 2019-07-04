@@ -412,27 +412,27 @@
 <style scoped lang="less">
 
   .orderIndex {
-    margin-top: 60px;
+    padding-top: 100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     .order_fl {
-      padding: 0 20px;
-      width: calc(100% - 300px);
+      padding: 0 40px;
+      width: calc(100% - 560px);
       .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         .tabs {
-          padding: 20px 0;
+          padding: 40px 0;
           .tab {
-            padding: 8px 10px;
+            padding: 15px 30px;
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
             color: #303133;
-            font-size: 15px;
-            margin-right: 15px;
+            font-size: 20px;
+            margin-right: 30px;
           }
           .active {
             color: #1AAD19;
@@ -442,19 +442,19 @@
         .synchronism {
           display: inline-flex;
           align-items: center;
-          padding: 8px 10px;
+          padding: 10px 30px;
           background: #FFFFFF;
           box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
           border-radius: 40px;
           cursor: pointer;
           img {
             display: inline-block;
-            width: 22px;
-            height: 22px;
+            width: 36px;
+            height: 36px;
           }
           span {
             color: #1AAD19;
-            font-size: 15px;
+            font-size: 20px;
           }
         }
       }
@@ -463,14 +463,14 @@
           background: #FFFFFF;
           box-shadow: 0 4px 11px 0 rgba(0,0,0,0.10);
           border-radius: 6px;
-          padding: 0 20px;
-          height: 36px;
-          line-height: 36px;
-          width: calc(100% - 40px);
+          padding: 0 40px;
+          height: 64px;
+          line-height: 64px;
+          width: calc(100% - 80px);
           .table_cell {
             width: 30%;
             display: inline-table;
-            font-size: 14px;
+            font-size: 18px;
             color: rgba(0, 0, 0, .4);
             text-align: left;
           }
@@ -483,19 +483,19 @@
             background: #FFFFFF;
             box-shadow: 0 4px 11px 0 rgba(0,0,0,0.10);
             border-radius: 6px;
-            margin-top: 10px;
-            padding: 0 20px;
-            width: calc(100% - 40px);
+            margin-top: 20px;
+            padding: 0 40px;
+            width: calc(100% - 80px);
             position: relative;
             .list_content {
               border-bottom: 1px solid #E5E5E5;
-              padding: 8px 0 15px;
+              padding: 10px 0 30px;
               .list_cell {
                 width: 30%;
                 display: inline-table;
                 text-align: left;
                 p {
-                  font-size: 14px;
+                  font-size: 18px;
                   color: #000;
                 }
               }
@@ -506,8 +506,8 @@
             }
             .remark {
               color: rgba(0, 0, 0, .5);
-              font-size: 12px;
-              padding: 5px 0;
+              font-size: 15px;
+              padding: 10px 0;
               text-align: left;
             }
             .banli_status {
@@ -517,8 +517,8 @@
               background: #1AAD19;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
-              padding: 5px 10px;
-              font-size: 11px;
+              padding: 10px 20px;
+              font-size: 15px;
               color: #fff;
               cursor: pointer;
             }
@@ -527,12 +527,12 @@
       }
     }
     .order_fr {
-      width: 260px;
+      width: 480px;
       background-color: #fff;
       .fast_title {
         position: relative;
-        margin: 30px 0;
-        font-size: 18px;
+        margin: 40px 0;
+        font-size: 26px;
         color: #303133;
         text-align: center;
         img {
@@ -548,11 +548,11 @@
         justify-content: space-around;
         align-items: center;
         span {
-          padding: 5px 0;
+          padding: 10px 0;
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 15px;
+          font-size: 20px;
           cursor: pointer;
         }
         span.active {
@@ -573,42 +573,42 @@
         padding: 0 15px;
         .tab {
           .input {
-            padding: 20px 0;
+            padding: 30px 0;
             position: relative;
             input {
               border: 1px solid #9A9A9A;
               border-radius: 44px;
               padding-left: 30px;
-              font-size: 12px;
+              font-size: 16px;
               color: #333;
-              height: 36px;
-              line-height: 36px;
+              height: 64px;
+              line-height: 64px;
               width: calc(100% - 30px);
               outline: none;
             }
             input:-moz-placeholder {
-              font-size: 12px;
+              font-size: 16px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 12px;
+              font-size: 16px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 12px;
+              font-size: 16px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 12px;
+              font-size: 16px;
               color: #606266;
             }
             img {
               position: absolute;
-              right: 10px;
+              right: 20px;
               top: 50%;
               display: inline-block;
-              width: 20px;
-              height: 20px;
+              width: 40px;
+              height: 40px;
               transform: translateY(-50%);
               cursor: pointer;
             }
@@ -620,27 +620,27 @@
           display: inline-block;
           border: 1px solid #C0C4CC;
           border-radius: 12px;
-          width: 44px;
-          height: 33px;
-          font-size: 24px;
-          line-height: 33px;
+          width: 78px;
+          height: 56px;
+          font-size: 36px;
+          line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 15px 15px 0;
+          margin: 0 42px 22px 0;
           cursor: pointer;
         }
         span:nth-of-type(4n) {
           margin-right: 0;
         }
         span:last-of-type {
-          width: 101px;
+          width: 194px;
           margin-right: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 33px;
-            height: 22px;
+            width: 50px;
+            height: 24px;
             display: inline-block;
           }
         }
@@ -648,13 +648,13 @@
       .keyBoard2 {
         span {
           border-radius: 3.6px;
-          width: 65px;
-          height: 40px;
-          line-height: 40px;
+          width: 110px;
+          height: 78px;
+          line-height: 78px;
           text-align: center;
           background-color: #D8D8D8;
-          font-size: 29px;
-          margin: 0 15px 15px 0;
+          font-size: 34px;
+          margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
           font-weight: bold;
@@ -663,15 +663,15 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 18px;
+          font-size: 28px;
         }
         span:last-of-type {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 33px;
-            height: 22px;
+            width: 50px;
+            height: 24px;
             display: inline-block;
           }
         }
@@ -679,9 +679,9 @@
     }
     .order_fr>div {
       position: fixed;
-      top: 60px;
+      top: 115px;
       right: 0;
-      width: 260px;
+      width: 480px;
       background-color: #fff;
     }
     .teamTig {
@@ -705,7 +705,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 20px;
+          font-size: 26px;
           position: relative;
           padding: 20px 30px;
           font-weight: bold;
@@ -715,8 +715,8 @@
             top: 50%;
             transform: translateY(-50%);
             display: block;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             cursor: pointer;
           }
         }
@@ -731,13 +731,13 @@
               width: 100%;
               display: inline-flex;
               justify-content: flex-start;
-              margin-bottom: 10px;
+              margin-bottom: 20px;
               .list_title {
                 color: #303133;
-                font-size: 18px;
+                font-size: 24px;
               }
               .list_total {
-                font-size: 20px;
+                font-size: 26px;
                 color: #F55825;
               }
             }
@@ -747,17 +747,17 @@
               justify-content: flex-start;
               .list_tab {
                 position: relative;
-                font-size: 16px;
+                font-size: 22px;
                 color: #000;
                 opacity: .8;
                 line-height: 45px;
-                width: 101px;
+                width: 116px;
                 text-align: center;
-                margin-right: 30px;
+                margin-right: 15px;
                 img {
                   position: absolute;
                   z-index: -1;
-                  width: 101px;
+                  width: 116px;
                   height: 45px;
                   left: 0;
                   top: 0;
@@ -783,10 +783,10 @@
           background: #1AAD19;
           border-radius: 44px;
           width: 220px;
-          height: 44px;
-          line-height: 44px;
+          height: 56px;
+          line-height: 56px;
           color: #fff;
-          font-size: 15px;
+          font-size: 20px;
           cursor: pointer;
           text-align: center;
           margin: 30px auto;
@@ -840,6 +840,15 @@
 
   .noMsg {
     margin-top: 150px;
+    img {
+      display: block;
+      width: 180px;
+      margin: 0 auto;
+    }
+    p {
+      font-size: 26px;
+      margin-top: 20px;
+    }
   }
 
   /deep/ .el-pagination {
@@ -848,11 +857,14 @@
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
     color: #999;
-    margin: 0 5px;
+    margin: 0 10px;
+    font-size: 16px;
+  }
+  /deep/ .el-pagination__total {
+    font-size: 16px !important;
   }
   /deep/ .el-pager li.active {
     background-color: #1AAD19;
     color: #fff;
   }
-
 </style>

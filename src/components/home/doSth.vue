@@ -266,7 +266,7 @@
     .header {
       background: #FFFFFF;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
-      height: 60px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -288,12 +288,12 @@
           margin-right: 60px;
           img {
             display: inline-block;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             margin-right: 10px;
           }
           span {
-            font-size: 18px;
+            font-size: 26px;
             color: #fff;
           }
         }
@@ -304,7 +304,7 @@
             height: 100%;
             position: relative;
             color: #909399;
-            font-size: 18px;
+            font-size: 26px;
             display: inline-flex;
             align-items: center;
           }
@@ -312,9 +312,9 @@
       }
     }
     .doSthContent {
-      margin-top: 60px;
+      margin-top: 100px;
       .changTabs {
-        padding: 20px;
+        padding: 40px;
         text-align: left;
         span {
           color: #303133;
@@ -337,25 +337,25 @@
       }
       .doSthLists {
         .list {
-          padding: 0 20px;
+          padding: 0 40px;
           background: #FFFFFF;
           box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.10);
           border-radius: 6px;
           text-align: left;
-          margin-bottom: 10px;
+          margin-bottom: 20px;
           .list_header {
             border-bottom: 1px solid #E5E5E5;
-            padding: 10px 0;
+            padding: 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             div:first-of-type {
               span {
                 color: #909399;
-                font-size: 12px;
+                font-size: 14px;
               }
               .title {
-                font-size: 15px;
+                font-size: 20px;
                 color: #000;
                 font-weight: bold;
                 margin-right: 30px;
@@ -363,19 +363,19 @@
             }
             dis:last-of-type {
               color: #303133;
-              font-size: 12px;
+              font-size: 14px;
             }
           }
           .list_content {
-            padding: 8px 0;
+            padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             .list_fl {
               div {
-                font-size: 12px;
+                font-size: 14px;
                 color: #000;
-                margin-top: 5px;
+                margin-top: 10px;
                 span:first-of-type {
                   width: 80px;
                   display: inline-block;
@@ -392,11 +392,11 @@
             .list_fr {
               span {
                 cursor: pointer;
-                width: 80px;
-                height: 32px;
-                line-height: 32px;
+                width: 94px;
+                height: 38px;
+                line-height: 38px;
                 background-color: #1AAD19;
-                font-size: 12px;
+                font-size: 14px;
                 color: #fff;
                 text-align: center;
                 display: inline-block;
@@ -411,6 +411,15 @@
 
   .noMsg {
     margin-top: 150px;
+    img {
+      display: block;
+      width: 180px;
+      margin: 0 auto;
+    }
+    p {
+      font-size: 26px;
+      margin-top: 20px;
+    }
   }
 
   /deep/ .el-pagination {
@@ -419,7 +428,11 @@
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
     color: #999;
-    margin: 0 5px;
+    margin: 0 10px;
+    font-size: 16px;
+  }
+  /deep/ .el-pagination__total {
+    font-size: 16px !important;
   }
   /deep/ .el-pager li.active {
     background-color: #1AAD19;
