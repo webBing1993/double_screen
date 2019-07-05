@@ -413,6 +413,9 @@
             cursor: pointer;
             font-weight: bold;
           }
+          .btning {
+            color: #999;
+          }
         }
         .login {
           margin-top: 56px;
