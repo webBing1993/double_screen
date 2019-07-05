@@ -20,7 +20,7 @@
               </div>
               <div class="code">
                 <i><img src="../../assets/mima.png" alt=""></i>
-                <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_" @blur="onBlur"/>
+                <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_" />
               </div>
               <p class="login"  @click="login">登录</p>
             </el-col>
