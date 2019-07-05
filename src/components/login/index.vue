@@ -2,35 +2,39 @@
     <div>
       <div class="login">
         <div class="header">
-          <!--<div class="img"><img src="../../assets/zhoujijiudian.png" alt=""></div>-->
-          <div class="timer">{{nowTime}}</div>
+          <div class="bg"><img src="../../assets/logoBg.png" alt=""></div>
+         <div class="title_timer">
+           <div class="title">欢迎使用智慧接待前台</div>
+           <div class="timer">{{nowTime}}</div>
+         </div>
         </div>
         <div class="content">
           <el-row >
-            <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="content_fl">
-              <p>欢迎使用</p>
-              <p>智慧接待前台</p>
-              <div class="img">
-                <img src="../../assets/huanying.png" alt="">
-              </div>
-            </el-col>
-            <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" :offset="2" class="content_fr">
+            <el-col :xs="14" :sm="14" :md="14" :lg="14" :xl="14" class="content_fr">
               <p>请输入手机号登录</p>
               <div class="phone">
                 <i><img src="../../assets/zhanghao.png" alt=""></i>
-                <input name="phone" type="tel" min="1" id="input_id" placeholder="请输入11位手机号" v-model="phone"  ref="keyboard" @focus="onFocus($event)" />
+                <input name="phone" type="tel" min="1" id="input_id" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" />
                 <el-button :plain="true" v-if="btntxt != '获取验证码' && btntxt != '重新获取'" class="btns btning">{{btntxt}}</el-button>
                 <el-button :plain="true" @click="sendcode" :class="btntxt == '获取验证码' || btntxt == '重新获取' ? 'btns' : 'btns btning'" v-else>{{btntxt}}</el-button>
               </div>
               <div class="code">
                 <i><img src="../../assets/mima.png" alt=""></i>
-                <input type="number" placeholder="请输入6位验证码" v-model="code"   ref="keyboard_" @focus="onFocus_($event)"/>
+                <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_" @blur="onBlur"/>
               </div>
               <p class="login"  @click="login">登录</p>
             </el-col>
+            <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="content_fl">
+              <div class="key_board">
+                <div class="keyBoard">
+                  <div class="keyBoards">
+                    <span v-for="item in keyBords" @click="item == '清除' ? clear(phoneCode) : keyEntry(item, phoneCode)">{{item}}</span>
+                    <span @click="keyCancel(phoneCode)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                  </div>
+                </div>
+              </div>
+            </el-col>
           </el-row>
-          <keyboard :option="option" @keyVal="getInputValue" @close="option.show=false"></keyboard>
-          <keyboard :option="option_" @keyVal="getInputValue_" @close="option_.show=false"></keyboard>
         </div>
       </div>
     </div>
@@ -38,11 +42,10 @@
 <script>
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
-  import Keyboard from '../keyboard.vue'
 
   export default {
     name: 'login',
-    components: {ElCol, Keyboard},
+    components: {ElCol},
     data () {
       return {
         nowTime: '',
@@ -52,21 +55,42 @@
         code: '',
         phone: '',
         entryAll: false,  // 判断是否可以点击确定按钮
-        option: {
-          show: false,
-          sourceDom: ''
-        },
-        option_: {
-          show: false,
-          sourceDom: ''
-        },
         getTimer: null,
+        keyBords: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],
+        phoneCode: 0,  // 0表示的是手机号输入，1表示的是验证码的输入
       }
     },
     methods: {
       ...mapActions([
         'goto', 'getCode', 'loginEntry'
       ]),
+
+      // 键盘清除事件
+      clear (type) {
+        if (type == 0) {
+            this.phone = '';
+        }else {
+            this.code = '';
+        }
+      },
+
+      // 键盘事件
+      keyEntry (item, type) {
+        if (type == 0) {
+          this.phone += item;
+        }else {
+          this.code += item;
+        }
+      },
+
+      // 键盘删除事件
+      keyCancel(type) {
+        if (type == 0) {
+          this.phone = this.phone.substr(0, this.phone.length - 1);
+        }else {
+          this.code = this.code.substr(0, this.code.length - 1);
+        }
+      },
 
       getDateTime(){
         let dateObj = new Date(); //表示当前系统时间的Date对象
@@ -86,16 +110,16 @@
         return date;
       },
 
-      onFocus(ev){
-//      document.activeElement.blur();//禁止默认键盘
-        this.$set(this.option,'show',true)
-        this.$set(this.option,'sourceDom',this.$refs['keyboard'])
+      onFocus(){
+        this.phoneCode = 0;
       },
 
-      onFocus_(ev){
-//      document.activeElement.blur();//禁止默认键盘
-        this.$set(this.option_,'show',true)
-        this.$set(this.option_,'sourceDom',this.$refs['keyboard_'])
+      onFocus_(){
+        this.phoneCode = 1;
+      },
+
+      onBlur () {
+        this.phoneCode = 0;
       },
 
       //获取键盘值
@@ -144,6 +168,7 @@
               this.entryAll = true;
               if (body.data.code == 0) {
                 if (body.data.data == '' || body.data.data == null) {
+                  this.phoneCode = 1;
                   this.timer();
                 }
                 if (body.data.data.code != 0) {
@@ -234,49 +259,107 @@
 
   .login {
     .header {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 0 40px;
       height: 150px;
       background: #FFFFFF;
-      box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
-      .img {
-        height: 94px;
+      position: relative;
+      .bg {
+        width: 100%;
+        height: 150px;
         img {
-          display: inline-flex;
+          display:  block;
+          width: 100%;
           height: 100%;
         }
       }
-      .timer {
-        color: #909399;
-        font-size: 34px;
+      .title_timer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: calc(100% - 80px);
+        height: 109px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40px;
+        .title {
+          font-size: 48px;
+          color: #000;
+          font-weight: bold;
+        }
+        .timer {
+          font-weight: bold;
+          color: #000;
+          font-size: 34px;
+        }
       }
     }
     .content {
-      padding: 70px 70px 0;
       .content_fl {
-        p {
-          font-size: 48px;
-          color: #606266;
-          margin: 0;
-          text-align: left;
-        }
-        .img {
-          margin-top: 70px;
-          img {
-            display: block;
+        position: relative;
+        .key_board {
+          position: absolute;
+          width: 100%;
+          height: calc(100vh - 112px);
+          background-color: #DEE7F8;
+          left: 0;
+          top: -38px;
+          .keyBoard {
+            position: relative;
             width: 100%;
+            height: 100%;
+            .keyBoards {
+              position: absolute;
+              left: 50%;
+              height: 50%;
+              width: 480px;
+              transform: translate(-50%, -50%);
+              top: 50%;
+              span {
+                border-radius: 3.6px;
+                width: 110px;
+                height: 78px;
+                line-height: 78px;
+                text-align: center;
+                background-color: #D8D8D8;
+                color: #0B0B0B;
+                font-size: 40px;
+                margin: 0 25px 25px 0;
+                cursor: pointer;
+                display: inline-block;
+                font-weight: bold;
+              }
+              span:nth-of-type(3n) {
+                margin-right: 0;
+              }
+              span:nth-of-type(10) {
+                font-size: 30px;
+                color: #EC8B2F;
+              }
+              span:last-of-type {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                img {
+                  width: 50px;
+                  height: 28px;
+                  display: inline-block;
+                }
+              }
+            }
           }
         }
       }
       .content_fr {
+        background-color: #fff;
+        height: calc(100vh - 150px);
+        padding: 0 13%;
         p {
-          color: #606266;
-          opacity: .8;
-          font-size: 30px;
+          color: #000;
+          font-weight: bold;
+          font-size: 42px;
           text-shadow: 0 2px 4px rgba(0,0,0,0.04);
-          margin: 80px 0 20px;
+          margin: 155px 0 20px;
+          text-align: left;
         }
         div {
           display: flex;
@@ -298,7 +381,7 @@
             border: none;
             font-size: 20px;
             line-height: 30px;
-            background-color: #cfcfcf !important;
+            background-color: #fff !important;
             color: #606266;
             width: calc(100% - 200px);
           }
@@ -328,14 +411,15 @@
             color: #1AAD19;
             font-size: 20px;
             cursor: pointer;
+            font-weight: bold;
           }
         }
         .login {
           margin-top: 56px;
           text-align: center;
-          height: 60px;
-          line-height: 60px;
-          font-size: 22px;
+          height: 78px;
+          line-height: 78px;
+          font-size: 30px;
           color: #fff;
           border-radius: 50px;
           background-color: #1AAD19;
