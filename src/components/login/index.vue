@@ -14,13 +14,13 @@
               <p>请输入手机号登录</p>
               <div class="phone">
                 <i><img src="../../assets/zhanghao.png" alt=""></i>
-                <input name="phone" type="tel" min="1" id="input_id" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" />
+                <input name="phone" type="tel" min="1" id="input_id" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
                 <el-button :plain="true" v-if="btntxt != '获取验证码' && btntxt != '重新获取'" class="btns btning">{{btntxt}}</el-button>
                 <el-button :plain="true" @click="sendcode" :class="btntxt == '获取验证码' || btntxt == '重新获取' ? 'btns' : 'btns btning'" v-else>{{btntxt}}</el-button>
               </div>
               <div class="code">
                 <i><img src="../../assets/mima.png" alt=""></i>
-                <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_" />
+                <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
               </div>
               <p class="login"  @click="login">登录</p>
             </el-col>
@@ -77,9 +77,17 @@
       // 键盘事件
       keyEntry (item, type) {
         if (type == 0) {
-          this.phone += item;
+          if (this.phone.length < 11) {
+            this.phone += item;
+          }else {
+              return;
+          }
         }else {
-          this.code += item;
+          if (this.code < 6) {
+            this.code += item;
+          }else {
+
+          }
         }
       },
 

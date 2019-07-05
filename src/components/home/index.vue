@@ -18,9 +18,12 @@
             <span>您有一笔待办待处理，点击查看</span>
             <img src="../../assets/gengduo.png" alt="">
           </div>
-          <div class="myInfo" @click="quit=true;">
+          <div class="myInfo">
             <img :src="myInfo.img" alt="">
             <span>{{myInfo.name}}</span>
+          </div>
+          <div class="tuichu" @click="quit=true;">
+            <img src="../../assets/tuichu.png" alt="">
           </div>
         </div>
       </div>
@@ -62,7 +65,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto'
+        'goto', 'replaceto', 'getTodoList'
       ]),
 
       // tab切换
@@ -87,6 +90,21 @@
       sure() {
         this.quit = false;
         this.replaceto('/');
+      },
+
+      // 获取列表
+      doSthList() {
+        this.getTodoList({
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0) {
+                  this.speakShow = false;
+              }else {
+                  this.speakShow = true;
+              }
+            }
+          }
+        })
       },
 
       OpenExternalScreen(type) {
@@ -129,6 +147,7 @@
 
     mounted () {
       this.tabClick(1);
+      this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
         this.websocketsend(88888);
@@ -245,6 +264,9 @@
             color: #4A4A4A;
             font-size: 18px;
           }
+        }
+        .tuichu {
+          margin-right: 20px;
         }
       }
     }

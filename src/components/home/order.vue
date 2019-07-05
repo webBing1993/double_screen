@@ -133,7 +133,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入预定人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -143,7 +143,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2">
+                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
               </div>
               <div class="keyBoard2">
@@ -246,10 +246,14 @@
           this.searchString = this.searchString1;
           this.getPreOrder(1);
         }else {
-          this.searchString2 += item;
-          if (this.searchString2.length == 11) {
-            this.searchString = this.searchString2;
-            this.getPreOrder(1);
+          if (this.searchString2.length < 11) {
+            this.searchString2 += item;
+            if (this.searchString2.length == 11) {
+              this.searchString = this.searchString2;
+              this.getPreOrder(1);
+            }
+          }else {
+            return;
           }
         }
       },
@@ -686,9 +690,10 @@
     }
     .order_fr>div {
       position: fixed;
-      top: 115px;
+      top: 100px;
       right: 0;
       width: 480px;
+      height: calc(100vh - 100px);
       background-color: #fff;
     }
     .teamTig {
