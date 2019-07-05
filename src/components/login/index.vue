@@ -379,8 +379,8 @@
           }
           input {
             border: none;
-            font-size: 20px;
-            line-height: 30px;
+            font-size: 36px;
+            line-height: 48px;
             background-color: #fff !important;
             color: #606266;
             width: calc(100% - 200px);
@@ -409,7 +409,7 @@
             border: none;
             box-shadow: none;
             color: #1AAD19;
-            font-size: 20px;
+            font-size: 32px;
             cursor: pointer;
             font-weight: bold;
           }
