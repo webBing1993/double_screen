@@ -8,7 +8,7 @@
             <span>切换外屏</span>
           </div>
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'tab active' : 'tab'" @click="tabClick(1)">订单中心</span>
+            <span :class="tabIndex == 1 ? 'tab active' : 'tab'" @click="tabClick(1)">办理入住</span>
             <span :class="tabIndex == 2 ? 'tab active' : 'tab'" @click="tabClick(2)">交易管理</span>
           </div>
         </div>
@@ -54,7 +54,7 @@
       return {
         tabIndex: 1,  // tab切换
         myInfo: {
-          img: sessionStorage.getItem('avatar'),
+          img: sessionStorage.getItem('avatar') ? sessionStorage.getItem('avatar') : require('../../assets/morentouxiang.png'),
           name: sessionStorage.getItem('name')
         },      // 获取个人头像和姓名
         quit: false,     // 是否退出弹框
