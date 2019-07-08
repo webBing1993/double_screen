@@ -222,7 +222,7 @@
       pmsCheckIn(id) {
         this.updateCheckinfailedStatus({
           id: id,
-          status: 0,
+          status: 1,
           onsuccess:(body)=>{
             if (body.data.code == 0) {
               this.doSthList();
