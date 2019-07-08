@@ -59,7 +59,8 @@
           <div class="tigContent">
             <div class="title">
               请确认订单支付状态
-              <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
+              <!--<img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">-->
+              <span @click="teamTig = false;">关闭</span>
             </div>
             <div class="tigLists">
               <div class="tig_list">
@@ -722,6 +723,16 @@
           position: relative;
           padding: 20px 30px;
           font-weight: bold;
+          span {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            cursor: pointer;
+            font-size: 26px;
+            color: #1AAD19;
+          }
           img {
             position: absolute;
             right: 30px;
