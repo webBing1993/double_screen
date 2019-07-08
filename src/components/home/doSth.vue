@@ -53,7 +53,7 @@
                 <div class="roomIn"><span>入账金额：</span>{{item.totalFeeStr}}</div>
               </div>
               <div class="list_fr">
-                <span @click="pmsPay(item.id)">处理完成</span>
+                <span @click="pmsPay(item.orderId)">处理完成</span>
               </div>
             </div>
             <div class="list_content" v-else>
@@ -310,7 +310,7 @@
             margin-right: 40px;
             height: 100%;
             position: relative;
-            color: #909399;
+            color: #000;
             font-size: 26px;
             display: inline-flex;
             align-items: center;
