@@ -66,7 +66,7 @@
               <div class="tig_list">
                 <div class="list_title_total">
                   <div class="list_title">总房费：</div>
-                  <div class="list_total">{{roomFeeShow}}元</div>
+                  <div class="list_total">{{(roomFeeShow/100).toFixed(2)}}元</div>
                 </div>
                 <div class="list_tabs">
                   <div class="list_tab" @click="payModeChange(1)">
@@ -89,7 +89,7 @@
               <div class="tig_list">
                 <div class="list_title_total">
                   <div class="list_title">押金：</div>
-                  <div class="list_total">{{cashFee}}元</div>
+                  <div class="list_total">{{(cashFee/100).toFixed(2)}}元</div>
                 </div>
                 <div class="list_tabs">
                   <div class="list_tab" @click="changeFreeDeposit(1)">
