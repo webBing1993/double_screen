@@ -28,7 +28,7 @@
               <div class="key_board">
                 <div class="keyBoard">
                   <div class="keyBoards">
-                    <span v-for="item in keyBords"  @touchstart="item == '清除' ? clear($event, phoneCode) : keyEntry($event, item, phoneCode)">{{item}}</span>
+                    <span v-for="item in keyBords"  @click="item == '清除' ? clear($event, phoneCode) : keyEntry($event, item, phoneCode)">{{item}}</span>
                     <span @click="keyCancel($event, phoneCode)"><img src="../../assets/shanchuanniu.png" alt=""></span>
                   </div>
                 </div>
@@ -338,6 +338,10 @@
                 cursor: pointer;
                 display: inline-block;
                 font-weight: bold;
+                -moz-user-select:none;
+                -ms-user-select: none;
+                -webkit-user-select: none;
+                user-select: none;
               }
               span:nth-of-type(3n) {
                 margin-right: 0;

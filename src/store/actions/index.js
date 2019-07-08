@@ -331,7 +331,7 @@ const actions = {
   // 发卡失败处理事件
   getFaka(ctx, param) {
     ctx.dispatch('resource', {
-      url: '/ecard/hotel/updateFakaFail/'+param.id,
+      url: '/ecard/hotel/updateToDoStatus/'+param.id,
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null

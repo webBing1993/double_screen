@@ -138,7 +138,7 @@
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
-                <span v-for="item in keyBords1" @touchstart="keyEntry($event, item, 1)">{{item}}</span>
+                <span v-for="item in keyBords1" @click="keyEntry($event, item, 1)">{{item}}</span>
                 <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
@@ -644,6 +644,10 @@
           font-weight: bold;
           margin: 0 42px 22px 0;
           cursor: pointer;
+          -moz-user-select:none;
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          user-select: none;
         }
         span:nth-of-type(4n) {
           margin-right: 0;

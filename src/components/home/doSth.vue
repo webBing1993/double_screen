@@ -248,7 +248,14 @@
 
       // 前台支付
       nativepay(id){
-
+        this.getFaka({
+          id: id,
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.doSthList();
+            }
+          }
+        })
       },
     },
 
