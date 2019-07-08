@@ -148,7 +148,7 @@
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
               </div>
               <div class="keyBoard2">
-                <span v-for="item in keyBords2" @touchstart="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
+                <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
                 <span @click="keyCancel($event, 2)"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
