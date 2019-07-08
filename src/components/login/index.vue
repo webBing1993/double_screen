@@ -83,7 +83,7 @@
               return;
           }
         }else {
-          if (this.code < 6) {
+          if (this.code.length < 6) {
             this.code += item;
           }else {
 

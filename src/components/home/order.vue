@@ -69,17 +69,17 @@
                 </div>
                 <div class="list_tabs">
                   <div class="list_tab" @click="payModeChange(1)">
-                    <img src="../../assets/xuanzhong.png" alt="" v-if="changeItem.payMode == 1">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 1">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     到店付
                   </div>
                   <div class="list_tab" @click="payModeChange(2)">
-                    <img src="../../assets/xuanzhong.png" alt="" v-if="changeItem.payMode == 2">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 2">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     已预付
                   </div>
                   <div class="list_tab" @click="payModeChange(3)">
-                    <img src="../../assets/xuanzhong.png" alt="" v-if="changeItem.payMode == 3">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 3">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     后付/挂账
                   </div>
@@ -92,12 +92,12 @@
                 </div>
                 <div class="list_tabs">
                   <div class="list_tab" @click="changeFreeDeposit(1)">
-                    <img src="../../assets/xuanzhong.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
                     <img src="../../assets/weixuan.png" alt="" v-esle>
                     免押金
                   </div>
                   <div class="list_tab" @click="changeFreeDeposit(2)" v-if="!cashFeeTrue">
-                    <img src="../../assets/xuanzhong.png" alt="" v-if="!changeItem.isFreeDeposit">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     收押金
                   </div>
@@ -738,7 +738,7 @@
           padding: 0 30px;
           position: relative;
           .tig_list {
-            margin-bottom: 20px;
+            margin-bottom: 70px;
             width: 100%;
             .list_title_total {
               width: 100%;
@@ -766,7 +766,7 @@
                 line-height: 45px;
                 width: 116px;
                 text-align: center;
-                margin-right: 42px;
+                margin-right: 88px;
                 img {
                   position: absolute;
                   z-index: -1;
@@ -795,9 +795,9 @@
         .tig_btn {
           background: #1AAD19;
           border-radius: 44px;
-          width: 220px;
-          height: 56px;
-          line-height: 56px;
+          width: 340px;
+          height: 68px;
+          line-height: 68px;
           color: #fff;
           font-size: 20px;
           cursor: pointer;
