@@ -451,6 +451,7 @@
       .change_item.active {
         background-color: #C8E1C8;
         border: 1px solid #1AAD19;
+        color: #1AAD19;
       }
     }
     .paymentLists {

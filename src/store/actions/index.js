@@ -88,7 +88,10 @@ const actions = {
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
-      else if (response.data.errcode !== 0) {
+      else if (response.data.code === 10004) {
+        router.replace('/');
+      }
+      else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         Vue.prototype.$message.error(response.data.msg);
         param.onFail && param.onFail(response)
       }
@@ -128,7 +131,10 @@ const actions = {
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
-      else if (response.data.errcode !== 0) {
+      else if (response.data.code === 10004) {
+        router.replace('/');
+      }
+      else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         Vue.prototype.$message.error(response.data.msg);
         param.onFail && param.onFail(response)
       }

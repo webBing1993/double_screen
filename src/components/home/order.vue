@@ -442,6 +442,7 @@
           .active {
             background-color: #C8E1C8;
             border: 1px solid #1AAD19;
+            color: #1AAD19;
           }
         }
         .synchronism {
@@ -709,7 +710,7 @@
       .tigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 500px;
+        width: 580px;
         position: fixed;
         z-index: 12;
         left: 50%;
