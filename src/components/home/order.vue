@@ -684,6 +684,7 @@
         }
         span:nth-of-type(10) {
           font-size: 28px;
+          color: #EC8B2F;
         }
         span:last-of-type {
           display: inline-flex;
@@ -718,7 +719,7 @@
       .tigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 580px;
+        width: 960px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -726,9 +727,9 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 26px;
+          font-size: 30px;
           position: relative;
-          padding: 20px 30px;
+          padding: 30px 30px;
           font-weight: bold;
           span {
             position: absolute;
@@ -737,7 +738,7 @@
             transform: translateY(-50%);
             display: block;
             cursor: pointer;
-            font-size: 26px;
+            font-size: 30px;
             color: #1AAD19;
           }
           img {
@@ -752,7 +753,7 @@
           }
         }
         .tigLists {
-          margin: 20px 0;
+          margin: 30px 0;
           padding: 0 30px;
           position: relative;
           .tig_list {
@@ -765,10 +766,12 @@
               margin-bottom: 20px;
               .list_title {
                 color: #303133;
-                font-size: 24px;
+                font-size: 28px;
+                font-weight: bold;
               }
               .list_total {
-                font-size: 26px;
+                font-size: 30px;
+                font-weight: bold;
                 color: #F55825;
               }
             }
@@ -780,16 +783,16 @@
                 position: relative;
                 font-size: 22px;
                 color: #000;
-                opacity: .8;
-                line-height: 45px;
-                width: 116px;
+                font-weight: bold;
+                line-height: 80px;
+                width: 245px;
                 text-align: center;
-                margin-right: 88px;
+                margin-right: 84px;
                 img {
                   position: absolute;
                   z-index: -1;
-                  width: 116px;
-                  height: 45px;
+                  width: 245px;
+                  height: 80px;
                   left: 0;
                   top: 0;
                 }
@@ -802,7 +805,7 @@
         }
         .tigLists:before {
           position: absolute;
-          top: -20px;
+          top: -30px;
           left: 30px;
           display: inline-block;
           content: '';
