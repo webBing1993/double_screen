@@ -138,8 +138,8 @@
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
-                <span v-for="item in keyBords1" @click="keyEntry(item,1)">{{item}}</span>
-                <span @click="keyCancel(1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                <span v-for="item in keyBords1" @touchstart="keyEntry($event, item, 1)">{{item}}</span>
+                <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
             <div class="tab" v-else>
@@ -148,8 +148,8 @@
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
               </div>
               <div class="keyBoard2">
-                <span v-for="item in keyBords2" @click="item == '清除' ? clear() : keyEntry(item,2)">{{item}}</span>
-                <span @click="keyCancel(2)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                <span v-for="item in keyBords2" @touchstart="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
+                <span @click="keyCancel($event, 2)"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
           </div>
@@ -217,31 +217,34 @@
         this.searchString = '';
       },
 
-      keyCancel (type) {
-          if (type == 1) {
-            if (this.searchString1.length > 0) {
-              this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
-              this.searchString = this.searchString1;
-              this.getPreOrder(1);
-            }
-          }else {
-            if (this.searchString2.length > 0) {
-              this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
-              this.searchString = this.searchString2;
-              this.getPreOrder(1);
-            }
+      keyCancel (event, type) {
+        event.preventDefault();
+        if (type == 1) {
+          if (this.searchString1.length > 0) {
+            this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
+            this.searchString = this.searchString1;
+            this.getPreOrder(1);
           }
+        }else {
+          if (this.searchString2.length > 0) {
+            this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
+            this.searchString = this.searchString2;
+            this.getPreOrder(1);
+          }
+        }
       },
 
       // 键盘清除事件
-      clear () {
+      clear (event) {
+        event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
         this.getPreOrder(1);
       },
 
       // 字母键盘事件
-      keyEntry(item,type) {
+      keyEntry(event, item,type) {
+        event.preventDefault();
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;

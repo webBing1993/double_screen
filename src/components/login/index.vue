@@ -28,8 +28,8 @@
               <div class="key_board">
                 <div class="keyBoard">
                   <div class="keyBoards">
-                    <span v-for="item in keyBords" @click="item == '清除' ? clear(phoneCode) : keyEntry(item, phoneCode)">{{item}}</span>
-                    <span @click="keyCancel(phoneCode)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                    <span v-for="item in keyBords"  @touchstart="item == '清除' ? clear($event, phoneCode) : keyEntry($event, item, phoneCode)">{{item}}</span>
+                    <span @click="keyCancel($event, phoneCode)"><img src="../../assets/shanchuanniu.png" alt=""></span>
                   </div>
                 </div>
               </div>
@@ -66,7 +66,8 @@
       ]),
 
       // 键盘清除事件
-      clear (type) {
+      clear (event, type) {
+        event.preventDefault();
         if (type == 0) {
             this.phone = '';
         }else {
@@ -75,7 +76,8 @@
       },
 
       // 键盘事件
-      keyEntry (item, type) {
+      keyEntry (event, item, type) {
+        event.preventDefault();
         if (type == 0) {
           if (this.phone.length < 11) {
             this.phone += item;
@@ -92,7 +94,8 @@
       },
 
       // 键盘删除事件
-      keyCancel(type) {
+      keyCancel(event, type) {
+        event.preventDefault();
         if (type == 0) {
           this.phone = this.phone.substr(0, this.phone.length - 1);
         }else {
