@@ -294,6 +294,7 @@
                           this.cashFee = 0;
                           this.cashFeeTrue = true;
                         }else {
+                          this.cashFeeTrue = false;
                           this.cashFee = body.data.data.cashFeeShow;
                         }
                         if (body.data.data.roomFeeShow == '预付房费') {
