@@ -342,6 +342,7 @@
         this.refreshList({
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
+              this.page = 1;
               this.getPreOrder(1);
               this.initRefreshTime();
             }
