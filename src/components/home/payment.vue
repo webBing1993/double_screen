@@ -35,7 +35,7 @@
               <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'退款':item.resultCode=='FAILED'?'收款失败':'收款'}}</span>
               <span v-if="item.channel == 6" class="red">取消授权</span>
               <span v-if="item.channel == 4" class="blue">快速结算</span>
-              <span v-if="item.channel == 5" class="grey">张三/李四 2019/06/07 11:24已结算</span>
+              <span v-if="item.channel == 5" class="grey">{{item.founder}} {{item.timeEndStr}} 已结算</span>
               <img src="../../assets/gengduo.png" alt="">
             </div>
           </div>
@@ -76,11 +76,11 @@
       <div class="channelDetail" v-if="channelDetail">
         <div class="shadow"></div>
         <div class="detail">
-          <div class="title" v-if="detailVal.channel == 4">
+          <div class="title" v-if="detailVal.channel == 4 && !detailVal.refundModel">
             授权信息
             <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
           </div>
-          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
+          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel != 4">
             授权信息
             <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
           </div>
@@ -122,7 +122,7 @@
             </div>
             <div class="list">
               <span>结算时间</span>
-              <span>{{payDetail.refundModel.timeEnd}}</span>
+              <span>{{detailVal.refundModel.timeEnd}}</span>
             </div>
             <div class="list">
               <span>商户订单号</span>
@@ -143,14 +143,31 @@
             </div>
             <div class="list">
               <span>解冻时间</span>
-              <span>{{payDetail.refundModel.timeEnd}}</span>
+              <span>{{detailVal.refundModel.timeEnd}}</span>
             </div>
             <div class="list">
               <span>解冻单号</span>
               <span>{{detailVal.refundModel.outTradeNo}}</span>
             </div>
           </div>
-          <div class="btns" v-if="detailVal.channel == 4">
+          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 6" style="padding: 5px 0">
+
+          </div>
+          <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 6">
+            <div class="list">
+              <span>授权状态</span>
+              <span class="blue">取消授权</span>
+            </div>
+            <div class="list">
+              <span>操作人员</span>
+              <span>{{detailVal.refundModel.founder}}</span>
+            </div>
+            <div class="list">
+              <div class="list_title">操作时间</div>
+              <div class="list_content">{{detailVal.refundModel.timeEnd}}</div>
+            </div>
+          </div>
+          <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel">
             <span @click="accountCancelSure">取消授权</span>
             <span @click="accounts">结算</span>
           </div>
@@ -694,6 +711,9 @@
             align-items: center;
             .red {
               color:#F5222D;
+            }
+            .blue {
+              color: #4A90E2;
             }
             span {
               font-size: 18px;
