@@ -31,9 +31,9 @@
               <div class="roomIn"><span>入住人：</span>{{item.contactName}}</div>
             </div>
             <div class="list_fr">
-              <p>交易金额： <span class="green">{{item.totalFeeStr}}</span></p>
-              <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'退款':item.resultCode=='FAILED'?'收款失败':'收款'}}</span>
-              <span v-if="item.channel == 6" class="red">取消授权</span>
+              <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
+              <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
+              <span v-if="item.channel == 6" class="red">已撤销</span>
               <span v-if="item.channel == 4" class="blue">快速结算</span>
               <span v-if="item.channel == 5" class="grey">{{item.founder}} {{item.timeEndStr}} 已结算</span>
               <img src="../../assets/gengduo.png" alt="">
@@ -795,7 +795,7 @@
   }
 
   /deep/ .el-pagination {
-    margin: 30px 0;
+    padding: 30px 0;
   }
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
