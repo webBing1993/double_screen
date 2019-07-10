@@ -59,7 +59,7 @@
             <div class="list_content" v-else>
               <div class="list_fl">
                 <div class="rooms"><span>预订人：</span>{{item.owner}} {{item.ownerTel}}</div>
-                <div class="roomIn"><span>入账金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
+                <div class="roomIn"><span>订单金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
               </div>
               <div class="list_fr">
                 <span @click="nativepay(item.id)">处理完成</span>
@@ -384,14 +384,14 @@
                 color: #000;
                 margin-top: 10px;
                 span:first-of-type {
-                  width: 110px;
+                  width: 125px;
                   display: inline-block;
                 }
                 span:last-of-type {
                   width: auto;
                 }
                 span:only-child {
-                  width: 110px;
+                  width: 125px;
                   display: inline-block;
                 }
               }
@@ -399,7 +399,7 @@
             .list_fr {
               span {
                 cursor: pointer;
-                width: 110px;
+                width: 125px;
                 height: 44px;
                 line-height: 44px;
                 background-color: #1AAD19;
