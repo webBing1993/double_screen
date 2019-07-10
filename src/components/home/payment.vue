@@ -12,7 +12,7 @@
           @change="datePicker"
         >
         </el-date-picker>
-        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权冻结</span>
+        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
         <span class="items">
           <span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)">微信支付</span>
           <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)">支付宝</span>
@@ -26,7 +26,7 @@
           </div>
           <div class="list_content">
             <div class="list_fl">
-              <p class="title">{{item.payFlag == 1 ? '微信支付' : '支付宝支付'}}</p>
+              <p class="title">{{item.payFlag == 1 ? '微信支付' : '支付宝支付'}}<sapn v-if="item.channel == 4 || item.channel == 5 || item.channel == 6"> . 预授权</sapn></p>
               <div class="rooms"><span>房间号：</span>{{item.roomNo}}</div>
               <div class="roomIn"><span>入住人：</span>{{item.contactName}}</div>
             </div>
