@@ -58,8 +58,8 @@
             </div>
             <div class="list_content" v-else>
               <div class="list_fl">
-                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
-                <div class="roomIn"><span>入账金额：</span>{{item.totalFeeStr}}</div>
+                <div class="rooms"><span>预订人：</span>{{item.owner}} {{item.ownerTel}}</div>
+                <div class="roomIn"><span>入账金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
               </div>
               <div class="list_fr">
                 <span @click="nativepay(item.id)">处理完成</span>
