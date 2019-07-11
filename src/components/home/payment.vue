@@ -21,14 +21,14 @@
       <div class="paymentLists">
         <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.channel, item.tradeType)">
           <div class="list_header">
-            <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd")}}</span>
+            <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
             <span>交易单号：{{item.orderId}}</span>
           </div>
           <div class="list_content">
             <div class="list_fl">
               <p class="title">{{item.payFlag == 1 ? '微信支付' : '支付宝支付'}}<sapn v-if="item.channel == 4 || item.channel == 5 || item.channel == 6"> . 预授权</sapn></p>
-              <div class="rooms"><span>房间号：</span>{{item.roomNo}}</div>
-              <div class="roomIn"><span>入住人：</span>{{item.contactName}}</div>
+              <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '暂无房号'}}</div>
+              <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '暂无入住人'}}</div>
             </div>
             <div class="list_fr">
               <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>

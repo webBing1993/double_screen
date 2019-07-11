@@ -283,34 +283,39 @@
             onsuccess: body => {
               if (body.data.code == 0) {
                 if (item.screen) {
-                  this.getOrderFree({
-                    data: {
-                      orderId: item.id
-                    },
-                    onsuccess: body => {
-                      console.log('body.code',body.data);
-                      if (body.data.code == 0) {
-                        if (body.data.data.cashFeeShow == '免押') {
-                          this.cashFee = 0;
-                          this.cashFeeTrue = true;
-                        }else {
-                          this.cashFeeTrue = false;
-                          this.cashFee = body.data.data.cashFeeShow;
-                        }
-                        if (body.data.data.roomFeeShow == '预付房费') {
+                  if (item.type == 1) {
+                    this.getOrderFree({
+                      data: {
+                        orderId: item.id
+                      },
+                      onsuccess: body => {
+                        console.log('body.code',body.data);
+                        if (body.data.code == 0) {
                           if (body.data.data.cashFeeShow == '免押') {
-                            this.roomFeeShow = body.data.data.totalFeeShow;
+                            this.cashFee = 0;
+                            this.cashFeeTrue = true;
                           }else {
-                            this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                            this.cashFeeTrue = false;
+                            this.cashFee = body.data.data.cashFeeShow;
                           }
-                        }else {
-                          this.roomFeeShow = body.data.data.roomFeeShow;
+                          if (body.data.data.roomFeeShow == '预付房费') {
+                            if (body.data.data.cashFeeShow == '免押') {
+                              this.roomFeeShow = body.data.data.totalFeeShow;
+                            }else {
+                              this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                            }
+                          }else {
+                            this.roomFeeShow = body.data.data.roomFeeShow;
+                          }
+                          this.teamTig = true;
+                          this.changeItem = item;
                         }
-                        this.teamTig = true;
-                        this.changeItem = item;
                       }
-                    }
-                  });
+                    });
+                  }else {
+                    this.OpenExternalScreen('SendMessage@'+item.id+'')
+                  }
+
                 }else {
 
                 }
