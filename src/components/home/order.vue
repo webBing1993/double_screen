@@ -307,7 +307,11 @@
                           }else {
                             this.roomFeeShow = body.data.data.roomFeeShow;
                           }
-                          this.teamTig = true;
+                          if (body.data.data.needPayFeeShow != 0) {
+                            this.teamTig = true;
+                          }else {
+                            this.OpenExternalScreen('SendMessage@'+item.id+'')
+                          }
                           this.changeItem = item;
                         }
                       }
