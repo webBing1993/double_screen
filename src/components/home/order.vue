@@ -72,7 +72,7 @@
                   <div class="list_tab" @click="payModeChange(1)">
                     <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 1">
                     <img src="../../assets/weixuan.png" alt="" v-else>
-                    到店付
+                    当面付
                   </div>
                   <div class="list_tab" @click="payModeChange(2)">
                     <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 2">
