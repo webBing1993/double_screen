@@ -1,9 +1,9 @@
 class apiTool{
   httpUrlEnv(){
     //本地调试
-    return '';
+    // return '';
     // 推远程
-    //   return '/'
+      return '/p/v2.7.9/'
   }
 }
 export default new apiTool()
