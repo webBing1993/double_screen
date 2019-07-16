@@ -76,11 +76,11 @@
       <div class="channelDetail" v-if="channelDetail">
         <div class="shadow"></div>
         <div class="detail">
-          <div class="title" v-if="detailVal.channel == 4 && !detailVal.refundModel">
+          <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">
             授权信息
             <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
           </div>
-          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel != 4">
+          <div class="title1 title" v-if="detailVal.refundModel && detailVal.refundModel.channel != 4">
             授权信息
             <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
           </div>
