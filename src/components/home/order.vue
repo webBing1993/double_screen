@@ -104,6 +104,7 @@
                   </div>
                 </div>
               </div>
+              <p class="tigRemark" v-if="changeItem.remark">订单备注：{{changeItem.remark}}</p>
             </div>
             <div class="tig_btn" @click="teamCheckIn()">开始办理</div>
           </div>
@@ -529,7 +530,7 @@
               }
             }
             .remark {
-              color: rgba(0, 0, 0, .5);
+              color: rgba(0, 0, 0, 1);
               font-size: 16px;
               padding: 10px 0;
               text-align: left;
@@ -740,11 +741,11 @@
           color: #303133;
           font-size: 30px;
           position: relative;
-          padding: 30px 30px;
+          padding: 30px 50px;
           font-weight: bold;
           span {
             position: absolute;
-            right: 30px;
+            right: 50px;
             top: 50%;
             transform: translateY(-50%);
             display: block;
@@ -754,7 +755,7 @@
           }
           img {
             position: absolute;
-            right: 30px;
+            right: 50px;
             top: 50%;
             transform: translateY(-50%);
             display: block;
@@ -765,10 +766,10 @@
         }
         .tigLists {
           margin: 30px 0;
-          padding: 0 30px;
+          padding: 0 50px;
           position: relative;
           .tig_list {
-            margin-bottom: 70px;
+            margin-bottom: 60px;
             width: 100%;
             .list_title_total {
               width: 100%;
@@ -802,7 +803,7 @@
                 img {
                   position: absolute;
                   z-index: -1;
-                  width: 245px;
+                  width: 233px;
                   height: 80px;
                   left: 0;
                   top: 0;
@@ -813,14 +814,19 @@
               }
             }
           }
+          .tigRemark {
+            text-align: left;
+            font-size: 30px;
+            color: #000;
+          }
         }
         .tigLists:before {
           position: absolute;
           top: -30px;
-          left: 30px;
+          left: 50px;
           display: inline-block;
           content: '';
-          width: calc(100% - 60px);
+          width: calc(100% - 100px);
           height: 1px;
           background-color: #D8D8D8;
         }
