@@ -560,7 +560,7 @@
       .payTigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 450px;
+        width: 960px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -568,9 +568,9 @@
         transform: translate(-50%, -50%);
         .payTig_title {
           color: #303133;
-          font-size: 26px;
+          font-size: 30px;
           position: relative;
-          padding: 20px 30px;
+          padding: 30px 40px;
           img {
             position: absolute;
             right: 30px;
@@ -583,17 +583,17 @@
           }
         }
         .payTig_content {
-          width: 227px;
+          width: 680px;
           margin: 0 auto;
           .payTig_input {
             input {
-              width: 225px;
+              width: 678px;
               border: 1px solid #979797;
               outline: none;
               text-align: center;
-              font-size: 18px;
-              height: 44px;
-              line-height: 44px;
+              font-size: 26px;
+              height: 68px;
+              line-height: 68px;
             }
             input::-webkit-outer-spin-button,
             input::-webkit-inner-spin-button {
@@ -603,32 +603,32 @@
               -moz-appearance: textfield;
             }
             input:-moz-placeholder {
-              font-size: 18px;
+              font-size: 26px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 18px;
+              font-size: 26px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 18px;
+              font-size: 26px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 18px;
+              font-size: 26px;
               color: #606266;
             }
           }
           .payTig_keyBoard {
             span {
               border-radius: 3.6px;
-              width: 64px;
-              height: 40px;
-              line-height: 40px;
+              width: 214px;
+              height: 70px;
+              line-height: 70px;
               text-align: center;
               background-color: #D8D8D8;
               font-size: 29px;
-              margin: 15px 15px 0 0;
+              margin: 20px 15px 0 0;
               cursor: pointer;
               display: inline-block;
               font-weight: bold;
@@ -648,13 +648,13 @@
             }
           }
           .btn {
-            margin: 20px 0 25px;
+            margin: 30px 0 40px;
             background: #1AAD19;
             border-radius: 44px;
             text-align: center;
-            height: 44px;
-            line-height: 44px;
-            font-size: 15px;
+            height: 78px;
+            line-height: 78px;
+            font-size: 26px;
             color: #fff;
             cursor: pointer;
           }
@@ -674,7 +674,7 @@
       .detail {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 410px;
+        width: 960px;
         padding: 0 30px 30px;
         position: fixed;
         z-index: 12;
@@ -700,12 +700,12 @@
           }
         }
         .title1 {
-          font-size: 26px;
+          font-size: 30px;
           text-align: left;
         }
         .lists {
           .list {
-            margin-top: 15px;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -716,38 +716,38 @@
               color: #4A90E2;
             }
             span {
-              font-size: 18px;
+              font-size: 26px;
               color: #000;
             }
           }
         }
         .btns {
-          margin: 30px 0 0;
+          margin: 50px 0 0;
           display: flex;
           justify-content: space-around;
           align-items: center;
           span:first-of-type {
             border: 1px solid #F5222D;
             border-radius: 44px;
-            width: 132px;
-            height: 56px;
+            width: 280px;
+            height: 78px;
             text-align: center;
-            line-height: 56px;
-            font-size: 20px;
+            line-height: 78px;
+            font-size: 30px;
             color:#F5222D;
           }
           span:last-of-type {
             background: #1AAD19;
             border-radius: 44px;
-            width: 132px;
-            height: 56px;
+            width: 280px;
+            height: 78px;
             text-align: center;
-            line-height: 56px;
-            font-size: 20px;
+            line-height: 78px;
+            font-size: 30px;
             color: #fff;
           }
           span.refund {
-            width: 200px;
+            width: 400px;
             background-color: transparent;
             color:#F5222D;
           }
