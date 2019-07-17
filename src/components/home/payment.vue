@@ -216,9 +216,8 @@
           </div>
           <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">
             退款信息
-            <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
           </div>
-          <div class="lists"  v-if="detailVal.tradeType=='refund'">
+          <div class="lists"  v-if="detailVal.refundModel || detailVal.refundModel != null">
             <div class="list">
               <span>退款金额</span>
               <span>￥{{detailVal.refundModel.totalFeeStr}}</span>
