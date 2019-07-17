@@ -230,7 +230,7 @@
           if (this.searchString2.length > 0) {
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
-            this.getPreOrder(1);
+//            this.getPreOrder(1);
           }
         }
       },
