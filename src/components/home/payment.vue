@@ -99,7 +99,7 @@
               <span v-else-if="detailVal.payFlag == 2">支付宝</span>
               <span v-else>微信</span>
             </div>
-            <div class="list">
+              <div class="list">
               <span>授权时间</span>
               <span>{{datetimeparse(detailVal.timeEnd, 'yy/MM/dd hh:mm:ss')}}</span>
             </div>
@@ -163,8 +163,8 @@
               <span>{{detailVal.refundModel.founder}}</span>
             </div>
             <div class="list">
-              <div class="list_title">操作时间</div>
-              <div class="list_content">{{detailVal.refundModel.timeEnd}}</div>
+              <span class="list_title">操作时间</span>
+              <span class="list_content">{{detailVal.refundModel.timeEnd}}</span>
             </div>
           </div>
           <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel">
@@ -214,7 +214,7 @@
               <span>{{detailVal.outTradeNo}}</span>
             </div>
           </div>
-          <div class="title1 title"  v-if="detailVal.tradeType=='refund'">
+          <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">
             退款信息
             <img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">
           </div>
@@ -236,7 +236,7 @@
               <span>{{detailVal.refundModel.outTradeNo}}</span>
             </div>
           </div>
-          <div class="btns" v-if="detailVal.tradeType == 'JSAPI'">
+          <div class="btns" v-if="!detailVal.refundModel || detailVal.refundModel == null">
             <span class="refund" @click="refund">退款</span>
           </div>
         </div>
