@@ -393,7 +393,7 @@
             refundfee: this.payMoney
           },
           onsuccess: (body) => {
-            if(body.code == 0){
+            if(body.data.code == 0){
               this.payTig = false;
               this.paymentList(1)
             }
@@ -410,7 +410,7 @@
             remark: ''
           },
           onsuccess: body => {
-            if (body.code == 0) {
+            if (body.data.code == 0) {
               this.payTig = false;
               this.paymentList(1);
             }
