@@ -78,11 +78,11 @@
         <div class="detail">
           <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">
             授权信息
-            <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle">
           </div>
           <div class="title1 title" v-if="detailVal.refundModel && detailVal.refundModel.channel != 4">
             授权信息
-            <img src="../../assets/guanbi.png" alt="" @click="channelDetail = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle">
           </div>
           <div class="lists">
             <div class="list">
@@ -178,11 +178,11 @@
       <div class="channelDetail" v-if="channelDetail1">
         <div class="shadow"></div>
         <div class="detail">
-          <div class="title"  v-if="detailVal.tradeType == 'JSAPI'">
+          <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">
             支付信息
             <img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
           </div>
-          <div class="title1 title"  v-if="detailVal.tradeType=='refund'">
+          <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">
             支付信息
             <img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
           </div>
@@ -214,7 +214,7 @@
               <span>{{detailVal.outTradeNo}}</span>
             </div>
           </div>
-          <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">
+          <div class="title1 title refundTitle"  v-if="detailVal.refundModel || detailVal.refundModel != null">
             退款信息
           </div>
           <div class="lists"  v-if="detailVal.refundModel || detailVal.refundModel != null">
@@ -345,6 +345,9 @@
             if(body.data.code == 0){
               this.detailVal = body.data.data;
               if (channel == 4 || channel == 5 || channel == 6) {
+                document.body.addEventListener('touchmove',this.bodyScroll,false);
+                document.body.style.position = 'fixed';
+                document.body.style.height = '100%';
                 this.channelDetail = true;
               }else {
                 this.channelDetail1 = true;
@@ -387,35 +390,43 @@
       // 退款事件
       refundMoney () {
           console.log('this.detailVal',this.detailVal);
-        this.reimburse({
-          data:{
-            orderId: this.detailVal.outTradeNo,
-            refundfee: this.payMoney
-          },
-          onsuccess: (body) => {
-            if(body.data.code == 0){
-              this.payTig = false;
-              this.paymentList(1)
-            }
-          },
-        });
+        if ((this.payMoney * 100) > this.detailVal.totalFee) {
+          this.$message('退款金额大于总额');
+        }else {
+          this.reimburse({
+            data:{
+              orderId: this.detailVal.outTradeNo,
+              refundfee: this.payMoney
+            },
+            onsuccess: (body) => {
+              if(body.data.code == 0){
+                this.payTig = false;
+                this.paymentList(1)
+              }
+            },
+          });
+        }
       },
 
       // 结算接口
       accountMoney() {
-        this.depositConsume({
-          data: {
-            orderId: this.detailVal.outTradeNo || '',
-            amount: this.payMoney,
-            remark: ''
-          },
-          onsuccess: body => {
-            if (body.data.code == 0) {
-              this.payTig = false;
-              this.paymentList(1);
+        if ((this.payMoney * 100) > this.detailVal.totalFee) {
+          this.$message('退款金额大于总额');
+        }else {
+          this.depositConsume({
+            data: {
+              orderId: this.detailVal.outTradeNo || '',
+              amount: this.payMoney,
+              remark: ''
+            },
+            onsuccess: body => {
+              if (body.data.code == 0) {
+                this.payTig = false;
+                this.paymentList(1);
+              }
             }
-          }
-        });
+          });
+        }
       },
 
       // 键盘事件
@@ -428,6 +439,18 @@
           this.payMoney = this.payMoney.substr(0, this.payMoney.length - 1);
         }
       },
+
+      // 取消弹框
+      channelDetailCancle () {
+        this.channelDetail = false;
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.height = 'auto';
+      },
+
+      bodyScroll(event){
+        event.preventDefault();
+      }
 
     },
 
@@ -446,6 +469,7 @@
 
   .paymentIndex {
     padding-top: 100px;
+    width: 100vw;
     .changeItem {
       padding: 40px;
       text-align: left;
@@ -463,6 +487,7 @@
         margin-right: 30px;
         display: inline-block;
         cursor: pointer;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
       .change_item.active {
         background-color: #C8E1C8;
@@ -680,6 +705,9 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+        max-height: 90vh;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
         .title {
           color: #303133;
           font-size: 30px;
@@ -701,6 +729,9 @@
         .title1 {
           font-size: 30px;
           text-align: left;
+        }
+        .refundTitle {
+          color: #D0021B;
         }
         .lists {
           .list {
@@ -751,6 +782,9 @@
             color:#F5222D;
           }
         }
+      }
+      .detail::-webkit-scrollbar {
+        display: none;
       }
     }
   }

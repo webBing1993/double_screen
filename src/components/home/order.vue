@@ -471,6 +471,7 @@
           box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
           border-radius: 40px;
           cursor: pointer;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
           img {
             display: inline-block;
             width: 36px;
@@ -548,6 +549,7 @@
               font-size: 20px;
               color: #fff;
               cursor: pointer;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
             }
           }
         }
@@ -662,6 +664,7 @@
           -ms-user-select: none;
           -webkit-user-select: none;
           user-select: none;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
         span:nth-of-type(4n) {
           margin-right: 0;
@@ -692,6 +695,7 @@
           cursor: pointer;
           display: inline-block;
           font-weight: bold;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
         span:nth-of-type(3n) {
           margin-right: 0;
@@ -843,6 +847,7 @@
           cursor: pointer;
           text-align: center;
           margin: 30px auto;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
       }
     }
