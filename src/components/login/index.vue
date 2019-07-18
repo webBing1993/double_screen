@@ -342,6 +342,7 @@
                 -ms-user-select: none;
                 -webkit-user-select: none;
                 user-select: none;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
               }
               span:nth-of-type(3n) {
                 margin-right: 0;
@@ -443,6 +444,7 @@
           background-color: #1AAD19;
           cursor: pointer;
           display: block;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
       }
     }
