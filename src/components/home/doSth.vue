@@ -17,7 +17,7 @@
           <!--<span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>-->
           <!--<span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>-->
         <!--</div>-->
-        <div class="doSthLists" v-if="changeTabString == 1">
+        <div class="doSthLists" v-if="showList">
           <div class="list" v-for="item in doSthLists">
             <div class="list_header">
               <div>
@@ -114,18 +114,23 @@
           </div>
         </div>-->
       </div>
+      <loadingList v-if="loadingShow" :loadingText="loadingText"></loadingList>
     </div>
   </div>
 </template>
 <script>
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
+  import loadingList from './loading.vue'
 
   export default {
     name: 'doSth',
-    components: {ElCol},
+    components: {ElCol, loadingList},
     data () {
       return {
+        loadingShow: false,  // loading
+        loadingText: '加载中...', // loading text
+        showList: false,
         changeTabString: 1,  // tab选中
         page: 1,  // 当前页数
         page1: 1,  // 当前页数
@@ -157,10 +162,12 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        this.loadingShow = true;
         this.doSthList(val, 1);
       },
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        this.loadingShow = true;
         this.doSthList(val, 2);
       },
 
@@ -168,6 +175,7 @@
       doSthList() {
         this.getTodoList({
           onsuccess: body => {
+            this.loadingShow = false;
             if (body.data.code == 0) {
               let faka = [];   // 发卡代办
               let pmscheckin = [];  // pms入住失败代办
@@ -193,6 +201,7 @@
               this.doSthLists.sort(this.compare('createTime'));
               console.log('this.doSthLists',this.doSthLists);
             }
+            this.showList = true;
           }
         })
       },
@@ -208,6 +217,7 @@
 
       // 发卡失败处理事件
       faka(id) {
+        this.loadingShow = true;
         this.getFaka({
           id: id,
           onsuccess: body => {
@@ -220,6 +230,7 @@
 
       // pms 入住失败处理事件
       pmsCheckIn(id) {
+        this.loadingShow = true;
         this.updateCheckinfailedStatus({
           id: id,
           status: 1,
@@ -233,6 +244,7 @@
 
       // pms入账失败处理事件
       pmsPay(id) {
+        this.loadingShow = true;
         this.updateWechatPay({
           data:{
             orderId: id
@@ -248,6 +260,7 @@
 
       // 前台支付
       nativepay(id){
+        this.loadingShow = true;
         this.getFaka({
           id: id,
           onsuccess: body => {
@@ -260,7 +273,7 @@
     },
 
     mounted () {
-        console.log(333333);
+      this.loadingShow = true;
       this.doSthList();
     }
   }
@@ -417,7 +430,7 @@
   }
 
   .noMsg {
-    margin-top: 150px;
+    padding-top: 400px;
     img {
       display: block;
       width: 180px;

@@ -19,6 +19,10 @@ import 'axios'
 
 import store from './store'
 
+import loadingList from './components/home/loading.vue'
+
+Vue.component('loadingList',loadingList );
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

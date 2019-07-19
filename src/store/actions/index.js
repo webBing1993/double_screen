@@ -8,7 +8,7 @@ function openFullScreen() {
   const loading = Vue.prototype.$loading({
     lock: true,
     text: '加载中...',
-    background: 'rgba(0, 0, 0, 0.7)'
+    background: 'rgba(0, 0, 0, 0.01)'
   });
   return loading;
 }
@@ -67,7 +67,7 @@ const actions = {
   },
 
   resource: (ctx, param) => {
-    openFullScreen();
+    // openFullScreen();
     axios({
       url: httpTool.httpUrlEnv() + 'ecard-wechat' + param.url,
       method: param.method || 'GET',
@@ -84,7 +84,7 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      closeFullScreen (openFullScreen());
+      // closeFullScreen (openFullScreen());
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
@@ -101,7 +101,7 @@ const actions = {
       }
     }).catch(
       error => {
-        closeFullScreen (openFullScreen());
+        // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error)
         }
@@ -110,7 +110,7 @@ const actions = {
     )
   },
   resource_: (ctx, param) => {
-    openFullScreen();
+    // openFullScreen();
     axios({
       url: httpTool.httpUrlEnv() + 'ecard-wechat' + param.url,
       method: param.method || 'GET',
@@ -127,7 +127,7 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      closeFullScreen (openFullScreen());
+      // closeFullScreen (openFullScreen());
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
@@ -144,7 +144,7 @@ const actions = {
       }
     }).catch(
       error => {
-        closeFullScreen (openFullScreen());
+        // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error)
         }

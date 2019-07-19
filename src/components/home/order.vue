@@ -18,7 +18,7 @@
             <span class="table_cell">入离时间</span>
             <span class="table_cell">房间信息</span>
           </div>
-          <div class="order_lists">
+          <div class="order_lists" v-if="showList">
             <div class="list" v-for="item in orderLists">
               <div class="list_content">
                 <div class="list_cell">
@@ -120,7 +120,7 @@
             </div>
           </div>
         </div>
-
+        <loadingList v-if="loadingShow" :loadingText="loadingText"></loadingList>
       </div>
       <div class="order_fr">
         <div>
@@ -162,12 +162,16 @@
 <script>
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
+  import loadingList from './loading.vue'
 
   export default {
     name: 'order',
-    components: {ElCol},
+    components: {ElCol, loadingList},
     data () {
       return {
+        loadingShow: false,  // loading
+        loadingText: '同步中...', // loading text
+        showList: false,
         tabIndex: 1,  // tab切换
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
@@ -204,6 +208,8 @@
       // tab切换
       tabClick (index) {
         this.tabIndex = index;
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         this.getPreOrder(1);
       },
 
@@ -224,6 +230,8 @@
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
+            this.loadingText = '加载中...';
+            this.loadingShow = true;
             this.getPreOrder(1);
           }
         }else {
@@ -231,6 +239,8 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             if (this.searchString2.length == 0) {
+              this.loadingText = '加载中...';
+              this.loadingShow = true;
               this.getPreOrder(1);
             }
           }
@@ -242,6 +252,8 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         this.getPreOrder(1);
       },
 
@@ -251,11 +263,15 @@
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
+          this.loadingText = '加载中...';
+          this.loadingShow = true;
           this.getPreOrder(1);
         }else {
           if (this.searchString2.length < 11) {
             this.searchString2 += item;
             if (this.searchString2.length == 11) {
+              this.loadingText = '加载中...';
+              this.loadingShow = true;
               this.searchString = this.searchString2;
               this.getPreOrder(1);
             }
@@ -269,16 +285,22 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         this.getPreOrder(1);
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         this.getPreOrder(1);
       },
 
       //办理入住
       checkGoIn(item) {
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         // 判断是否为今日订单
         this.sendCheck({
             id: item.id,
@@ -294,6 +316,7 @@
                       onsuccess: body => {
                         console.log('body.code',body.data);
                         if (body.data.code == 0) {
+                          this.loadingShow = false;
                           if (body.data.data.cashFeeShow == '免押') {
                             this.cashFee = 0;
                             this.cashFeeTrue = true;
@@ -320,22 +343,26 @@
                       }
                     });
                   }else {
+                    this.loadingShow = false;
                     this.OpenExternalScreen('SendMessage@'+item.id+'')
                   }
 
                 }else {
-
+                  this.loadingShow = false;
                 }
               }
             }
         });
       },
       teamCheckIn(){
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         this.updatePaidMode({
           orderId: this.changeItem.id,
           isFreeDeposit: this.changeItem.isFreeDeposit,
           modeId: this.changeItem.payMode,
           onsuccess: body => {
+            this.loadingShow = false;
             if (body.data.code == 0) {
               this.teamTig = false;
               this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'')
@@ -351,6 +378,9 @@
 
       //同步订单
       getRefreshList(){
+        this.showList = false;
+        this.loadingText = '同步中...';
+        this.loadingShow = true;
         this.refreshList({
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
@@ -390,9 +420,11 @@
             searchString: this.searchString
           },
           onsuccess: body => {
+            this.loadingShow = false;
             if (body.data.code == 0 && body.data.data.list) {
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
+              this.showList = true;
             }
           }
         })
@@ -405,6 +437,8 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
         this.getPreOrder(val);
       },
 
@@ -425,6 +459,8 @@
     },
 
     mounted () {
+      this.loadingText = '加载中...';
+      this.loadingShow = true;
       this.getPreOrder(1);
     }
   }
@@ -441,6 +477,8 @@
     .order_fl {
       padding: 0 40px;
       width: calc(100% - 560px);
+      position: relative;
+      min-height: calc(100vh - 100px);
       .header {
         display: flex;
         justify-content: space-between;

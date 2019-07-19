@@ -18,7 +18,7 @@
           <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)">支付宝</span>
         </span>
       </div>
-      <div class="paymentLists">
+      <div class="paymentLists" v-if="showList">
         <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.channel, item.tradeType)">
           <div class="list_header">
             <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
@@ -240,18 +240,23 @@
           </div>
         </div>
       </div>
+      <loadingList v-if="loadingShow" :loadingText="loadingText"></loadingList>
     </div>
   </div>
 </template>
 <script>
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
+  import loadingList from './loading.vue'
 
   export default {
     name: 'payment',
-    components: {ElCol},
+    components: {ElCol, loadingList},
     data () {
       return {
+        loadingShow: false,  // loading
+        loadingText: '加载中...', // loading text
+        showList: false,
         timeVal: '', // 日期选择
         isPreauthorize: false, // 预授权冻结选中状态
         paymentLists: [],  // 数据列表
@@ -283,18 +288,21 @@
 
       // 日期选择
       datePicker(val) {
+        this.loadingShow = true;
         console.log('datePciker',val);
         this.paymentList(1, '');
       },
 
       // 支付选择
       payStatusChange (index) {
+        this.loadingShow = true;
         this.filterObj.payFlag = index;
         this.paymentList(1, '');
       },
 
       // 选择预授权冻结
       preLicensingChange() {
+        this.loadingShow = true;
         this.isPreauthorize = !this.isPreauthorize;
         this.paymentList(1, '');
       },
@@ -306,6 +314,7 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        this.loadingShow = true;
         this.paymentList(val);
       },
 
@@ -323,13 +332,15 @@
           },
           onsuccess: body => {
               console.log('body.data',body.data.data);
+            this.loadingShow = false;
             if (body.data.code == 0) {
               this.paymentLists = body.data.data.data;
               this.total = body.data.data.total;
             }
+            this.showList = true;
           },
           onfail: (body, headers) => {
-
+            this.loadingShow = false;
           }
         })
       },
@@ -359,6 +370,7 @@
 
       // 撤销预授权
       accountCancelSure() {
+        this.loadingShow = true;
         this.canclePreAuthorizedDeposit({
           data: {
             orderId: this.detailVal.outTradeNo || '',
@@ -393,6 +405,7 @@
         if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.$message('退款金额大于总额');
         }else {
+          this.loadingShow = true;
           this.reimburse({
             data:{
               orderId: this.detailVal.outTradeNo,
@@ -413,6 +426,7 @@
         if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.$message('退款金额大于总额');
         }else {
+          this.loadingShow = true;
           this.depositConsume({
             data: {
               orderId: this.detailVal.outTradeNo || '',
@@ -455,6 +469,7 @@
     },
 
     mounted () {
+      this.loadingShow = true;
       let startTime = new Date(new Date(new Date().toLocaleDateString()).getTime());
       let endTime = new Date(new Date(new Date().toLocaleDateString()).getTime());
       this.timeVal = [];
