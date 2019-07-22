@@ -339,6 +339,8 @@
                             this.OpenExternalScreen('SendMessage@'+item.id+'')
                           }
                           this.changeItem = item;
+                        }else {
+                          this.loadingShow = false;
                         }
                       },
                       onfail: (body, headers) => {
