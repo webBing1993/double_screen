@@ -7,9 +7,14 @@
             <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)">散客订单</span>
             <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">团队订单</span>
           </div>
-          <div class="synchronism" @click="getRefreshList">
-            <img src="../../assets/tongbu.png" alt="">
-            <span>同步订单</span>
+          <div class="synchronismReplay">
+            <div class="synchronism" @click="getRefreshList">
+              <span>同步订单</span>
+            </div>
+            <div class="replayList" @click="replayList">
+              <img src="../../assets/tongbu.png" alt="">
+              <span>刷新</span>
+            </div>
           </div>
         </div>
         <div class="content">
@@ -42,7 +47,7 @@
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page.sync="page"
-              :page-size="10"
+              :page-size="4"
               layout="total, prev, pager, next"
               :total="total" v-if="orderLists.length != 0">
             </el-pagination>
@@ -422,6 +427,15 @@
         });
       },
 
+      // 刷新
+      replayList () {
+        this.page = 1;
+        this.showList = false;
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
+        this.getPreOrder(1);
+      },
+
       //获得同步时间
       initRefreshTime(){
         this.getRefreshTime({
@@ -438,7 +452,7 @@
             start: '',
             end: '',
             page: page,
-            pageSize: 10,
+            pageSize: 4,
             payMode: '',
             precheckinStatus: '',
             status: "1",
@@ -533,10 +547,15 @@
             color: #1AAD19;
           }
         }
-        .synchronism {
+        .synchronismReplay {
+          display: inline-flex;
+        }
+        .synchronism, .replayList {
           display: inline-flex;
           align-items: center;
           padding: 10px 30px;
+          line-height: 36px;
+          margin-left: 30px;
           background: #FFFFFF;
           box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
           border-radius: 40px;
