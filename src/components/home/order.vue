@@ -120,7 +120,7 @@
             </div>
           </div>
         </div>
-        <loadingList v-if="loadingShow" :loadingText="loadingText"></loadingList>
+        <loadingList v-if="loadingShow" :loadingText="loadingText" style="width: calc(100vw - 480px)"></loadingList>
       </div>
       <div class="order_fr">
         <div>

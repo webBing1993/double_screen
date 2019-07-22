@@ -114,7 +114,7 @@
           </div>
         </div>-->
       </div>
-      <loadingList v-if="loadingShow" :loadingText="loadingText"></loadingList>
+      <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
   </div>
 </template>

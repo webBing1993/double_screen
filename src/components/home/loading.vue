@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="position: fixed;z-index: 99999999;left: 0;top: 50%;transform: translate(0, -50%);">
       <div class="loading" ref="loading">
         <img src="../../assets/loading.gif" alt="">
         <p>{{loadingText}}</p>
@@ -38,14 +38,12 @@
 <style scoped lang="less">
 
   .loading {
-    position: absolute;
-    z-index: 99999999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: 100%;
+
     img {
       width: 180px;
       display: block;
+      margin: 0 auto;
     }
     p {
       font-size: 26px;
