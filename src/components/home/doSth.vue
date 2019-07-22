@@ -202,6 +202,9 @@
               console.log('this.doSthLists',this.doSthLists);
             }
             this.showList = true;
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         })
       },
@@ -223,7 +226,12 @@
           onsuccess: body => {
             if (body.data.code == 0) {
               this.doSthList();
+            }else {
+              this.loadingShow = false;
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         })
       },
@@ -237,9 +245,14 @@
           onsuccess:(body)=>{
             if (body.data.code == 0) {
               this.doSthList();
+            }else {
+              this.loadingShow = false;
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
-        });
+        })
       },
 
       // pms入账失败处理事件
@@ -252,9 +265,13 @@
           onsuccess: (body) => {
             if(body.data.code == 0){
               this.doSthList();
+            }else {
+              this.loadingShow = false;
             }
           },
-          onfail: body => {}
+          onfail: (body, headers) => {
+            this.loadingShow = false;
+          }
         });
       },
 
@@ -266,7 +283,12 @@
           onsuccess: body => {
             if (body.data.code == 0) {
               this.doSthList();
+            }else {
+              this.loadingShow = false;
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         })
       },
