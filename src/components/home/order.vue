@@ -355,7 +355,12 @@
                 }else {
                   this.loadingShow = false;
                 }
+              }else {
+                this.loadingShow = false;
               }
+            },
+            onfail: (body, headers) => {
+              this.loadingShow = false;
             }
         });
       },
