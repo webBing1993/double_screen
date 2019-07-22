@@ -874,7 +874,7 @@
                 color: #000;
                 font-weight: bold;
                 line-height: 80px;
-                width: 245px;
+                width: 233px;
                 text-align: center;
                 margin-right: 84px;
                 img {
