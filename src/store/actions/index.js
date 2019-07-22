@@ -190,7 +190,10 @@ const actions = {
       body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -202,7 +205,10 @@ const actions = {
       body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -213,7 +219,10 @@ const actions = {
       method: 'PUT',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -224,7 +233,10 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -235,7 +247,10 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -246,7 +261,10 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -259,7 +277,10 @@ const actions = {
       emulateJSON:true,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -271,7 +292,10 @@ const actions = {
       method: 'POST',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -298,7 +322,10 @@ const actions = {
       method: 'POST',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -324,7 +351,10 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -335,7 +365,10 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -346,7 +379,10 @@ const actions = {
       method: 'PUT',
       onSuccess: (body, headers,code) => {
         param.onsuccess ? param.onsuccess(body, headers,code) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 
@@ -358,7 +394,10 @@ const actions = {
       body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
     })
   },
 

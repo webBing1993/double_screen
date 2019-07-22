@@ -347,12 +347,14 @@
 
       // 獲取詳情
       detailTig(id, channel,tradeType) {
+        this.loadingShow = true;
         this.paymentAndUnfinish({
           data:{
             orderId: id,
             isRefund: tradeType == 'refund' ? true : false
           },
           onsuccess: (body) => {
+            this.loadingShow = false;
             if(body.data.code == 0){
               this.detailVal = body.data.data;
               if (channel == 4 || channel == 5 || channel == 6) {
@@ -364,6 +366,9 @@
                 this.channelDetail1 = true;
               }
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         });
       },
@@ -377,10 +382,14 @@
             remark: ''
           },
           onsuccess: body => {
+            this.loadingShow = false;
             if (body.code == 0) {
               this.channelDetail = false;
               this.paymentList(this.page);
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         });
       },
@@ -412,11 +421,15 @@
               refundfee: this.payMoney
             },
             onsuccess: (body) => {
+              this.loadingShow = false;
               if(body.data.code == 0){
                 this.payTig = false;
                 this.paymentList(1)
               }
             },
+            onfail: (body, headers) => {
+              this.loadingShow = false;
+            }
           });
         }
       },
@@ -434,10 +447,14 @@
               remark: ''
             },
             onsuccess: body => {
+              this.loadingShow = false;
               if (body.data.code == 0) {
                 this.payTig = false;
                 this.paymentList(1);
               }
+            },
+            onfail: (body, headers) => {
+              this.loadingShow = false;
             }
           });
         }

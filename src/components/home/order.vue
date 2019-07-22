@@ -339,7 +339,12 @@
                             this.OpenExternalScreen('SendMessage@'+item.id+'')
                           }
                           this.changeItem = item;
+                        }else {
+                          this.loadingShow = false;
                         }
+                      },
+                      onfail: (body, headers) => {
+                        this.loadingShow = false;
                       }
                     });
                   }else {
@@ -367,6 +372,9 @@
               this.teamTig = false;
               this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'')
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         });
 
@@ -387,11 +395,16 @@
               this.page = 1;
               this.getPreOrder(1);
               this.initRefreshTime();
+            }else {
+              this.loadingShow = false;
             }
             this.$message({
               message: body.data.data,
               type: 'success'
             });
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         });
       },
@@ -426,6 +439,9 @@
               this.total = body.data.data.total;
               this.showList = true;
             }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
           }
         })
       },
