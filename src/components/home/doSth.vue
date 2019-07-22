@@ -114,7 +114,7 @@
           </div>
         </div>-->
       </div>
-      <loadingList v-if="loadingShow" :loadingText="loadingText"></loadingList>
+      <loadingList v-if="loadingShow" :loadingText="loadingText" :loadingWidth="loadingWidth"></loadingList>
     </div>
   </div>
 </template>
@@ -130,6 +130,7 @@
       return {
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
+        loadingWidth: '100vw',   // loading width
         showList: false,
         changeTabString: 1,  // tab选中
         page: 1,  // 当前页数
