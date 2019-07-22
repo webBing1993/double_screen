@@ -210,6 +210,7 @@
         this.tabIndex = index;
         this.loadingText = '加载中...';
         this.loadingShow = true;
+        this.showList = false;
         this.getPreOrder(1);
       },
 
@@ -230,8 +231,9 @@
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
-            this.loadingText = '加载中...';
-            this.loadingShow = true;
+//            this.loadingText = '加载中...';
+//            this.loadingShow = true;
+//            this.showList = false;
             this.getPreOrder(1);
           }
         }else {
@@ -239,8 +241,9 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             if (this.searchString2.length == 0) {
-              this.loadingText = '加载中...';
-              this.loadingShow = true;
+//              this.loadingText = '加载中...';
+//              this.loadingShow = true;
+//              this.showList = false;
               this.getPreOrder(1);
             }
           }
@@ -252,8 +255,9 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
+//        this.loadingText = '加载中...';
+//        this.loadingShow = true;
+//        this.showList = false;
         this.getPreOrder(1);
       },
 
@@ -263,15 +267,17 @@
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
-          this.loadingText = '加载中...';
-          this.loadingShow = true;
+//          this.loadingText = '加载中...';
+//          this.loadingShow = true;
+//          this.showList = false;
           this.getPreOrder(1);
         }else {
           if (this.searchString2.length < 11) {
             this.searchString2 += item;
             if (this.searchString2.length == 11) {
-              this.loadingText = '加载中...';
-              this.loadingShow = true;
+//              this.loadingText = '加载中...';
+//              this.loadingShow = true;
+//              this.showList = false;
               this.searchString = this.searchString2;
               this.getPreOrder(1);
             }
@@ -285,15 +291,17 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
+//        this.loadingText = '加载中...';
+//        this.loadingShow = true;
+//        this.showList = false;
         this.getPreOrder(1);
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
+//        this.loadingText = '加载中...';
+//        this.loadingShow = true;
+//        this.showList = false;
         this.getPreOrder(1);
       },
 
@@ -439,6 +447,7 @@
           },
           onsuccess: body => {
             this.loadingShow = false;
+            this.showList = false;
             if (body.data.code == 0 && body.data.data.list) {
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
@@ -447,6 +456,7 @@
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
+            this.showList = false;
           }
         })
       },
@@ -482,6 +492,7 @@
     mounted () {
       this.loadingText = '加载中...';
       this.loadingShow = true;
+      this.showList = false;
       this.getPreOrder(1);
     }
   }
@@ -565,6 +576,7 @@
           }
         }
         .order_lists {
+          padding-bottom: 115px;
           .list {
             background: #FFFFFF;
             box-shadow: 0 4px 11px 0 rgba(0,0,0,0.10);
@@ -604,7 +616,7 @@
               background: #1AAD19;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
-              padding: 10px 20px;
+              padding: 15px 20px;
               font-size: 20px;
               color: #fff;
               cursor: pointer;
@@ -970,6 +982,12 @@
 
   /deep/ .el-pagination {
     padding: 30px 0;
+    position: fixed;
+    width: calc(100vw - 480px);
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #DEE7F8;
   }
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);

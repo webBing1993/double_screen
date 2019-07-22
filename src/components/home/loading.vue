@@ -49,7 +49,7 @@
     }
     p {
       font-size: 26px;
-      color: #1AAD19;
+      color: #000;
       text-align: center;
       height: 30px;
     }

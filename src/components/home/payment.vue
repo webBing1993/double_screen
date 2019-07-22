@@ -290,6 +290,7 @@
       datePicker(val) {
         this.loadingShow = true;
         console.log('datePciker',val);
+        this.showList = false;
         this.paymentList(1, '');
       },
 
@@ -297,6 +298,7 @@
       payStatusChange (index) {
         this.loadingShow = true;
         this.filterObj.payFlag = index;
+        this.showList = false;
         this.paymentList(1, '');
       },
 
@@ -304,6 +306,7 @@
       preLicensingChange() {
         this.loadingShow = true;
         this.isPreauthorize = !this.isPreauthorize;
+        this.showList = false;
         this.paymentList(1, '');
       },
 
@@ -315,6 +318,7 @@
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
         this.loadingShow = true;
+        this.showList = false;
         this.paymentList(val);
       },
 
@@ -528,6 +532,7 @@
       }
     }
     .paymentLists {
+      padding-bottom: 115px;
       .list {
         padding: 0 40px;
         background: #FFFFFF;
@@ -861,6 +866,12 @@
 
   /deep/ .el-pagination {
     padding: 30px 0;
+    position: fixed;
+    width: 100vw;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #DEE7F8;
   }
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
