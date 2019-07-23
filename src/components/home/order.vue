@@ -375,7 +375,13 @@
               }
             },
             onfail: (body, headers) => {
-              this.loadingShow = false;
+              console.log('body',body.data);
+              if (body.data.code == 89000 || body.data.code == 79000 || body.data.code == 69000) {
+                this.page = 1;
+                this.getPreOrder(1);
+              }else {
+                this.loadingShow = false;
+              }
             }
         });
       },

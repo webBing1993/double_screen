@@ -387,7 +387,7 @@
           },
           onsuccess: body => {
             this.loadingShow = false;
-            if (body.code == 0) {
+            if (body.data.code == 0) {
               this.channelDetail = false;
               this.paymentList(this.page);
             }
