@@ -15,7 +15,7 @@
         <div class="header_fr">
           <div class="newTig" @click="goto('/doSth')" v-if="speakShow">
             <img src="../../assets/xiaoxi.png" alt="">
-            <span>您有一笔待办待处理，点击查看</span>
+            <span>您有待办事项未处理，点击查看</span>
             <img src="../../assets/gengduo.png" alt="">
           </div>
           <div class="myInfo">
@@ -132,7 +132,7 @@
         let date = e.data;
         if (date == '"refresh"') {
           this.speakShow = true;
-          this.speckText('您有一笔待办待处理，点击查看');
+          this.speckText('您有待办事项未处理，点击查看');
         }
       },
       websocketsend(agentData){//数据发送
