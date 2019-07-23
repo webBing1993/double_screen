@@ -896,4 +896,8 @@
     height: 44px;
   }
 
+  /deep/ .el-date-editor .el-range__close-icon {
+    display: none;
+  }
+
 </style>
