@@ -43,18 +43,18 @@
               </div>
               <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
             </div>
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page.sync="page"
-              :page-size="4"
-              layout="total, prev, pager, next"
-              :total="total" v-if="orderLists.length != 0">
-            </el-pagination>
-            <div class="noMsg" v-else>
-              <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
-              <p>暂无内容</p>
-            </div>
+          </div>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="page"
+            :page-size="4"
+            layout="total, prev, pager, next"
+            :total="total" v-if="orderLists.length != 0 && showList_">
+          </el-pagination>
+          <div class="noMsg" v-if="orderLists.length == 0 && showList">
+            <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
+            <p>暂无内容</p>
           </div>
         </div>
 
@@ -177,6 +177,7 @@
         loadingShow: false,  // loading
         loadingText: '同步中...', // loading text
         showList: false,
+        showList_: false,
         tabIndex: 1,  // tab切换
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
@@ -216,6 +217,7 @@
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.showList = false;
+        this.showList_ = false;
         this.getPreOrder(1);
       },
 
@@ -405,6 +407,7 @@
       //同步订单
       getRefreshList(){
         this.showList = false;
+        this.showList_ = false;
         this.loadingText = '同步中...';
         this.loadingShow = true;
         this.refreshList({
@@ -431,6 +434,7 @@
       replayList () {
         this.page = 1;
         this.showList = false;
+        this.showList_ = false;
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.getPreOrder(1);
@@ -461,16 +465,17 @@
           },
           onsuccess: body => {
             this.loadingShow = false;
-            this.showList = false;
             if (body.data.code == 0 && body.data.data.list) {
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
               this.showList = true;
+              this.showList_ = true;
             }
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
             this.showList = false;
+            this.showList_ = false;
           }
         })
       },
@@ -484,6 +489,8 @@
         console.log(`当前页: ${val}`);
         this.loadingText = '加载中...';
         this.loadingShow = true;
+        this.showList = false;
+        this.showList_ = true;
         this.getPreOrder(val);
       },
 
@@ -507,6 +514,7 @@
       this.loadingText = '加载中...';
       this.loadingShow = true;
       this.showList = false;
+      this.showList_ = false;
       this.getPreOrder(1);
     }
   }
