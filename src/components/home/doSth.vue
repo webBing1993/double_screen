@@ -305,6 +305,7 @@
 <style scoped lang="less">
 
   .doSthIndex {
+    width: 100vw;
     .header {
       background: #FFFFFF;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
