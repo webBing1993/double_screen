@@ -8,7 +8,7 @@
             <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">团队订单</span>
           </div>
           <div class="synchronismReplay">
-            <div class="synchronism" @click="getRefreshList">
+            <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
               <span>同步订单</span>
             </div>
             <div class="replayList" @click="replayList">
@@ -195,6 +195,7 @@
         cashFee: 0,      // 押金
         cashFeeTrue: false,  // 判断是否有无押金配置
         isShowScreen: false, // 是否分房
+        pmsFlag: true,   // 判断是否对接pms
       }
     },
     filters: {
@@ -208,7 +209,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode'
+        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag'
       ]),
 
       // tab切换
@@ -524,9 +525,20 @@
         }
       },
 
+      initPmsFlag(){
+        this.getPmsFlag({
+          onsuccess: (body)=>{
+            if(body.data.code==0 && body.data.data!=null){
+              this.pmsFlag = body.data.data;
+            }
+          },
+        });
+      },
+
     },
 
     mounted () {
+      this.initPmsFlag();
       this.loadingText = '加载中...';
       this.loadingShow = true;
       this.showList = false;

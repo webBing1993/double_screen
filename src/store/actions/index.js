@@ -182,6 +182,17 @@ const actions = {
     })
   },
 
+  //查看是否对接PMS
+  getPmsFlag(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/get/pmsFlag',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      }
+    })
+  },
+
   // 获取列表
   getQueryByPage (ctx, param) {
     ctx.dispatch('resource', {
