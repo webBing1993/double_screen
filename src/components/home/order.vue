@@ -540,12 +540,15 @@
 <style scoped lang="less">
 
   .orderIndex {
+    width: 100vw;
     padding-top: 100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     .order_fl {
       padding: 0 40px;
+      width: -moz-calc(100% - 560px);
+      width: -webkit-calc(100% - 560px);
       width: calc(100% - 560px);
       position: relative;
       min-height: calc(100vh - 100px);
