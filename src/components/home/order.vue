@@ -332,28 +332,38 @@
                         console.log('body.code',body.data);
                         if (body.data.code == 0) {
                           this.loadingShow = false;
-                          if (body.data.data.cashFeeShow == '免押') {
-                            this.cashFee = 0;
-                            this.cashFeeTrue = true;
+                          if (body.data.data == null || !body.data.data) {
+                            this.$message({
+                              message: '订单已取消',
+                              type: 'warning'
+                            });
+                            this.page = 1;
+                            this.getPreOrder(1);
                           }else {
-                            this.cashFeeTrue = false;
-                            this.cashFee = body.data.data.cashFeeShow;
-                          }
-                          if (body.data.data.roomFeeShow == '预付房费') {
                             if (body.data.data.cashFeeShow == '免押') {
-                              this.roomFeeShow = body.data.data.totalFeeShow;
+                              this.cashFee = 0;
+                              this.cashFeeTrue = true;
                             }else {
-                              this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                              this.cashFeeTrue = false;
+                              this.cashFee = body.data.data.cashFeeShow;
                             }
-                          }else {
-                            this.roomFeeShow = body.data.data.roomFeeShow;
+                            if (body.data.data.roomFeeShow == '预付房费') {
+                              if (body.data.data.cashFeeShow == '免押') {
+                                this.roomFeeShow = body.data.data.totalFeeShow;
+                              }else {
+                                this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                              }
+                            }else {
+                              this.roomFeeShow = body.data.data.roomFeeShow;
+                            }
+                            if (body.data.data.needPayFeeShow != 0) {
+                              this.teamTig = true;
+                            }else {
+                              this.OpenExternalScreen('SendMessage@'+item.id+'')
+                            }
+                            this.changeItem = item;
                           }
-                          if (body.data.data.needPayFeeShow != 0) {
-                            this.teamTig = true;
-                          }else {
-                            this.OpenExternalScreen('SendMessage@'+item.id+'')
-                          }
-                          this.changeItem = item;
+
                         }else {
                           this.loadingShow = false;
                         }
