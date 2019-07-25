@@ -42,7 +42,7 @@ const actions = {
       },
       params: param.params || null,
       data: param.body || null,
-      timeout: param.timeout || 60000,
+      timeout: param.timeout || 120000,
     }).then(response => {
       sessionStorage.setItem('onLoad',true);
       console.log("response",response);
@@ -59,7 +59,8 @@ const actions = {
       error => {
         // ctx.dispatch ('showLoading', false);
         if(error){
-          console.log("error",error)
+          console.log("error",error);
+          param.onError && param.onError(error);
         }
 
       }
