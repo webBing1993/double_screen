@@ -79,7 +79,7 @@ const actions = {
       },
       params: qs.stringify(param.params) || null,
       data: qs.stringify(param.body) || null,
-      timeout: param.timeout || 60000,
+      timeout: param.timeout || 120000,
       credentials: false,
       emulateHTTP: false,
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
@@ -104,7 +104,8 @@ const actions = {
       error => {
         // closeFullScreen (openFullScreen());
         if(error){
-          console.log("error",error)
+          console.log("error",error);
+          param.onError && param.onError(error);
         }
 
       }
