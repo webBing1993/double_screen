@@ -5,12 +5,9 @@
         <span>交易时间</span>
         <el-date-picker
           v-model="timeVal"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          type="date"
           @change="datePicker"
-        >
+          placeholder="选择日期">
         </el-date-picker>
         <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
         <span class="items">
@@ -18,41 +15,79 @@
           <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)">支付宝</span>
         </span>
       </div>
-      <div class="paymentLists" v-if="showList">
-        <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.channel, item.tradeType)">
-          <div class="list_header">
-            <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
-            <span>交易单号：{{item.orderId}}</span>
+      <div class="paymentAll">
+        <div class="paymentLists" v-if="showList">
+          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.channel, item.tradeType)">
+            <div class="list_header">
+              <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
+              <span>交易单号：{{item.orderId}}</span>
+            </div>
+            <div class="list_content">
+              <div class="list_fl">
+                <p class="title">{{item.payFlag == 1 ? '微信支付' : '支付宝支付'}}<sapn v-if="item.channel == 4 || item.channel == 5 || item.channel == 6"> . 预授权</sapn></p>
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '暂无房号'}}</div>
+                <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '暂无入住人'}}</div>
+              </div>
+              <div class="list_fr">
+                <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
+                <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
+                <span v-if="item.channel == 6" class="red">已撤销</span>
+                <span v-if="item.channel == 4" class="blue">快速结算</span>
+                <span v-if="item.channel == 5" class="grey">{{item.founder}} {{item.timeEndStr}} 已结算</span>
+                <img src="../../assets/gengduo.png" alt="">
+              </div>
+            </div>
           </div>
-          <div class="list_content">
-            <div class="list_fl">
-              <p class="title">{{item.payFlag == 1 ? '微信支付' : '支付宝支付'}}<sapn v-if="item.channel == 4 || item.channel == 5 || item.channel == 6"> . 预授权</sapn></p>
-              <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '暂无房号'}}</div>
-              <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '暂无入住人'}}</div>
-            </div>
-            <div class="list_fr">
-              <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
-              <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
-              <span v-if="item.channel == 6" class="red">已撤销</span>
-              <span v-if="item.channel == 4" class="blue">快速结算</span>
-              <span v-if="item.channel == 5" class="grey">{{item.founder}} {{item.timeEndStr}} 已结算</span>
-              <img src="../../assets/gengduo.png" alt="">
-            </div>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="page"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="total" v-if="paymentLists.length != 0">
+          </el-pagination>
+          <div class="noMsg" v-else>
+            <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
+            <p>暂无内容</p>
           </div>
         </div>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="page"
-          :page-size="10"
-          layout="total, prev, pager, next"
-          :total="total" v-if="paymentLists.length != 0">
-        </el-pagination>
-        <div class="noMsg" v-else>
-          <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
-          <p>暂无内容</p>
+
+        <div class="order_fr">
+          <div>
+            <div class="fast_title">
+              <img src="../../assets/xiantiao.png" alt="">
+              快速筛选
+            </div>
+            <div class="changTabs">
+              <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">预订人</span>
+              <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
+            </div>
+            <div class="change_tabs">
+              <div class="tab" v-if="changeTabString == 1">
+                <div class="input">
+                  <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
+                  <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
+                </div>
+                <div class="keyBoard">
+                  <span v-for="item in keyBords1" @click="keyEntry($event, item, 1)">{{item}}</span>
+                  <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                </div>
+              </div>
+              <div class="tab" v-else>
+                <div class="input">
+                  <input type="text" placeholder="请输入入住人手机号查询" v-model="searchString2" maxlength="11">
+                  <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
+                </div>
+                <div class="keyBoard2">
+                  <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
+                  <span @click="keyCancel($event, 2)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
       <!-- 结算、退款弹框-->
       <div class="payTig" v-if="payTig">
         <div class="shadow"></div>
@@ -235,12 +270,12 @@
               <span>{{detailVal.refundModel.outTradeNo}}</span>
             </div>
           </div>
-          <div class="btns" v-if="!detailVal.refundModel || detailVal.refundModel == null">
+          <div class="btns" v-if="(!detailVal.refundModel || detailVal.refundModel == null) && (parseFloat(detailVal.refundFeeStr) * 100) != 0">
             <span class="refund" @click="refund">退款</span>
           </div>
         </div>
       </div>
-      <loadingList v-if="loadingShow" :loadingText="loadingText" style="width: 100vw"></loadingList>
+      <loadingList v-if="loadingShow" :loadingText="loadingText" style="width: calc(100vw - 480px)"></loadingList>
     </div>
   </div>
 </template>
@@ -276,6 +311,12 @@
         channelDetail: false,  // 授權詳情
         channelDetail1: false,  // 授權詳情
         detailVal: {},   // 詳情
+        changeTabString: 1,  // 右侧筛选tab切换
+        keyBords1: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K','L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],     // 字母键盘
+        keyBords2: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],   // 数字键盘
+        searchString: '',  // 搜索
+        searchString1: '',  // 字母搜索
+        searchString2: '',  // 数字搜索
       }
     },
     filters: {
@@ -291,7 +332,77 @@
         this.loadingShow = true;
         console.log('datePciker',val);
         this.showList = false;
-        this.paymentList(1, '');
+        this.paymentList(1);
+      },
+
+      // 右侧筛选tab切换
+      changeTabClick(index) {
+        this.changeTabString = index;
+        if (index == 1) {
+          this.searchString2 = '';
+        }else {
+          this.searchString1 = '';
+        }
+        this.searchString = '';
+      },
+
+      keyCancel (event, type) {
+        event.preventDefault();
+        if (type == 1) {
+          if (this.searchString1.length > 0) {
+            this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
+            this.searchString = this.searchString1;
+            this.paymentList(1);
+          }
+        }else {
+          if (this.searchString2.length > 0) {
+            this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
+            this.searchString = this.searchString2;
+            if (this.searchString2.length == 0) {
+              this.paymentList(1);
+            }
+          }
+        }
+      },
+
+      // 键盘清除事件
+      clear (event) {
+        event.preventDefault();
+        this.searchString2 = '';
+        this.searchString = '';
+        this.paymentList(1);
+      },
+
+      // 字母键盘事件
+      keyEntry(event, item,type) {
+        event.preventDefault();
+        if (type == 1) {
+          this.searchString1 += item;
+          this.searchString = this.searchString1;
+          this.paymentList(1);
+        }else {
+          if (this.searchString2.length < 11) {
+            this.searchString2 += item;
+            if (this.searchString2.length == 11) {
+              this.searchString = this.searchString2;
+              this.paymentList(1);
+            }
+          }else {
+            return;
+          }
+        }
+      },
+
+      // 键盘删除事件
+      clearSearch() {
+        this.searchString1 = '';
+        this.searchString = this.searchString1;
+        this.paymentList(1);
+      },
+      clearSearch1() {
+        this.searchString2 = '';
+        this.searchString = this.searchString2;
+        this.paymentList(1);
       },
 
       // 支付选择
@@ -299,7 +410,7 @@
         this.loadingShow = true;
         this.filterObj.payFlag = index;
         this.showList = false;
-        this.paymentList(1, '');
+        this.paymentList(1);
       },
 
       // 选择预授权冻结
@@ -307,7 +418,7 @@
         this.loadingShow = true;
         this.isPreauthorize = !this.isPreauthorize;
         this.showList = false;
-        this.paymentList(1, '');
+        this.paymentList(1);
       },
 
       // 分页
@@ -328,10 +439,12 @@
           data: {
             page: page,  //页数
             roomNo: '',//房号 (房间名字：如303)
-            startTime: this.datetimeparse(this.timeVal[0].getTime(), 'yy-MM-dd hh:mm:ss'),
-            endTime: this.datetimeparse(this.timeVal[1].getTime() + 24*60*60*1000-1, 'yy-MM-dd hh:mm:ss'),
+//            startTime: this.datetimeparse(this.timeVal[0].getTime(), 'yy-MM-dd hh:mm:ss'),
+//            endTime: this.datetimeparse(this.timeVal[1].getTime() + 24*60*60*1000-1, 'yy-MM-dd hh:mm:ss'),
             founder: 'All',
+            timeEnd:  this.datetimeparse(this.timeVal.getTime(), 'yy-MM-dd') + ' ' + 15 + ':' + 33 + ':' + 40,
             isPreauthorize: this.isPreauthorize ? 1 : '',
+            keyWord: this.searchString,
             ...this.filterObj
           },
           onsuccess: body => {
@@ -464,17 +577,6 @@
         }
       },
 
-      // 键盘事件
-      keyEntry(item) {
-        this.payMoney += item;
-      },
-
-      keyCancel () {
-        if (this.payMoney.length > 0) {
-          this.payMoney = this.payMoney.substr(0, this.payMoney.length - 1);
-        }
-      },
-
       // 取消弹框
       channelDetailCancle () {
         this.channelDetail = false;
@@ -493,8 +595,9 @@
       this.loadingShow = true;
       let startTime = new Date(new Date(new Date().toLocaleDateString()).getTime());
       let endTime = new Date(new Date(new Date().toLocaleDateString()).getTime());
-      this.timeVal = [];
-      this.timeVal.push(startTime, endTime);
+//      this.timeVal = [];
+//      this.timeVal.push(startTime, endTime);
+      this.timeVal = new Date(new Date(new Date().toLocaleDateString()).getTime());
       this.paymentList(1);
     }
   }
@@ -531,8 +634,14 @@
         color: #1AAD19;
       }
     }
+    .paymentAll {
+      width: 100vw;
+    }
     .paymentLists {
-      padding-bottom: 115px;
+      width: -moz-calc(100% - 560px);
+      width: -webkit-calc(100% - 560px);
+      width: calc(100% - 560px);
+      padding: 0 40px 115px;
       .list {
         padding: 0 40px;
         background: #FFFFFF;
@@ -607,6 +716,175 @@
           }
         }
       }
+    }
+    .order_fr {
+      width: 480px;
+      background-color: #fff;
+      .fast_title {
+        position: relative;
+        margin: 40px 0;
+        font-size: 28px;
+        color: #303133;
+        text-align: center;
+        font-weight: bold;
+        img {
+          position: absolute;
+          left: 30px;
+          top: 9px;
+          width: calc(100% - 60px);
+        }
+      }
+      .changTabs {
+        border-bottom: 1px solid #D8D8D8;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        span {
+          padding: 10px 0;
+          display: inline-block;
+          position: relative;
+          color: #909399;
+          font-size: 24px;
+          cursor: pointer;
+          font-weight: bold;
+        }
+        span.active {
+          color: #1AAD19;
+        }
+        span.active:after {
+          content: '';
+          display: block;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #1AAD19;
+        }
+      }
+      .change_tabs {
+        padding: 0 15px;
+        .tab {
+          .input {
+            padding: 30px 0;
+            position: relative;
+            input {
+              border: 1px solid #9A9A9A;
+              border-radius: 44px;
+              padding-left: 30px;
+              font-size: 20px;
+              color: #333;
+              height: 64px;
+              line-height: 64px;
+              width: calc(100% - 30px);
+              outline: none;
+            }
+            input:-moz-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            input:-ms-input-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            input::-moz-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            input::-webkit-input-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            img {
+              position: absolute;
+              right: 20px;
+              top: 50%;
+              display: inline-block;
+              width: 40px;
+              height: 40px;
+              transform: translateY(-50%);
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      .keyBoard {
+        span {
+          display: inline-block;
+          border: 1px solid #dcdcdc;
+          background-color: #f0f0f0;
+          border-radius: 12px;
+          width: 78px;
+          height: 56px;
+          font-size: 36px;
+          line-height: 56px;
+          text-align: center;
+          font-weight: bold;
+          margin: 0 42px 22px 0;
+          cursor: pointer;
+          -moz-user-select:none;
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          user-select: none;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        span:nth-of-type(4n) {
+          margin-right: 0;
+        }
+        span:last-of-type {
+          width: 194px;
+          margin-right: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            width: 50px;
+            height: 28px;
+            display: inline-block;
+          }
+        }
+      }
+      .keyBoard2 {
+        span {
+          border-radius: 3.6px;
+          width: 110px;
+          height: 78px;
+          line-height: 78px;
+          text-align: center;
+          background-color: #D8D8D8;
+          font-size: 34px;
+          margin: 0 25px 25px 0;
+          cursor: pointer;
+          display: inline-block;
+          font-weight: bold;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        span:nth-of-type(3n) {
+          margin-right: 0;
+        }
+        span:nth-of-type(10) {
+          font-size: 28px;
+          color: #EC8B2F;
+        }
+        span:last-of-type {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            width: 50px;
+            height: 28px;
+            display: inline-block;
+          }
+        }
+      }
+    }
+    .order_fr>div {
+      position: fixed;
+      top: 100px;
+      right: 0;
+      width: 480px;
+      height: calc(100vh - 100px);
+      background-color: #fff;
     }
     .payTig {
       .shadow {
@@ -826,27 +1104,33 @@
     }
   }
 
-  /deep/ .el-range-editor.el-input__inner {
+  /deep/ .el-date-editor.el-input {
     background-color: #FFFFFF;
     border-radius: 40px;
     box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
-    width: 385px;
+    width: 186px;
     height: 50px;
     margin: 0 30px;
-    padding: 3px 20px;
+    padding: 3px 40px;
   }
 
-  /deep/ .el-date-editor .el-range__icon {
+  /deep/ .el-input__icon {
     font-size: 24px;
-    line-height: 42px;
+    line-height: 56px;
   }
 
-  /deep/ .el-date-editor .el-range-separator {
-    line-height: 42px;
+  /deep/ .el-input__prefix {
+    left: 26px;
+  }
+
+  /deep/ .el-input--prefix .el-input__inner {
+    line-height: 54px;
     font-size: 24px;
+    height: 54px;
+    border: none;
   }
 
-  /deep/ .el-date-editor .el-range-input, .el-date-editor .el-range-separator {
+  /deep/ .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
     font-size: 24px;
     font-family: '黑色';
   }
@@ -867,7 +1151,7 @@
   /deep/ .el-pagination {
     padding: 30px 0;
     position: fixed;
-    width: 100vw;
+    width: calc(100vw - 480px);
     bottom: 0;
     left: 0;
     z-index: 1;
@@ -896,8 +1180,13 @@
     height: 44px;
   }
 
-  /deep/ .el-date-editor .el-range__close-icon {
+  /deep/ .el-date-editor .el-icon-circle-close {
     display: none;
   }
+
+  /deep/ .el-date-picker .el-picker-panel__content {
+    width: 400px;
+  }
+
 
 </style>
