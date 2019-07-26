@@ -235,7 +235,7 @@
               <span>{{detailVal.refundModel.outTradeNo}}</span>
             </div>
           </div>
-          <div class="btns" v-if="!detailVal.refundModel || detailVal.refundModel == null">
+          <div class="btns" v-if="(!detailVal.refundModel || detailVal.refundModel == null) && (parseFloat(detailVal.refundFeeStr) * 100) != 0">
             <span class="refund" @click="refund">退款</span>
           </div>
         </div>
