@@ -111,7 +111,8 @@
               </div>
               <p class="tigRemark" v-if="changeItem.remark">订单备注：{{changeItem.remark}}</p>
             </div>
-            <el-button type="primary" class="tig_btn" :loading="loadingCheckIn"  @click="teamCheckIn()">开始办理</el-button>
+            <el-button type="primary" class="tig_btn" :loading="loadingCheckIn"  @click="teamCheckIn()" v-if="payMode != 0">开始办理</el-button>
+            <el-button type="info" disabled class="tig_btn tig_info" :loading="loadingCheckIn"  v-else>开始办理</el-button>
           </div>
         </div>
 
@@ -993,6 +994,10 @@
           text-align: center;
           margin: 30px auto;
           -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        .tig_info {
+          background-color: #d7d7d7;
+          color: #a4a4a4;
         }
       }
     }
