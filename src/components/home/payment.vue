@@ -99,8 +99,8 @@
           <div class="payTig_content">
             <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="payTigStatus == 1 ? '请输入退款金额' : '请输入结算金额'"></div>
             <div class="payTig_keyBoard">
-              <span v-for="item in keyBoard" @click="keyEntry(item)">{{item}}</span>
-              <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
+              <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
+              <span @click="keyCancel_()"><img src="../../assets/shanchuanniu.png" alt=""></span>
             </div>
             <div class="btn" @click="payTigStatus == 1 ? refundMoney() : accountMoney()">确定</div>
           </div>
@@ -574,6 +574,17 @@
               this.loadingShow = false;
             }
           });
+        }
+      },
+
+      // 键盘事件
+      keyEntry_(item) {
+        this.payMoney += item;
+      },
+
+      keyCancel_ () {
+        if (this.payMoney.length > 0) {
+          this.payMoney = this.payMoney.substr(0, this.payMoney.length - 1);
         }
       },
 
