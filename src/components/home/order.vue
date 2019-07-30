@@ -529,7 +529,7 @@
 
       // 房费更改
       payModeChange(index) {
-        this.changeItem.payMode = index;
+        this.payMode = index;
       },
 
       // 选择是否免押金
