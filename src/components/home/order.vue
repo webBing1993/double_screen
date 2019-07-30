@@ -406,7 +406,7 @@
         this.updatePaidMode({
           orderId: this.changeItem.id,
           isFreeDeposit: this.changeItem.isFreeDeposit,
-          modeId: this.changeItem.payMode,
+          modeId: this.payMode,
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0) {
