@@ -116,7 +116,7 @@
         //ws地址
         let mymessage = encodeURIComponent(sessionStorage.session_id+sessionStorage.hotel_id);
         let wsuri = '';
-        wsuri = "wss://qa.fortrun.cn/todolistws?wsCode=" + mymessage;  // qa
+        wsuri = "wss://wqt.fortrun.cn/p/v2.7.9/todolistws?wsCode=" + mymessage;  // qa
         this.websock = new WebSocket(wsuri);
         this.websock.onopen = this.websocketonopen;
         this.websock.onmessage = this.websocketonmessage;
