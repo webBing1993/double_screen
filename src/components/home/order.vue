@@ -75,17 +75,17 @@
                 </div>
                 <div class="list_tabs">
                   <div class="list_tab" @click="payModeChange(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 1">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     当面付
                   </div>
                   <div class="list_tab" @click="payModeChange(2)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 2">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     已预付
                   </div>
                   <div class="list_tab" @click="payModeChange(3)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="changeItem.payMode == 3">
+                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
                     <img src="../../assets/weixuan.png" alt="" v-else>
                     后付/挂账
                   </div>
@@ -111,7 +111,8 @@
               </div>
               <p class="tigRemark" v-if="changeItem.remark">订单备注：{{changeItem.remark}}</p>
             </div>
-            <div class="tig_btn" @click="teamCheckIn()">开始办理</div>
+            <el-button type="primary" class="tig_btn" :loading="loadingCheckIn"  @click="teamCheckIn()" v-if="payMode != 0">开始办理</el-button>
+            <el-button type="info" disabled class="tig_btn tig_info" :loading="loadingCheckIn"  v-else>开始办理</el-button>
           </div>
         </div>
 
@@ -194,8 +195,11 @@
         paidFeeShow: 0,  // 已付房费
         cashFee: 0,      // 押金
         cashFeeTrue: false,  // 判断是否有无押金配置
+        ispaid: false,  // 判断是否付过款了
+        payMode: 0,  // 判断房费支付状态
         isShowScreen: false, // 是否分房
         pmsFlag: true,   // 判断是否对接pms
+        loadingCheckIn: false,  // 判断是否办理 加载中
       }
     },
     filters: {
@@ -357,7 +361,9 @@
                             }else {
                               this.roomFeeShow = body.data.data.roomFeeShow;
                             }
-                            if (body.data.data.needPayFeeShow != 0) {
+                            this.payMode = body.data.data.payMode;
+                            this.ispaid = body.data.data.paid;
+                            if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
                               this.teamTig = true;
                             }else {
                               this.OpenExternalScreen('SendMessage@'+item.id+'')
@@ -397,16 +403,18 @@
         });
       },
       teamCheckIn(){
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
+        this.loadingCheckIn = true;
         this.updatePaidMode({
           orderId: this.changeItem.id,
           isFreeDeposit: this.changeItem.isFreeDeposit,
-          modeId: this.changeItem.payMode,
+          modeId: this.payMode,
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0) {
               this.teamTig = false;
+              this.page = 1;
+              this.getPreOrder(1);
+              this.loadingCheckIn = false;
               this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'')
             }
           },
@@ -522,7 +530,7 @@
 
       // 房费更改
       payModeChange(index) {
-        this.changeItem.payMode = index;
+        this.payMode = index;
       },
 
       // 选择是否免押金
@@ -979,13 +987,17 @@
           border-radius: 44px;
           width: 340px;
           height: 68px;
-          line-height: 68px;
+          /*line-height: 68px;*/
           color: #fff;
           font-size: 20px;
           cursor: pointer;
           text-align: center;
           margin: 30px auto;
           -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        .tig_info {
+          background-color: #d7d7d7;
+          color: #a4a4a4;
         }
       }
     }
