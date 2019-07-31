@@ -155,6 +155,50 @@ const actions = {
     )
   },
 
+  resourceGemini: (ctx, param) => {
+    // openFullScreen();
+    axios({
+      url: httpTool.httpUrlEnv() + 'q/master/gemini' + param.url,
+      method: param.method || 'GET',
+      baseURL: '/',
+      headers: param.headers || {
+        Session: sessionStorage.session_id,
+        token: sessionStorage.session_id
+      },
+      params: param.params || null,
+      data: param.body || null,
+      timeout: param.timeout || 60000,
+      credentials: false,
+      emulateHTTP: false,
+      emulateJSON: param.emulateJSON ? param.emulateJSON:true,
+    }).then(response => {
+      console.log("response",response);
+      // closeFullScreen (openFullScreen());
+      if (response.data.code == 0 || response.data.errcode == 0) {
+        param.onSuccess && param.onSuccess(response)
+      }
+      else if (response.data.code === 10004) {
+        router.replace('/');
+      }
+      else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
+        Vue.prototype.$message.error(response.data.msg);
+        param.onFail && param.onFail(response)
+      }
+      else {
+        Vue.prototype.$message.error(response.data.msg);
+        param.onFail && param.onFail(response)
+      }
+    }).catch(
+      error => {
+        // closeFullScreen (openFullScreen());
+        if(error){
+          console.log("error",error)
+        }
+
+      }
+    )
+  },
+
   // 获取验证码
   getCode (ctx,param){
     ctx.dispatch('request',{
@@ -411,6 +455,18 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+    })
+  },
+
+  // 获取公安核验列表
+  newIdentityList(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/lvye/searchLvyeReportInfos?limit='+ param.limit+'&offset='+param.offset,
+      method: 'POST',
+      body: param.data,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      }
     })
   },
 

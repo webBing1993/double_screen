@@ -10,6 +10,7 @@
           <div class="tabs">
             <span :class="tabIndex == 1 ? 'tab active' : 'tab'" @click="tabClick(1)">办理入住</span>
             <span :class="tabIndex == 2 ? 'tab active' : 'tab'" @click="tabClick(2)">交易管理</span>
+            <span :class="tabIndex == 3 ? 'tab active' : 'tab'" @click="tabClick(3)">公安核验 <i v-if="unhandleNum != ''">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
           </div>
         </div>
         <div class="header_fr">
@@ -61,11 +62,12 @@
         speakShow: false,  // 判断是否有新代办来了
         websock: null,
         timer: null,
+        unhandleNum: '',  // 公安核验数量
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList'
       ]),
 
       // tab切换
@@ -73,8 +75,10 @@
         this.tabIndex = index;
         if (index == 1) {
           this.replaceto('/order');
-        }else {
+        }else if (index == 2) {
           this.replaceto('/payment');
+        }else {
+          this.replaceto('/policeIdentity');
         }
       },
 
@@ -107,6 +111,26 @@
         })
       },
 
+      // 获取公安核验未处理数据
+      unhandleList() {
+        this.newIdentityList ({
+          data: {
+            createTimeStart: '',
+            createTimeEnd: '',
+            reportInStatuses: ["NONE","PENDING","FAILED"],//需要的入住上报旅业状态
+            desc: true,
+            name: ''  // 搜索
+          },
+          limit: 15,
+          offset: 1,
+          onsuccess: (body, headers) => {
+            if (body.errcode == 0) {
+              this.unhandleNum = headers['x-total-count'];
+            }
+          }
+        });
+      },
+
       OpenExternalScreen(type) {
         document.title = new Date().getSeconds() + "@" + type;
       },
@@ -133,6 +157,7 @@
         if (date == '"refresh"') {
           this.speakShow = true;
           this.speckText('您有待办事项未处理，点击查看');
+          this.initWebSocket();
         }
       },
       websocketsend(agentData){//数据发送
@@ -148,6 +173,7 @@
     mounted () {
       this.tabClick(1);
       this.doSthList();
+      this.unhandleList();
       this.initWebSocket();
       this.timer = setInterval(() => {
         this.websocketsend(88888);
@@ -207,6 +233,18 @@
             display: inline-flex;
             align-items: center;
             font-weight: bold;
+            i {
+              font-style:normal;
+              background-color: #F5222D;
+              border-radius: 50%;
+              padding: 3px;
+              font-size: 20px;
+              color: #fff;
+              margin-left: 6px;
+              width: 28px;
+              height: 28px;
+              line-height: 28px;
+            }
           }
           .active {
             color: #303133;

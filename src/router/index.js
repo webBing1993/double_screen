@@ -24,6 +24,11 @@ export default new Router({
           path: '/payment',
           name: 'payment',
           component: resolve => require(['../components/home/payment.vue'],resolve),
+        },
+        {
+          path: '/policeIdentity',
+          name: 'policeIdentity',
+          component: resolve => require(['../components/home/policeIdentity.vue'],resolve),
         }
       ],
     },
