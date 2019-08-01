@@ -13,11 +13,11 @@
         </div>
       </div>
       <div class="doSthContent">
-        <!--<div class="changTabs">-->
-        <!--<span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>-->
-        <!--<span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>-->
-        <!--</div>-->
-        <div class="doSthLists" v-if="showList">
+        <div class="changTabs">
+          <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>
+          <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>
+        </div>
+        <div class="doSthLists" v-if="showList && changeTabString == 1">
           <div class="list" v-for="item in doSthLists">
             <div class="list_header">
               <div>
@@ -66,20 +66,20 @@
               </div>
             </div>
           </div>
-          <!--<el-pagination-->
-          <!--@size-change="handleSizeChange"-->
-          <!--@current-change="handleCurrentChange"-->
-          <!--:current-page.sync="page"-->
-          <!--:page-size="10"-->
-          <!--layout="total, prev, pager, next"-->
-          <!--:total="total" v-if="doSthLists.length != 0">-->
-          <!--</el-pagination>-->
+          <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="page"
+          :page-size="10"
+          layout="total, prev, pager, next"
+          :total="total" v-if="doSthLists.length != 0">
+          </el-pagination>
           <div class="noMsg" v-if="doSthLists.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
             <p>暂无内容</p>
           </div>
         </div>
-        <!--<div class="doSthLists" v-if="changeTabString == 2">
+        <div class="doSthLists" v-if="showList && changeTabString == 2">
           <div class="list" v-for="item in doSthLists1">
             <div class="list_header">
               <div>
@@ -100,19 +100,19 @@
               </div>
             </div>
           </div>
-          &lt;!&ndash;<el-pagination&ndash;&gt;
-            &lt;!&ndash;@size-change="handleSizeChange"&ndash;&gt;
-            &lt;!&ndash;@current-change="handleCurrentChange1"&ndash;&gt;
-            &lt;!&ndash;:current-page.sync="page1"&ndash;&gt;
-            &lt;!&ndash;:page-size="10"&ndash;&gt;
-            &lt;!&ndash;layout="total, prev, pager, next"&ndash;&gt;
-            &lt;!&ndash;:total="total1" v-if="doSthLists.length != 0">&ndash;&gt;
-          &lt;!&ndash;</el-pagination>&ndash;&gt;
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange1"
+            :current-page.sync="page1"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="total1" v-if="doSthLists.length != 0">
+          </el-pagination>
           <div class="noMsg" v-if="doSthLists.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
             <p>暂无内容</p>
           </div>
-        </div>-->
+        </div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
@@ -145,13 +145,13 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay'
+        'goto', 'newIdentityList'
       ]),
 
       // tab
       changeTabClick(index) {
         this.changeTabString = index;
-        this.page = 0;
+        this.page = 1;
         this.page1 = 1;
       },
 
@@ -163,71 +163,39 @@
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
         this.loadingShow = true;
-        this.doSthList(val, 1);
+        this.page = val;
+        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), val, 1);
       },
-      handleCurrentChange(val) {
+      handleCurrentChange1(val) {
         console.log(`当前页: ${val}`);
         this.loadingShow = true;
-        this.doSthList(val, 2);
+        this.page1 = val;
+        this.policeIdentityList(val, 1, 2);
       },
 
       // 获取列表
-      doSthList() {
-        this.getTodoList({
-          onsuccess: body => {
-            this.loadingShow = false;
-            if (body.data.code == 0) {
-              let faka = [];   // 发卡代办
-              let pmscheckin = [];  // pms入住失败代办
-              let pmspay = [];   // pms入账失败
-              let nativepay = [];  // 前台支付
-              faka = body.data.data.faka;
-              pmscheckin = body.data.data.pmscheckin;
-              pmspay = body.data.data.pmspay;
-              nativepay = body.data.data.nativepay;
-              faka.forEach(item => {
-                item.doSthTitle = '发卡失败';
-              });
-              pmscheckin.forEach(item => {
-                item.doSthTitle = 'PMS入住失败';
-              });
-              pmspay.forEach(item => {
-                item.doSthTitle = 'PMS入账失败';
-              });
-              nativepay.forEach(item => {
-                item.doSthTitle = '前台支付';
-              });
-              this.doSthLists = faka.concat(pmscheckin, pmspay, nativepay);
-              this.doSthLists.sort(this.compare('createTime'));
-              console.log('this.doSthLists',this.doSthLists);
-            }
-            this.showList = true;
+      policeIdentityList(reportInStatuses, page, type) {
+        this.newIdentityList ({
+          data: {
+            createTimeStart: '',
+            createTimeEnd: '',
+            reportInStatuses: JSON.parse(reportInStatuses),//需要的入住上报旅业状态
+            desc: true,
+            name: ''  // 搜索
           },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        })
-      },
-
-      // 排序
-      compare(attr) {
-        return function(a,b){
-          let val1 = a[attr];
-          let val2 = b[attr];
-          return val2 - val1;
-        }
-      },
-
-      // 发卡失败处理事件
-      faka(id) {
-        this.loadingShow = true;
-        this.getFaka({
-          id: id,
-          onsuccess: body => {
-            if (body.data.code == 0) {
-              this.doSthList();
-            }else {
-              this.loadingShow = false;
+          limit: 4,
+          offset: page,
+          onsuccess: (body, headers) => {
+            this.showList = false;
+            if (body.errcode == 0) {
+              if (type == 1) {
+                this.total = headers['x-total-count'];
+                this.doSthLists = [...this.doSthLists, ...body.data.content];
+              }else {
+                this.total1 = headers['x-total-count'];
+                this.doSthLists1 = [...this.doSthLists1, ...body.data.content];
+              }
+              this.showList = true;
             }
           },
           onfail: (body, headers) => {
@@ -236,67 +204,13 @@
         })
       },
 
-      // pms 入住失败处理事件
-      pmsCheckIn(id) {
-        this.loadingShow = true;
-        this.updateCheckinfailedStatus({
-          id: id,
-          status: 1,
-          onsuccess:(body)=>{
-            if (body.data.code == 0) {
-              this.doSthList();
-            }else {
-              this.loadingShow = false;
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        })
-      },
-
-      // pms入账失败处理事件
-      pmsPay(id) {
-        this.loadingShow = true;
-        this.updateWechatPay({
-          data:{
-            orderId: id
-          },
-          onsuccess: (body) => {
-            if(body.data.code == 0){
-              this.doSthList();
-            }else {
-              this.loadingShow = false;
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        });
-      },
-
-      // 前台支付
-      nativepay(id){
-        this.loadingShow = true;
-        this.getFaka({
-          id: id,
-          onsuccess: body => {
-            if (body.data.code == 0) {
-              this.doSthList();
-            }else {
-              this.loadingShow = false;
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        })
-      },
     },
 
     mounted () {
       this.loadingShow = true;
-      this.doSthList();
+      this.page = 1;
+      this.page1 = 1;
+      this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
     }
   }
 </script>
@@ -360,17 +274,14 @@
         padding: 40px;
         text-align: left;
         span {
-          color: #303133;
-          font-size: 13px;
+          padding: 15px 30px;
           background: #FFFFFF;
-          box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
+          box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.1);
           border-radius: 40px;
-          height: 40px;
-          line-height: 40px;
-          width: 105px;
-          text-align: center;
-          margin-right: 15px;
-          display: inline-block;
+          color: #303133;
+          font-size: 20px;
+          margin-right: 30px;
+          font-weight: bold;
           cursor: pointer;
         }
         span.active {
@@ -379,6 +290,7 @@
         }
       }
       .doSthLists {
+        padding: 0 40px;
         .list {
           padding: 0 40px;
           background: #FFFFFF;
@@ -386,68 +298,7 @@
           border-radius: 6px;
           text-align: left;
           margin-bottom: 20px;
-          .list_header {
-            border-bottom: 1px solid #E5E5E5;
-            padding: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            div:first-of-type {
-              span {
-                color: #909399;
-                font-size: 20px;
-              }
-              .title {
-                font-size: 24px;
-                color: #000;
-                font-weight: bold;
-                margin-right: 30px;
-              }
-            }
-            dis:last-of-type {
-              color: #303133;
-              font-size: 14px;
-            }
-          }
-          .list_content {
-            padding: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            .list_fl {
-              div {
-                font-size: 20px;
-                color: #000;
-                margin-top: 10px;
-                span:first-of-type {
-                  width: 125px;
-                  display: inline-block;
-                }
-                span:last-of-type {
-                  width: auto;
-                }
-                span:only-child {
-                  width: 125px;
-                  display: inline-block;
-                }
-              }
-            }
-            .list_fr {
-              span {
-                cursor: pointer;
-                width: 125px;
-                height: 44px;
-                line-height: 44px;
-                background-color: #1AAD19;
-                font-size: 20px;
-                color: #fff;
-                text-align: center;
-                display: inline-block;
-                border-radius: 32px;
-                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-              }
-            }
-          }
+
         }
       }
     }
