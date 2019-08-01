@@ -366,6 +366,8 @@
                             if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
                               this.teamTig = true;
                             }else {
+                              this.page = 1;
+                              this.getPreOrder(1);
                               this.OpenExternalScreen('SendMessage@'+item.id+'')
                             }
                             this.changeItem = item;
@@ -381,6 +383,8 @@
                     });
                   }else {
                     this.loadingShow = false;
+                    this.page = 1;
+                    this.getPreOrder(1);
                     this.OpenExternalScreen('SendMessage@'+item.id+'')
                   }
 

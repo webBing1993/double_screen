@@ -158,7 +158,7 @@ const actions = {
   resourceGemini: (ctx, param) => {
     // openFullScreen();
     axios({
-      url: httpTool.httpUrlEnv() + 'q/master/gemini' + param.url,
+      url: httpTool.httpUrlEnv() + 'gemini' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {

@@ -17,52 +17,25 @@
           <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>
           <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>
         </div>
-        <div class="doSthLists" v-if="showList && changeTabString == 1">
-          <div class="list" v-for="item in doSthLists">
+        <div class="identityList" v-if="showList && changeTabString == 1">
+          <div class="list" v-for="item in unhandleList">
             <div class="list_header">
-              <div>
-                <span class="title">{{item.doSthTitle}}</span>
-                <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
-              </div>
+              核验时间：{{datetimeparse(item.createdTime, 'yy/MM/dd hh:mm')}}
             </div>
-            <div class="list_content" v-if="item.doSthTitle=='发卡失败'">
-              <div class="list_fl">
-                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn" v-if="item.type == 'QUEKA'"><span>失败原因：</span>缺卡</div>
-                <div class="roomIn" v-else-if="item.type == 'FAKA'"><span>失败原因：</span>发卡失败</div>
-                <div class="roomIn" v-else-if="item.type == 'WUKA'"><span>失败原因：</span>无卡</div>
-                <div class="roomIn" v-else><span>失败原因：</span>回收卡槽已满</div>
-              </div>
-              <div class="list_fr">
-                <span @click="faka(item.id)">处理完成</span>
-              </div>
-            </div>
-            <div class="list_content" v-else-if="item.doSthTitle=='PMS入住失败'">
-              <div class="list_fl">
-                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn"><span>住客信息：</span><span v-if="item.guestList" v-for="i in item.guestList">【{{i.name}}/{{i.idCard}}/{{i.address}} 】</span></div>
-              </div>
-              <div class="list_fr">
-                <span @click="pmsCheckIn(item.id)">处理完成</span>
-              </div>
-            </div>
-            <div class="list_content" v-else-if="item.doSthTitle=='PMS入账失败'">
-              <div class="list_fl">
-                <div class="roomIn"><span>PMS订单号：</span>{{item.pmsOrderNo}}</div>
-                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
-                <div class="roomIn"><span>入账金额：</span>{{item.totalFeeStr}}</div>
-              </div>
-              <div class="list_fr">
-                <span @click="pmsPay(item.orderId)">处理完成</span>
-              </div>
-            </div>
-            <div class="list_content" v-else>
-              <div class="list_fl">
-                <div class="rooms"><span>预订人：</span>{{item.owner}} {{item.ownerTel}}</div>
-                <div class="roomIn"><span>订单金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
-              </div>
-              <div class="list_fr">
-                <span @click="nativepay(item.id)">处理完成</span>
+            <div class="list_content">
+              <div class="lis">
+                <div class="li">
+                  <span>姓名：</span>
+                  <span>{{item.name}}</span>
+                </div>
+                <div class="li">
+                  <span>身份证：</span>
+                  <span>{{item.idCard}}</span>
+                </div>
+                <div class="li">
+                  <span>相似度：</span>
+                  <span class="blue">{{item.similarity}}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -70,17 +43,17 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page.sync="page"
-          :page-size="10"
+          :page-size="4"
           layout="total, prev, pager, next"
-          :total="total" v-if="doSthLists.length != 0">
+          :total="total" v-if="unhandleList.length != 0">
           </el-pagination>
-          <div class="noMsg" v-if="doSthLists.length == 0">
+          <div class="noMsg" v-if="unhandleList.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
             <p>暂无内容</p>
           </div>
         </div>
-        <div class="doSthLists" v-if="showList && changeTabString == 2">
-          <div class="list" v-for="item in doSthLists1">
+        <div class="identityList" v-if="showList && changeTabString == 2">
+          <div class="list" v-for="item in handleList">
             <div class="list_header">
               <div>
                 <span class="title">{{item.title}}</span>
@@ -104,11 +77,11 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange1"
             :current-page.sync="page1"
-            :page-size="10"
+            :page-size="4"
             layout="total, prev, pager, next"
-            :total="total1" v-if="doSthLists.length != 0">
+            :total="total1" v-if="handleList.length != 0">
           </el-pagination>
-          <div class="noMsg" v-if="doSthLists.length == 0">
+          <div class="noMsg" v-if="handleList.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
             <p>暂无内容</p>
           </div>
@@ -136,8 +109,8 @@
         page1: 1,  // 当前页数
         total: 1, // 总条数
         total1: 1, // 总条数
-        doSthLists: [],  // 代办未处理列表
-        doSthLists1: [],  //代办已处理列表
+        unhandleList: [],  // 代办未处理列表
+        handleList: [],  //代办已处理列表
       }
     },
     filters: {
@@ -186,17 +159,17 @@
           limit: 4,
           offset: page,
           onsuccess: (body, headers) => {
-            this.showList = false;
             if (body.errcode == 0) {
               if (type == 1) {
                 this.total = headers['x-total-count'];
-                this.doSthLists = [...this.doSthLists, ...body.data.content];
+                this.unhandleList = [...this.unhandleList, ...body.data.content];
               }else {
                 this.total1 = headers['x-total-count'];
-                this.doSthLists1 = [...this.doSthLists1, ...body.data.content];
+                this.handleList = [...this.handleList, ...body.data.content];
               }
-              this.showList = true;
             }
+            this.loadingShow = false;
+            this.showList = true;
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
@@ -289,16 +262,40 @@
           border: 1px solid #1AAD19;
         }
       }
-      .doSthLists {
+      .identityList {
         padding: 0 40px;
         .list {
-          padding: 0 40px;
+          padding: 0 30px;
           background: #FFFFFF;
           box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.10);
           border-radius: 6px;
           text-align: left;
           margin-bottom: 20px;
-
+          .list_header {
+            border-bottom: 1px solid #E5E5E5;
+            padding: 25px 0;
+            font-size: 24px;
+            color: #909399;
+          }
+          .list_content {
+            position: relative;
+            .lis {
+              padding: 20px 0;
+              .li {
+                margin-bottom: 20px;
+                span {
+                  color: #000;
+                  font-size: 24px;
+                }
+                span:first-of-type {
+                  width: 120px;
+                }
+                .blue {
+                  color: #1AAD19;
+                }
+              }
+            }
+          }
         }
       }
     }
