@@ -1,7 +1,7 @@
 class apiTool{
   httpUrlEnv(){
     //本地调试
-    return '';
+    return '/q/master/';
     // 推远程
     //   return '/'
   }
