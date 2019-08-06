@@ -19,6 +19,15 @@
             <span>拍照时间：{{datetimeparse(detail.createdTime,'YYYY/MM/DD hh:mm:ss')}}</span>
             <span>相似度：<i class="blue">{{detail.similarity}}</i></span>
           </div>
+          <!--<div class="outTime">-->
+            <!--<span>最晚离店时间：</span>-->
+            <!--<el-date-picker-->
+              <!--v-model="outTime"-->
+              <!--type="datetime"-->
+              <!--value-format="yyyy-MM-dd HH:mm"-->
+              <!--placeholder="选择日期时间">-->
+            <!--</el-date-picker>-->
+          <!--</div>-->
           <div class="detail_content">
             <div class="now_info">
               <img :src="detail.livePhoto" alt="">
@@ -91,6 +100,7 @@
         detail: {},   // 详情
         guestType:'LODGER',
         inputRoomNumber: '',  // 获取的房间号
+        outTime: '',   // 最晚离店时间
       }
     },
     watch: {

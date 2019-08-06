@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="checkIn">
+    <div class="checkIn" v-show="checkInShow">
       <div class="bgCheckTop"></div>
       <div class="goback">
         <div @click="gobanck">
@@ -91,17 +91,18 @@
       return {
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
-        isfaka: true,   // 是否发卡
+        isfaka: false,   // 是否发卡
         isrcpdf: false,  // 是否需要RC单
         isphone: false,  // 是否需要手机号
         loadingCancel: false, // 取消办理按钮加载状态
         loadingSure: false,  // 办理入住按钮加载状态
         changeItem: '',   // 临时数据
+        checkInShow: false,  // 模块显示隐藏
       }
     },
     methods: {
       ...mapActions([
-         ''
+         'checkInGetOptions', 'checkInPostOptions'
       ]),
 
       // 返回上一页
@@ -117,7 +118,7 @@
           }else {
               this.isfaka = false;
           }
-        }else if (type == 1) {
+        }else if (type == 2) {
           if (status == 1) {
             this.isrcpdf = true;
           }else {
@@ -134,11 +135,49 @@
 
       // 开始办理
       checkIn() {
-        this.SendTeamOrderMessage(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
+        this.loadingSure = true;
+        this.checkInPostOptions({
+          orderId: this.$route.params.id,
+          data: {
+            sendCard: this.isfaka,
+            printRc: this.isrcpdf,
+            needPhoneNum: this.isphone,
+            hotelId: sessionStorage.hotel_id
+          },
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.SendTeamOrderMessage(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
+            }
+            this.loadingSure = false;
+          },onfail: body => {
+            this.loadingSure = false;
+          }
+        });
       },
 
       SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
         document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + rcStatus + '@' + phoneStatus + '@' + status;
+      },
+
+      // 初始化获取设置列表
+      getCheckList() {
+          this.checkInGetOptions({
+            orderId: this.$route.params.id,
+            onsuccess: body => {
+              if (body.data.code == 0) {
+                 if (body.data.data != null) {
+                    this.isfaka = body.data.data.sendCard ? body.data.data.sendCard : false;
+                    this.isrcpdf = body.data.data.printRc ? body.data.data.printRc : false;
+                    this.isphone = body.data.data.needPhoneNum ? body.data.data.needPhoneNum : false;
+                 }
+              }
+              this.checkInShow = true;
+              this.loadingShow = false;
+            },onfail: body => {
+              this.checkInShow = true;
+              this.loadingShow = false;
+            }
+          })
       },
 
     },
@@ -146,9 +185,7 @@
     mounted () {
       this.loadingShow = true;
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
-      setTimeout(() => {
-        this.loadingShow = false;
-      }, 1500)
+      this.getCheckList();
     },
   }
 </script>

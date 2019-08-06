@@ -51,7 +51,7 @@
                       {{room.roomTypeName}} &nbsp; *{{room.count}}间
                     </p>
                   </div>
-                  <div class="tongbu_status">同步</div>
+                  <div class="tongbu_status" @click="getRefresh(item.id)">同步</div>
                   <div class="banli_status" @click="checkGoIn(item)">办理入住</div>
                 </div>
               </div>
@@ -241,7 +241,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag'
+        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag', 'refreshOne'
       ]),
 
       // tab切换
@@ -465,6 +465,36 @@
       tigTeamKnow() {
         this.tigTeamShow = false;
         this.$emit('gocheckIn', this.changeItem.id);
+      },
+
+      // 单个订单同步
+      getRefresh(orderId) {
+        this.loadingText = '同步中...';
+        this.loadingShow = true;
+        this.refreshOne({
+          orderId: orderId,
+          onsuccess: body => {
+            if (body.data.data == '同步成功') {
+              this.getPreOrder(this.page);
+            }else {
+              this.loadingShow = false;
+            }
+            this.$message({
+              message: body.data.data,
+              type: 'success'
+            });
+          },onfail: (body, headers) => {
+            this.loadingShow = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
+            this.$message({
+              message: "同步超时，请稍后再试",
+              type: 'error'
+            });
+            this.getPreOrder(this.page);
+          }
+        })
       },
 
       //同步订单

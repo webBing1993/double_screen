@@ -326,7 +326,21 @@ const actions = {
     })
   },
 
-  //获得同步时间
+  // 单个同步
+  refreshOne(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/pms/refreshOne/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 获得同步时间
   getRefreshTime(ctx, param) {
     ctx.dispatch('resource', {
       url: '/ecard/hotel/hotelInfo?refresh=1',
@@ -555,6 +569,35 @@ const actions = {
       },
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 团队订单获取投屏选项
+  checkInGetOptions(ctx, param){
+    ctx.dispatch('resource', {
+      url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
+      method: 'GET',
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 团队订单办理入住
+  checkInPostOptions(ctx, param){
+    ctx.dispatch('resource_', {
+      url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
       },
     })
   },
