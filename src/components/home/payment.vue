@@ -3,12 +3,16 @@
     <div class="paymentIndex">
       <div class="changeItem">
         <span>交易时间</span>
-        <el-date-picker
-          v-model="timeVal"
-          type="date"
-          @change="datePicker"
-          placeholder="选择日期">
-        </el-date-picker>
+        <span class="time_change">
+          <i @click="preDay"><img src="../../assets/shaungyige.png" alt=""></i>
+          <el-date-picker
+            v-model="timeVal"
+            type="date"
+            @change="datePicker"
+            placeholder="选择日期">
+          </el-date-picker>
+          <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
+        </span>
         <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
         <span class="items">
           <span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)">微信支付</span>
@@ -59,13 +63,13 @@
               快速筛选
             </div>
             <div class="changTabs">
-              <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">预订人</span>
-              <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
+              <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">入住人</span>
+              <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">房间号</span>
             </div>
             <div class="change_tabs">
               <div class="tab" v-if="changeTabString == 1">
                 <div class="input">
-                  <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
+                  <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
                   <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
                 </div>
                 <div class="keyBoard">
@@ -75,7 +79,7 @@
               </div>
               <div class="tab" v-else>
                 <div class="input">
-                  <input type="text" placeholder="请输入入住人手机号查询" v-model="searchString2" maxlength="11">
+                  <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
                   <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
                 </div>
                 <div class="keyBoard2">
@@ -275,7 +279,7 @@
           </div>
         </div>
       </div>
-      <loadingList v-if="loadingShow" :loadingText="loadingText" style="width: calc(100vw - 480px)"></loadingList>
+      <loadingList v-if="loadingShow" :loadingText="loadingText" :style="isScreen ? 'width: 100vw' : 'width: calc(100vw - 480px)'"></loadingList>
     </div>
   </div>
 </template>
@@ -317,6 +321,8 @@
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
         searchString2: '',  // 数字搜索
+        timer: null,
+        isScreen: false,
       }
     },
     filters: {
@@ -326,6 +332,22 @@
       ...mapActions([
         'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish'
       ]),
+
+      // 前一天
+      preDay() {
+        this.timeVal = new Date(this.timeVal.getTime() - 24 * 60 * 60 * 1000);
+        this.loadingShow = true;
+        this.showList = false;
+        this.paymentList(1);
+      },
+
+      // 后一天
+      nextDay() {
+        this.timeVal = new Date(this.timeVal.getTime() + 24 * 60 * 60 * 1000);
+        this.loadingShow = true;
+        this.showList = false;
+        this.paymentList(1);
+      },
 
       // 日期选择
       datePicker(val) {
@@ -348,6 +370,7 @@
 
       keyCancel (event, type) {
         event.preventDefault();
+        clearTimeout(this.timer);
         if (type == 1) {
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
@@ -358,9 +381,9 @@
           if (this.searchString2.length > 0) {
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
-            if (this.searchString2.length == 0) {
+            this.timer = setTimeout(() => {
               this.paymentList(1);
-            }
+            },1500)
           }
         }
       },
@@ -376,20 +399,17 @@
       // 字母键盘事件
       keyEntry(event, item,type) {
         event.preventDefault();
+        clearTimeout(this.timer);
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
           this.paymentList(1);
         }else {
-          if (this.searchString2.length < 11) {
-            this.searchString2 += item;
-            if (this.searchString2.length == 11) {
-              this.searchString = this.searchString2;
-              this.paymentList(1);
-            }
-          }else {
-            return;
-          }
+          this.searchString2 += item;
+          this.searchString = this.searchString2;
+          this.timer = setTimeout(() => {
+            this.paymentList(1);
+          },1500)
         }
       },
 
@@ -531,6 +551,7 @@
         if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.$message('退款金额大于总额');
         }else {
+          this.isScreen = true;
           this.loadingShow = true;
           this.reimburse({
             data:{
@@ -539,6 +560,7 @@
             },
             onsuccess: (body) => {
               this.loadingShow = false;
+              this.isScreen = false;
               if(body.data.code == 0){
                 this.payTig = false;
                 this.paymentList(1)
@@ -546,6 +568,7 @@
             },
             onfail: (body, headers) => {
               this.loadingShow = false;
+              this.isScreen = false;
             }
           });
         }
@@ -556,6 +579,7 @@
         if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.$message('退款金额大于总额');
         }else {
+          this.isScreen = true;
           this.loadingShow = true;
           this.depositConsume({
             data: {
@@ -565,6 +589,7 @@
             },
             onsuccess: body => {
               this.loadingShow = false;
+              this.isScreen = false;
               if (body.data.code == 0) {
                 this.payTig = false;
                 this.paymentList(1);
@@ -572,6 +597,7 @@
             },
             onfail: (body, headers) => {
               this.loadingShow = false;
+              this.isScreen = false;
             }
           });
         }
@@ -604,10 +630,6 @@
 
     mounted () {
       this.loadingShow = true;
-      let startTime = new Date(new Date(new Date().toLocaleDateString()).getTime());
-      let endTime = new Date(new Date(new Date().toLocaleDateString()).getTime());
-//      this.timeVal = [];
-//      this.timeVal.push(startTime, endTime);
       this.timeVal = new Date(new Date(new Date().toLocaleDateString()).getTime());
       this.paymentList(1);
     }
@@ -626,6 +648,18 @@
       span {
         color: #303133;
         font-size: 24px;
+      }
+      .time_change {
+        background-color: #FFFFFF;
+        border-radius: 40px;
+        box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.1);
+        width: 300px;
+        height: 54px;
+        margin: 0 30px;
+        padding: 0 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .change_item {
         background: #FFFFFF;
@@ -663,10 +697,12 @@
         .list_header {
           border-bottom: 1px solid #E5E5E5;
           padding: 20px 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           span {
             color: #909399;
             font-size: 20px;
-            margin-right: 35px;
           }
         }
         .list_content {
@@ -1077,6 +1113,9 @@
             }
           }
         }
+        .lists:last-of-type {
+          padding-bottom: 30px;
+        }
         .btns {
           margin: 50px 0 0;
           display: flex;
@@ -1117,12 +1156,7 @@
 
   /deep/ .el-date-editor.el-input {
     background-color: #FFFFFF;
-    border-radius: 40px;
-    box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
-    width: 186px;
-    height: 50px;
-    margin: 0 30px;
-    padding: 3px 40px;
+    padding-left: 40px;
   }
 
   /deep/ .el-input__icon {

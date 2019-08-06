@@ -64,7 +64,11 @@ Vue.mixin({
           output = prefix ? (prefix + output) : output
 
           return newtimestamp ? output : ''
-      }
+      },
+
+      idnumber: id => {
+        return id.replace(id.slice(3, 14), '***********')
+      },
   },
   mounted () {
     let httpUrl = apiTool.httpUrlEnv();

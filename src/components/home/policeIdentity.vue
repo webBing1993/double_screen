@@ -1,24 +1,13 @@
 <template>
   <div>
-    <div class="doSthIndex">
-      <div class="header">
-        <div class="header_fl">
-          <div class="changeScreen" @click="goto('/home')">
-            <img src="../../assets/fanhui.png" alt="">
-            <span>返回首页</span>
-          </div>
-          <div class="tabs">
-            <span>待办事项</span>
-          </div>
-        </div>
-      </div>
+    <div class="doSthIndex" v-show="showPoliceIdentity">
       <div class="doSthContent">
         <div class="changTabs">
           <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>
-          <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>
+          <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" v-if="showHandledList">已处理</span>
         </div>
         <div class="identityList" v-if="showList && changeTabString == 1">
-          <div class="list" v-for="item in unhandleList">
+          <div class="list" v-for="item in unhandleList"  @click="unhandleClick(item)">
             <div class="list_header">
               核验时间：{{datetimeparse(item.createdTime, 'yy/MM/dd hh:mm')}}
             </div>
@@ -30,13 +19,14 @@
                 </div>
                 <div class="li">
                   <span>身份证：</span>
-                  <span>{{item.idCard}}</span>
+                  <span>{{idnumber(item.idCard)}}</span>
                 </div>
                 <div class="li">
                   <span>相似度：</span>
                   <span class="blue">{{item.similarity}}</span>
                 </div>
               </div>
+              <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading">立即处理</el-button>
             </div>
           </div>
           <el-pagination
@@ -53,24 +43,26 @@
           </div>
         </div>
         <div class="identityList" v-if="showList && changeTabString == 2">
-          <div class="list" v-for="item in handleList">
+          <div class="list" v-for="item in handleList"  @click="unhandleClick(item)">
             <div class="list_header">
-              <div>
-                <span class="title">{{item.title}}</span>
-                <span>{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
-              </div>
-              <div>
-                处理人：{{item.founder}} {{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}
-              </div>
+              核验时间：{{datetimeparse(item.createdTime, 'yy/MM/dd hh:mm')}}
             </div>
             <div class="list_content">
-              <div class="list_fl">
-                <div class="rooms"><span>房间号：</span>{{item.roomNo}}</div>
-                <div class="roomIn"><span>住客信息：</span>{{item.contactName}}</div>
+              <div class="lis">
+                <div class="li">
+                  <span>姓名：</span>
+                  <span>{{item.name}}</span>
+                </div>
+                <div class="li">
+                  <span>身份证：</span>
+                  <span>{{idnumber(item.idCard)}}</span>
+                </div>
+                <div class="li">
+                  <span>房间号：</span>
+                  <span class="blue">{{item.roomNumber}}</span>
+                </div>
               </div>
-              <div class="list_fr">
-                <span>处理完成</span>
-              </div>
+              <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading">立即处理</el-button>
             </div>
           </div>
           <el-pagination
@@ -97,7 +89,7 @@
   import loadingList from './loading.vue'
 
   export default {
-    name: 'doSth',
+    name: 'policeIdentity',
     components: {ElCol, loadingList},
     data () {
       return {
@@ -111,6 +103,8 @@
         total1: 1, // 总条数
         unhandleList: [],  // 代办未处理列表
         handleList: [],  //代办已处理列表
+        showHandledList: true,  // 是否显示已处理
+        showPoliceIdentity: false,  // 是否显示模板
       }
     },
     filters: {
@@ -118,14 +112,36 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'newIdentityList'
+         'newIdentityList', 'getShowPoliceConfigs'
       ]),
+
+      // 已处理按钮是否显示
+      getConfig(){
+        this.getShowPoliceConfigs({
+          onsuccess:(body)=> {
+            if (body.data.data=='true') {
+              this.showHandledList = true;
+            }else {
+              this.showHandledList = false;
+            }
+            this.showPoliceIdentity = true;
+          },
+          onfail: body => {
+            this.showPoliceIdentity = true;
+          }
+        });
+      },
 
       // tab
       changeTabClick(index) {
         this.changeTabString = index;
         this.page = 1;
         this.page1 = 1;
+        if (index == 1) {
+          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+        }else {
+          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+        }
       },
 
       // 分页
@@ -157,15 +173,18 @@
             name: ''  // 搜索
           },
           limit: 4,
-          offset: page,
+          offset: (page-1)*4,
           onsuccess: (body, headers) => {
-            if (body.errcode == 0) {
+            if (body.errcode == 0 && body.data.content) {
+              body.data.content.forEach(item => {
+                  item.unhandleLoading = false;
+              });
               if (type == 1) {
-                this.total = headers['x-total-count'];
-                this.unhandleList = [...this.unhandleList, ...body.data.content];
+                this.total = parseFloat(headers['x-total-count']);
+                this.unhandleList = [ ...body.data.content];
               }else {
-                this.total1 = headers['x-total-count'];
-                this.handleList = [...this.handleList, ...body.data.content];
+                this.total1 = parseFloat(headers['x-total-count']);
+                this.handleList = [ ...body.data.content];
               }
             }
             this.loadingShow = false;
@@ -177,10 +196,17 @@
         })
       },
 
+      // 立即处理
+      unhandleClick (item) {
+        item.unhandleLoading = true;
+        this.$emit('gotoDtail', item.lvyeReportRecordId);
+      },
+
     },
 
     mounted () {
       this.loadingShow = true;
+      this.getConfig();
       this.page = 1;
       this.page1 = 1;
       this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
@@ -263,7 +289,7 @@
         }
       }
       .identityList {
-        padding: 0 40px;
+        padding: 0 40px 115px;
         .list {
           padding: 0 30px;
           background: #FFFFFF;
@@ -286,6 +312,7 @@
                 span {
                   color: #000;
                   font-size: 24px;
+                  display: inline-block;
                 }
                 span:first-of-type {
                   width: 120px;
@@ -295,6 +322,20 @@
                 }
               }
             }
+            .tig_btn {
+              position: absolute;
+              bottom: 20px;
+              right: 30px;
+              background-color: #1AAD19;
+              width: 184px;
+              height: 64px;
+              border-radius: 32px;
+              text-align: center;
+              box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
+              font-size: 24px;
+              color: #fff;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
           }
         }
       }
@@ -302,7 +343,7 @@
   }
 
   .noMsg {
-    padding-top: 400px;
+    margin-top: 150px;
     img {
       display: block;
       width: 180px;
@@ -315,20 +356,41 @@
   }
 
   /deep/ .el-pagination {
-    margin: 30px 0;
+    padding: 30px 0;
+    position: fixed;
+    width: 100vw;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #DEE7F8;
   }
   /deep/ .el-pager li {
     background: rgba(0, 0, 0, .3);
-    color: #999;
+    color: #fff;
     margin: 0 10px;
-    font-size: 16px;
+    font-size: 20px;
+    height: 44px;
+    line-height: 44px;
+    min-width: 44px;
+    font-family: '黑体';
   }
   /deep/ .el-pagination__total {
-    font-size: 16px !important;
+    font-size: 20px !important;
+    line-height: 44px !important;
+    height: 44px !important;
   }
   /deep/ .el-pager li.active {
     background-color: #1AAD19;
     color: #fff;
+  }
+  /deep/ .el-pagination button {
+    height: 44px;
+  }
+  /deep/ .el-pagination .btn-next .el-icon, .el-pagination .btn-prev .el-icon {
+    font-size: 20px;
+  }
+  /deep/ .el-pagination .btn-prev .el-icon {
+    font-size: 20px;
   }
 
 </style>

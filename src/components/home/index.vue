@@ -9,8 +9,9 @@
           </div>
           <div class="tabs">
             <span :class="tabIndex == 1 ? 'tab active' : 'tab'" @click="tabClick(1)">办理入住</span>
-            <span :class="tabIndex == 2 ? 'tab active' : 'tab'" @click="tabClick(2)">交易管理</span>
-            <span :class="tabIndex == 3 ? 'tab active' : 'tab'" @click="tabClick(3)">公安核验 <i v-if="unhandleNum != ''">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
+            <span :class="tabIndex == 2 ? 'tab active' : 'tab'" @click="tabClick(2)">在住房间</span>
+            <span :class="tabIndex == 3 ? 'tab active' : 'tab'" @click="tabClick(3)">交易管理</span>
+            <span :class="tabIndex == 4 ? 'tab active' : 'tab'" @click="tabClick(4)">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
           </div>
         </div>
         <div class="header_fr">
@@ -29,7 +30,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn"></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -62,7 +63,7 @@
         speakShow: false,  // 判断是否有新代办来了
         websock: null,
         timer: null,
-        unhandleNum: '',  // 公安核验数量
+        unhandleNum: 0,  // 公安核验数量
       }
     },
     methods: {
@@ -76,10 +77,13 @@
         if (index == 1) {
           this.replaceto('/order');
         }else if (index == 2) {
+          this.replaceto('/liveIn');
+        }else if (index == 3) {
           this.replaceto('/payment');
         }else {
           this.replaceto('/policeIdentity');
         }
+        sessionStorage.setItem('tabIndex', index);
       },
 
       // 语音播报
@@ -131,6 +135,20 @@
         });
       },
 
+      showMsg (val) {
+        this.unhandleList();
+      },
+
+      // 进公安核验详情
+      policeIdentity(val) {
+        this.goto('/policeIdentityDetail/'+val);
+      },
+
+      // 进入团队投屏前选择
+      gotocheckIn(val) {
+        this.goto('/checkIn/'+val);
+      },
+
       OpenExternalScreen(type) {
         document.title = new Date().getSeconds() + "@" + type;
       },
@@ -171,12 +189,12 @@
     },
 
     mounted () {
-      this.tabClick(1);
+      this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : 1);
       this.doSthList();
       this.unhandleList();
       this.initWebSocket();
       this.timer = setInterval(() => {
-        this.websocketsend(88888);
+//        this.websocketsend(88888);
       },1500)
     },
   }

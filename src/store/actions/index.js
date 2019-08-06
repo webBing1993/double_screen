@@ -86,7 +86,7 @@ const actions = {
     }).then(response => {
       console.log("response",response);
       // closeFullScreen (openFullScreen());
-      if (response.data.code == 0 || response.data.errcode == 0) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.body.code === 888000) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
@@ -239,10 +239,25 @@ const actions = {
     })
   },
 
-  // 获取列表
+  // 获取预订单列表
   getQueryByPage (ctx, param) {
     ctx.dispatch('resource', {
       url: '/ecard/orders/queryByPage',
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 获取在住单列表
+  getNoPmsQueryCheckInList (ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/workWechat/room/checkInOutList',
       method: 'POST',
       body: param.data,
       onSuccess: (body, headers) => {
@@ -458,6 +473,20 @@ const actions = {
     })
   },
 
+  // 已处理按钮是否显示
+  getShowPoliceConfigs(ctx, param){
+    ctx.dispatch('resourceGemini', {
+      url: '/getHotelConfig/enable_show_plice_processed',
+      method: 'GET',
+      onSuccess: body=>{
+        param.onsuccess ? param.onsuccess(body) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
   // 获取公安核验列表
   newIdentityList(ctx, param) {
     ctx.dispatch('resourceGemini', {
@@ -466,7 +495,67 @@ const actions = {
       body: param.data,
       onSuccess: (response) => {
         param.onsuccess ? param.onsuccess(response.data, response.headers) : null
-      }
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 获取酒店房间列表
+  getRoomNumberList(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/room/list',
+      method: 'GET',
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 公安核验详情
+  newIdentityDetail(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/lvye/lvyeReportInfo/' + param.identity_id,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 拒绝
+  rejectStatus(ctx, param){
+    ctx.dispatch('resourceGemini',{
+      url:'/lvye/checkStatus/'+param.identity_id+'/'+param.status,
+      method:'PUT',
+      body:param.body,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 上传旅业
+  reportLvYe(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/lvye/lvyeReport',
+      method: 'PUT',
+      body: param.data,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
     })
   },
 

@@ -259,6 +259,11 @@
        },1000)
     },
     beforeRouteLeave(to,from,next) {
+      sessionStorage.removeItem('tabIndex');
+      sessionStorage.removeItem('tabIndex_');
+      sessionStorage.removeItem('currentChange');
+      sessionStorage.removeItem('pmsFlag');
+      sessionStorage.removeItem('changeItem');
       clearInterval(this.getTimer);
       next();
     }
