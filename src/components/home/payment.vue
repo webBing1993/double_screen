@@ -115,169 +115,154 @@
       <div class="channelDetail" v-if="channelDetail">
         <div class="shadow"></div>
         <div class="detail">
-          <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">
-            授权信息
-            <img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle">
-          </div>
-          <div class="title1 title" v-if="detailVal.refundModel && detailVal.refundModel.channel != 4">
-            授权信息
-            <img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle">
-          </div>
-          <div class="lists">
-            <div class="list">
-              <span>冻结金额</span>
-              <span>￥{{detailVal.totalFeeStr}}</span>
-            </div>
-            <div class="list">
-              <span>操作人员</span>
-              <span>{{detailVal.founder}}</span>
-            </div>
-            <div class="list">
-              <span>授权通道</span>
-              <span v-if="detailVal.payFlag == 1">微信</span>
-              <span v-else-if="detailVal.payFlag == 2">支付宝</span>
-              <span v-else>微信</span>
-            </div>
+          <div class="detail_content">
+            <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
+            <div class="title1 title" v-if="detailVal.refundModel && detailVal.refundModel.channel != 4"> 授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
+            <div class="lists">
               <div class="list">
-              <span>授权时间</span>
-              <span>{{datetimeparse(detailVal.timeEnd, 'yy/MM/dd hh:mm:ss')}}</span>
+                <span>冻结金额</span>
+                <span>￥{{detailVal.totalFeeStr}}</span>
+              </div>
+              <div class="list">
+                <span>操作人员</span>
+                <span>{{detailVal.founder}}</span>
+              </div>
+              <div class="list">
+                <span>授权通道</span>
+                <span v-if="detailVal.payFlag == 1">微信</span>
+                <span v-else-if="detailVal.payFlag == 2">支付宝</span>
+                <span v-else>微信</span>
+              </div>
+              <div class="list">
+                <span>授权时间</span>
+                <span>{{datetimeparse(detailVal.timeEnd, 'yy/MM/dd hh:mm:ss')}}</span>
+              </div>
+              <div class="list">
+                <span>商户订单号</span>
+                <span>{{detailVal.outTradeNo}}</span>
+              </div>
             </div>
-            <div class="list">
-              <span>商户订单号</span>
-              <span>{{detailVal.outTradeNo}}</span>
+            <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">结算信息</div>
+            <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
+              <div class="list">
+                <span>结算金额</span>
+                <span>￥{{(detailVal.refundModel.totalFee/100).toFixed(2)}}</span>
+              </div>
+              <div class="list">
+                <span>操作人员</span>
+                <span>{{detailVal.refundModel.founder}}</span>
+              </div>
+              <div class="list">
+                <span>结算时间</span>
+                <span>{{detailVal.refundModel.timeEnd}}</span>
+              </div>
+              <div class="list">
+                <span>商户订单号</span>
+                <span>{{detailVal.outTradeNo}}</span>
+              </div>
+            </div>
+            <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">解冻信息</div>
+            <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
+              <div class="list">
+                <span>解冻金额</span>
+                <span>￥{{(detailVal.refundModel.refund_fee/100).toFixed(2)}}</span>
+              </div>
+              <div class="list">
+                <span>操作人员</span>
+                <span>{{detailVal.refundModel.founder}}</span>
+              </div>
+              <div class="list">
+                <span>解冻时间</span>
+                <span>{{detailVal.refundModel.timeEnd}}</span>
+              </div>
+              <div class="list">
+                <span>解冻单号</span>
+                <span>{{detailVal.refundModel.outTradeNo}}</span>
+              </div>
+            </div>
+            <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 6" style="padding: 5px 0"></div>
+            <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 6">
+              <div class="list">
+                <span>授权状态</span>
+                <span class="blue">取消授权</span>
+              </div>
+              <div class="list">
+                <span>操作人员</span>
+                <span>{{detailVal.refundModel.founder}}</span>
+              </div>
+              <div class="list">
+                <span class="list_title">操作时间</span>
+                <span class="list_content">{{detailVal.refundModel.timeEnd}}</span>
+              </div>
+            </div>
+            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel">
+              <span @click="accountCancelSure">取消授权</span>
+              <span @click="accounts">结算</span>
             </div>
           </div>
-          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
-            结算信息
           </div>
-          <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
-            <div class="list">
-              <span>结算金额</span>
-              <span>￥{{(detailVal.refundModel.totalFee/100).toFixed(2)}}</span>
-            </div>
-            <div class="list">
-              <span>操作人员</span>
-              <span>{{detailVal.refundModel.founder}}</span>
-            </div>
-            <div class="list">
-              <span>结算时间</span>
-              <span>{{detailVal.refundModel.timeEnd}}</span>
-            </div>
-            <div class="list">
-              <span>商户订单号</span>
-              <span>{{detailVal.outTradeNo}}</span>
-            </div>
-          </div>
-          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
-            解冻信息
-          </div>
-          <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
-            <div class="list">
-              <span>解冻金额</span>
-              <span>￥{{(detailVal.refundModel.refund_fee/100).toFixed(2)}}</span>
-            </div>
-            <div class="list">
-              <span>操作人员</span>
-              <span>{{detailVal.refundModel.founder}}</span>
-            </div>
-            <div class="list">
-              <span>解冻时间</span>
-              <span>{{detailVal.refundModel.timeEnd}}</span>
-            </div>
-            <div class="list">
-              <span>解冻单号</span>
-              <span>{{detailVal.refundModel.outTradeNo}}</span>
-            </div>
-          </div>
-          <div class="title1 title" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 6" style="padding: 5px 0">
-
-          </div>
-          <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 6">
-            <div class="list">
-              <span>授权状态</span>
-              <span class="blue">取消授权</span>
-            </div>
-            <div class="list">
-              <span>操作人员</span>
-              <span>{{detailVal.refundModel.founder}}</span>
-            </div>
-            <div class="list">
-              <span class="list_title">操作时间</span>
-              <span class="list_content">{{detailVal.refundModel.timeEnd}}</span>
-            </div>
-          </div>
-          <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel">
-            <span @click="accountCancelSure">取消授权</span>
-            <span @click="accounts">结算</span>
-          </div>
-        </div>
       </div>
 
       <!-- 订单详情-->
       <div class="channelDetail" v-if="channelDetail1">
         <div class="shadow"></div>
         <div class="detail">
-          <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">
-            支付信息
-            <img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
-          </div>
-          <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">
-            支付信息
-            <img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
-          </div>
-          <div class="lists">
-            <div class="list">
-              <span>支付金额</span>
-              <span>￥{{detailVal.totalFeeStr}}</span>
+          <div class="detail_content">
+            <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">支付信息<img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;"></div>
+            <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">支付信息<img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
             </div>
-            <div class="list">
-              <span>操作人员</span>
-              <span>{{detailVal.founder}}</span>
+            <div class="lists">
+              <div class="list">
+                <span>支付金额</span>
+                <span>￥{{detailVal.totalFeeStr}}</span>
+              </div>
+              <div class="list">
+                <span>操作人员</span>
+                <span>{{detailVal.founder}}</span>
+              </div>
+              <div class="list">
+                <span>支付通道</span>
+                <span v-if="detailVal.payFlag == 1">微信</span>
+                <span v-else-if="detailVal.payFlag == 2">支付宝</span>
+                <span v-else>微信</span>
+              </div>
+              <div class="list">
+                <span>交易状态</span>
+                <span :class="{'red':detailVal.resultCode=='FAILED'}">{{detailVal.tradeType=='refund'?detailVal.resultCode=='FAILED'?'退款失败':'退款':detailVal.resultCode=='FAILED'?'收款失败':'收款'}}</span>
+              </div>
+              <div class="list">
+                <span>交易时间</span>
+                <span>{{datetimeparse(detailVal.timeEnd, 'yy/MM/dd hh:mm:ss')}}</span>
+              </div>
+              <div class="list">
+                <span>商户订单号</span>
+                <span>{{detailVal.outTradeNo}}</span>
+              </div>
             </div>
-            <div class="list">
-              <span>支付通道</span>
-              <span v-if="detailVal.payFlag == 1">微信</span>
-              <span v-else-if="detailVal.payFlag == 2">支付宝</span>
-              <span v-else>微信</span>
+            <div class="title1 title refundTitle"  v-if="detailVal.refundModel || detailVal.refundModel != null">退款信息</div>
+            <div class="lists"  v-if="detailVal.refundModel || detailVal.refundModel != null">
+              <div class="list">
+                <span>退款金额</span>
+                <span>￥{{detailVal.refundModel.totalFeeStr}}</span>
+              </div>
+              <div class="list">
+                <span>操作人员</span>
+                <span>{{detailVal.refundModel.founder}}</span>
+              </div>
+              <div class="list">
+                <span>退款时间</span>
+                <span>{{detailVal.refundModel.timeEnd}}</span>
+              </div>
+              <div class="list">
+                <span>商户订单号</span>
+                <span>{{detailVal.refundModel.outTradeNo}}</span>
+              </div>
             </div>
-            <div class="list">
-              <span>交易状态</span>
-              <span :class="{'red':detailVal.resultCode=='FAILED'}">{{detailVal.tradeType=='refund'?detailVal.resultCode=='FAILED'?'退款失败':'退款':detailVal.resultCode=='FAILED'?'收款失败':'收款'}}</span>
-            </div>
-            <div class="list">
-              <span>交易时间</span>
-              <span>{{datetimeparse(detailVal.timeEnd, 'yy/MM/dd hh:mm:ss')}}</span>
-            </div>
-            <div class="list">
-              <span>商户订单号</span>
-              <span>{{detailVal.outTradeNo}}</span>
-            </div>
-          </div>
-          <div class="title1 title refundTitle"  v-if="detailVal.refundModel || detailVal.refundModel != null">
-            退款信息
-          </div>
-          <div class="lists"  v-if="detailVal.refundModel || detailVal.refundModel != null">
-            <div class="list">
-              <span>退款金额</span>
-              <span>￥{{detailVal.refundModel.totalFeeStr}}</span>
-            </div>
-            <div class="list">
-              <span>操作人员</span>
-              <span>{{detailVal.refundModel.founder}}</span>
-            </div>
-            <div class="list">
-              <span>退款时间</span>
-              <span>{{detailVal.refundModel.timeEnd}}</span>
-            </div>
-            <div class="list">
-              <span>商户订单号</span>
-              <span>{{detailVal.refundModel.outTradeNo}}</span>
+            <div class="btns" v-if="(!detailVal.refundModel || detailVal.refundModel == null) && (parseFloat(detailVal.refundFeeStr) * 100) != 0">
+              <span class="refund" @click="refund">退款</span>
             </div>
           </div>
-          <div class="btns" v-if="(!detailVal.refundModel || detailVal.refundModel == null) && (parseFloat(detailVal.refundFeeStr) * 100) != 0">
-            <span class="refund" @click="refund">退款</span>
           </div>
-        </div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText" :style="isScreen ? 'width: 100vw' : 'width: calc(100vw - 480px)'"></loadingList>
     </div>
@@ -495,9 +480,9 @@
             if(body.data.code == 0){
               this.detailVal = body.data.data;
               if (channel == 4 || channel == 5 || channel == 6) {
-                document.body.addEventListener('touchmove',this.bodyScroll,false);
-                document.body.style.position = 'fixed';
-                document.body.style.height = '100%';
+//                document.body.addEventListener('touchmove',this.bodyScroll,false);
+//                document.body.style.position = 'fixed';
+//                document.body.style.height = '100%';
                 this.channelDetail = true;
               }else {
                 this.channelDetail1 = true;
@@ -617,9 +602,9 @@
       // 取消弹框
       channelDetailCancle () {
         this.channelDetail = false;
-        document.body.removeEventListener('touchmove',this.bodyScroll,false);
-        document.body.style.position = 'initial';
-        document.body.style.height = 'auto';
+//        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+//        document.body.style.position = 'initial';
+//        document.body.style.height = 'auto';
       },
 
       bodyScroll(event){
@@ -653,13 +638,16 @@
         background-color: #FFFFFF;
         border-radius: 40px;
         box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.1);
-        width: 300px;
+        width: 354px;
         height: 54px;
         margin: 0 30px;
         padding: 0 40px;
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
+        i {
+          margin-top: 5px;
+        }
       }
       .change_item {
         background: #FFFFFF;
@@ -1060,16 +1048,19 @@
       .detail {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
         padding: 0 30px 30px;
         position: fixed;
         z-index: 12;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        max-height: 96vh;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
+        white-space: pre-wrap;
+        .detail_content {
+          width: 960px;
+          max-height: 90vh;
+          overflow-y: scroll;
+          -webkit-overflow-scrolling: touch;
+        }
         .title {
           color: #303133;
           font-size: 30px;
@@ -1148,7 +1139,7 @@
           }
         }
       }
-      .detail::-webkit-scrollbar {
+      .detail_content::-webkit-scrollbar {
         display: none;
       }
     }
@@ -1157,6 +1148,7 @@
   /deep/ .el-date-editor.el-input {
     background-color: #FFFFFF;
     padding-left: 40px;
+    width: 235px;
   }
 
   /deep/ .el-input__icon {
