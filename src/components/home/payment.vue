@@ -1067,7 +1067,7 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        max-height: 90vh;
+        max-height: 96vh;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
         .title {
