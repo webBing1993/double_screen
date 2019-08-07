@@ -150,6 +150,15 @@
         fakaTig: false,   // 发卡提示选择
       }
     },
+    filters: {
+      isToday:function(value) {
+        if (new Date(value).toDateString() === new Date().toDateString()) {
+          return   '(今日)'
+        }else{
+          return '';
+        }
+      }
+    },
     methods: {
       ...mapActions([
         'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime'
