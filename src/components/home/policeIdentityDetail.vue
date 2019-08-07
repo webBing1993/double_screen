@@ -340,18 +340,18 @@
           span {
             font-size: 32px;
             color: #000;
-            margin-right: 30px;
             text-align: left;
           }
           span:first-of-type {
-            width: 212px;
+            width: 250px;
+            margin-right: 15px;
           }
           input {
             border: 1px solid #979797;
             height: 72px;
             line-height: 72px;
             padding-left: 30px;
-            width: 454px;
+            width: 480px;
             font-size: 32px;
             color: #000;
             background-color: #fff;
@@ -369,7 +369,11 @@
           text-align: left;
           margin-bottom: 30px;
           span {
-            width: 212px;
+            width: 250px;
+            display: inline-block;
+          }
+          /deep/ .ivu-icon-ios-close-circle {
+            display: none;
           }
           /deep/ .ivu-date-picker {
             width: 480px;
@@ -461,7 +465,7 @@
               display: flex;
               justify-content: space-between;
               .lists {
-                padding: 56px 26px 0 0;
+                padding: 36px 26px 0 0;
                 width: calc(100% - 222px);
                 .list {
                   display: flex;
