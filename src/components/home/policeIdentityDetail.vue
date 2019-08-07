@@ -12,22 +12,24 @@
         <div class="detail">
           <div class="search">
             <span>房间号：</span>
-            <input type="text" placeholder="请输入房间号" v-model="roomNum">
+            <input type="text" placeholder="请输入房间号" v-model="detail.roomNumber" disabled v-if="!buttonGroupShow">
+            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else>
             <span class="tig" v-if="!roomShow && roomNum != ''">酒店无该房间，请重新输入</span>
+          </div>
+          <div class="outTime">
+            <span>最晚离店时间：</span>
+            <DatePicker
+              type="datetime"
+              format="yyyy/MM/dd HH:mm"
+              placeholder="请选择最晚离店时间"
+              :value="outTime"
+              >
+            </DatePicker>
           </div>
           <div class="time_origin">
             <span>拍照时间：{{datetimeparse(detail.createdTime,'YYYY/MM/DD hh:mm:ss')}}</span>
-            <span>相似度：<i class="blue">{{detail.similarity}}</i></span>
+            <span  v-if="hotelConfig.show_similarity==='true'">相似度：<i class="blue">{{detail.similarity}}</i></span>
           </div>
-          <!--<div class="outTime">-->
-            <!--<span>最晚离店时间：</span>-->
-            <!--<el-date-picker-->
-              <!--v-model="outTime"-->
-              <!--type="datetime"-->
-              <!--value-format="yyyy-MM-dd HH:mm"-->
-              <!--placeholder="选择日期时间">-->
-            <!--</el-date-picker>-->
-          <!--</div>-->
           <div class="detail_content">
             <div class="now_info">
               <img :src="detail.livePhoto" alt="">
@@ -83,10 +85,11 @@
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
+  import {DatePicker} from 'iview'
 
   export default {
     name: 'policeIdentityDetail',
-    components: {ElCol, loadingList},
+    components: {ElCol, loadingList,DatePicker},
     data () {
       return {
         loadingShow: false,  // loading
@@ -101,20 +104,14 @@
         guestType:'LODGER',
         inputRoomNumber: '',  // 获取的房间号
         outTime: '',   // 最晚离店时间
+        inTimeFilter: Date.parse(new Date()),
+        days: 1,
+        buttonGroupShow: false,
+        hotelConfig: {},  // 权限
       }
     },
     watch: {
-      // 区分未处理详情还是已处理详情
-      buttonGroupShow(val){
-        if(val){
-          this.guestType = null;
-        }
-      },
-      guestType(val){
-        if(val == "STAFF") {
-          this.roomNum = '';
-        }
-      },
+
     },
     filters: {
 
@@ -131,26 +128,30 @@
 
       // 键盘事件
       keyEntry(item) {
-        this.roomNum += item;
-        this.roomShow = false;
-        this.roomList.forEach(item=>{
-          if(this.roomNum == item.room_number){
-            this.roomShow = true;
-          }
-          return;
-        });
+        if (this.buttonGroupShow) {
+          this.roomNum += item;
+          this.roomShow = false;
+          this.roomList.forEach(item=>{
+            if(this.roomNum == item.room_number){
+              this.roomShow = true;
+            }
+            return;
+          });
+        }
       },
 
       // 键盘清空事件
       clear (event) {
         event.preventDefault();
-        this.roomNum = '';
-        this.roomShow = false;
+        if (this.buttonGroupShow) {
+          this.roomNum = '';
+          this.roomShow = false;
+        }
       },
 
       // 键盘删除事件
       keyCancel () {
-        if (this.roomNum.length > 0) {
+        if (this.roomNum.length > 0 && this.buttonGroupShow) {
           this.roomNum = this.roomNum.substr(0, this.roomNum.length - 1);
           this.roomShow = false;
           this.roomList.forEach(item=>{
@@ -180,18 +181,36 @@
           onsuccess: body => {
             if (body.errcode == 0) {
               this.detail = body.data.content;
+              this.hotelConfig = body.data.config;
+              this.inTimeFilter = this.detail.reportInTime ? this.detail.reportInTime : Date.parse(new Date());
+              if(!this.detail.outTime || this.detail.outTime==''){
+                let today = new Date().getDate()+1;
+                let tomorrow = new Date(new Date(new Date().setDate(today)).setHours(12)).setMinutes(0);
+                this.outTime = this.datetimeparse(tomorrow,"YYYY/MM/DD hh:mm");
+              }else {
+                this.outTime = this.datetimeparse(this.detail.outTime, 'YYYY/MM/DD hh:mm');
+              }
+              this.days = this.getAll(this.inTimeFilter, Date.parse(this.outTime));
             }
+            this.buttonGroup();
             this.loadingShow = false;
           }
         })
       },
 
+      // 计算两时间戳之间天数
+      getAll(beginTime, endTime) {
+        let totalDay = Math.abs(endTime - beginTime) / 1000;
+        let days = Math.floor(totalDay/3600/24);
+        return days
+      },
+
       // 区分未处理详情还是已处理详情
-      buttonGroupShow(){
+      buttonGroup(){
         if(this.detail.reportInStatus == 'SUCCESS'||this.detail.reportInStatus == 'UNREPORTED'||this.detail.reportInStatus=='PENDING'){
-          return false;
+          this.buttonGroupShow = false;
         }else {
-          return true;
+          this.buttonGroupShow = true;
         }
       },
 
@@ -244,10 +263,10 @@
               roomId: getRoom_id || '',
               mobile:'',
               lvyeReportRecordIds: this.detail.lvyeReportRecordId.split(' '),//旅业上报记录Id
-              roomNumber: this.detail.roomNum,//房间号
-//              nights: +this.days,//入住晚数
-//              inTime: this.inTimeFilter,//入住时间
-//              outTime: Date.parse(this.outTimeFilter)||'',//离店时间
+              roomNumber: this.roomNum,//房间号
+              nights: this.days,//入住晚数
+              inTime: this.inTimeFilter,//入住时间
+              outTime: Date.parse(this.outTime),//离店时间
               guestType:this.guestType,
             },
             onsuccess: (body) => {
@@ -289,7 +308,6 @@
       box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
       margin-left: 40px;
       .bgCheckTop {
-        width: 100vw;
         height: 20px;
         background-color: #DEE7F8;
       }
@@ -297,7 +315,7 @@
         padding-left: 60px;
         text-align: left;
         div {
-          padding: 40px 0;
+          padding: 30px 0;
           display: inline-flex;
           align-items: center;
           img {
@@ -323,20 +341,86 @@
             font-size: 32px;
             color: #000;
             margin-right: 30px;
+            text-align: left;
+          }
+          span:first-of-type {
+            width: 212px;
           }
           input {
             border: 1px solid #979797;
-            height: 88px;
-            line-height: 88px;
+            height: 72px;
+            line-height: 72px;
             padding-left: 30px;
             width: 454px;
             font-size: 32px;
             color: #000;
+            background-color: #fff;
+            outline: none;
           }
           .tig {
             margin-left: 44px;
             font-size: 28px;
             color: #F5222D;
+          }
+        }
+        .outTime {
+          font-size: 32px;
+          color: #000;
+          text-align: left;
+          margin-bottom: 30px;
+          span {
+            width: 212px;
+          }
+          /deep/ .ivu-date-picker {
+            width: 480px;
+            height: 72px;
+          }
+          /deep/ .ivu-input {
+            height: 72px;
+            border: 1px solid #979797;
+            color: #303133;
+            font-size: 32px;
+            padding-left: 30px;
+          }
+          /deep/ .ivu-input-suffix {
+            right: 15px;
+          }
+          /deep/ .ivu-input-suffix i {
+            font-size: 32px;
+            line-height: 72px;
+          }
+          /deep/ .ivu-picker-panel-icon-btn i {
+            font-size: 32px;
+          }
+          /deep/ .ivu-date-picker-cells span {
+            width: 56px;
+            height: 56px;
+            line-height: 56px;
+            text-align: center;
+            margin: 5px 2px 2px 2px;
+          }
+          /deep/ .ivu-date-picker-cells {
+            width: 420px;
+            margin: 28px;
+          }
+          /deep/ .ivu-picker-panel-icon-btn {
+            width: 74px;
+            height: 48px;
+          }
+          /deep/ .ivu-date-picker-header {
+            height: 48px;
+            line-height: 48px;
+          }
+          /deep/ .ivu-btn-small {
+            font-size: 32px;
+          }
+          /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
+            width: 239px;
+            max-height: 546px;
+          }
+          /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
+            padding: 0;
+            text-align: center;
           }
         }
         .time_origin {
@@ -358,8 +442,8 @@
           align-items: center;
           margin-top: 30px;
           .now_info {
-            width: 400px;
-            height: 400px;
+            width: 360px;
+            height: 360px;
             img {
               display: inline-flex;
               width: 100%;
@@ -370,14 +454,14 @@
             margin-left: 60px;
             background: #F2F8FF;
             border-radius: 20px;
-            height: 400px;
+            height: 360px;
             padding: 0 44px 0 58px;
             width: calc(100% - 460px);
             .idCard_info_shang {
               display: flex;
               justify-content: space-between;
               .lists {
-                padding: 56px 30px 0 0;
+                padding: 56px 26px 0 0;
                 width: calc(100% - 222px);
                 .list {
                   display: flex;
@@ -409,8 +493,8 @@
                 }
               }
               .idCard_img {
-                width: 192px;
-                height: 250px;
+                width: 173px;
+                height: 225px;
                 background-color: #fff;
                 margin-top: 56px;
                 img {
@@ -421,7 +505,7 @@
               }
             }
             .idCard_info_xia {
-              margin-top: 30px;
+              margin-top: 27px;
               .list {
                 text-align: left;
                 .title {
@@ -440,7 +524,7 @@
           }
         }
         .btns {
-          margin-top: 50px;
+          margin-top: 40px;
           width: 100%;
           display: flex;
           justify-content: flex-start;
@@ -477,7 +561,6 @@
         top: 50%;
         transform: translate(-50%, -50%);
         width: calc(100% - 66px);
-        padding: 0 33px;
         span {
           background: #D7D7D7;
           border: 1px solid #979797;
@@ -499,7 +582,6 @@
         span:nth-of-type(10) {
           font-size: 38px;
           padding: 11px 0;
-          height: 58px;
           margin-top: 0px;
           line-height: 70px;
         }

@@ -21,7 +21,7 @@
                   <span>身份证：</span>
                   <span>{{idnumber(item.idCard)}}</span>
                 </div>
-                <div class="li">
+                <div class="li"  v-if="hotelConfig.show_similarity==='true'">
                   <span>相似度：</span>
                   <span class="blue">{{item.similarity}}</span>
                 </div>
@@ -105,6 +105,7 @@
         handleList: [],  //代办已处理列表
         showHandledList: true,  // 是否显示已处理
         showPoliceIdentity: false,  // 是否显示模板
+        hotelConfig: {},  // 权限
       }
     },
     filters: {
@@ -135,6 +136,8 @@
       // tab
       changeTabClick(index) {
         this.changeTabString = index;
+        this.showList = false;
+        this.loadingShow = true;
         this.page = 1;
         this.page1 = 1;
         if (index == 1) {
@@ -151,15 +154,17 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        this.showList = false;
         this.loadingShow = true;
         this.page = val;
         this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), val, 1);
       },
       handleCurrentChange1(val) {
         console.log(`当前页: ${val}`);
+        this.showList = false;
         this.loadingShow = true;
         this.page1 = val;
-        this.policeIdentityList(val, 1, 2);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), val, 2);
       },
 
       // 获取列表
@@ -182,6 +187,7 @@
               if (type == 1) {
                 this.total = parseFloat(headers['x-total-count']);
                 this.unhandleList = [ ...body.data.content];
+                this.hotelConfig = body.data.config;
               }else {
                 this.total1 = parseFloat(headers['x-total-count']);
                 this.handleList = [ ...body.data.content];
@@ -199,6 +205,7 @@
       // 立即处理
       unhandleClick (item) {
         item.unhandleLoading = true;
+        sessionStorage.setItem('changeTabString', this.changeTabString);
         this.$emit('gotoDtail', item.lvyeReportRecordId);
       },
 
@@ -209,7 +216,12 @@
       this.getConfig();
       this.page = 1;
       this.page1 = 1;
-      this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+      this.changeTabString = sessionStorage.getItem('changeTabString') ? sessionStorage.getItem('changeTabString') : 1;
+      if (this.changeTabString == 1) {
+        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+      }else {
+        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+      }
     }
   }
 </script>

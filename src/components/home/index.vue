@@ -75,10 +75,13 @@
       tabClick (index) {
         this.tabIndex = index;
         if (index == 1) {
+          sessionStorage.removeItem('changeTabString');
           this.replaceto('/order');
         }else if (index == 2) {
+          sessionStorage.removeItem('changeTabString');
           this.replaceto('/liveIn');
         }else if (index == 3) {
+          sessionStorage.removeItem('changeTabString');
           this.replaceto('/payment');
         }else {
           this.replaceto('/policeIdentity');
@@ -255,7 +258,6 @@
               font-style:normal;
               background-color: #F5222D;
               border-radius: 50%;
-              padding: 3px;
               font-size: 20px;
               color: #fff;
               margin-left: 6px;
