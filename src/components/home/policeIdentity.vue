@@ -45,7 +45,7 @@
           </div>
           <div class="identityList" v-if="showList && changeTabString == 2">
             <div class="list" v-for="item in handleList"  @click="unhandleClick(item)">
-              <div class="list_header">
+              <div class="list_header list_header_">
                 核验时间：{{datetimeparse(item.createdTime, 'yy/MM/dd hh:mm')}}
             </div>
               <div class="list_content">
@@ -453,11 +453,21 @@
               padding: 15px 0;
               font-size: 20px;
               color: #909399;
+              width: 82%;
+            }
+            .list_header_ {
+              width: 100%;
             }
             .list_content {
               position: relative;
+              display: flex;
+              justify-content: space-between;
               .lis {
                 padding: 15px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 76%;
                 .li {
                   margin-bottom: 15px;
                   span {
@@ -466,16 +476,22 @@
                     display: inline-block;
                   }
                   span:first-of-type {
-                    width: 120px;
+                    width: 84px;
                   }
                   .blue {
                     color: #1AAD19;
                   }
                 }
+                .li:first-of-type {
+                  width: 220px;
+                }
+                .li:last-of-type {
+                  width: 186px;
+                }
               }
               .tig_btn {
                 position: absolute;
-                bottom: 20px;
+                bottom: 48px;
                 right: 30px;
                 background-color: #1AAD19;
                 width: 160px;
