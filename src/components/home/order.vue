@@ -9,7 +9,7 @@
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
-              <span>同步订单</span>
+              <span>批量同步</span>
             </div>
             <div class="replayList" @click="replayList">
               <img src="../../assets/tongbu.png" alt="">
