@@ -621,12 +621,12 @@
       }
       .keyBoard2 {
         span {
-          border-radius: 3.6px;
           width: 110px;
           height: 78px;
           line-height: 78px;
           text-align: center;
-          background-color: #D8D8D8;
+          background-color: #f0f0f0;
+          border-radius: 12px;
           font-size: 34px;
           margin: 0 25px 25px 0;
           cursor: pointer;

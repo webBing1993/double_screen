@@ -213,8 +213,8 @@
         display: inline-flex;
         align-items: center;
         img {
-          width: 21px;
-          height: 36px;
+          width: 18px;
+          height: 30px;
           display: inline-flex;
           margin-right: 10px;
         }

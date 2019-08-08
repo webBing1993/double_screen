@@ -75,7 +75,7 @@
         <div>
           <div class="changTabs">
             <span :class="changeTabFr == 1 ? 'active' : ''" @click="changeTabClick(1)">英文</span>
-            <span :class="changeTabFr == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
+            <span :class="changeTabFr == 2 ? 'active' : ''" @click="changeTabClick(2)">数字</span>
           </div>
           <div class="change_tabs">
             <div class="tab" v-if="changeTabFr == 1">
@@ -344,8 +344,8 @@
           display: inline-flex;
           align-items: center;
           img {
-            width: 21px;
-            height: 36px;
+            width: 18px;
+            height: 30px;
             display: inline-flex;
             margin-right: 10px;
           }
@@ -356,7 +356,7 @@
         }
       }
       .detail {
-        padding: 0 30px;
+        padding: 0 50px;
         .search {
           border-top: 1px solid #E5E5E5;
           padding: 30px 0;
@@ -369,7 +369,7 @@
           }
           span:first-of-type {
             width: 250px;
-            margin-right: 16px;
+            margin-right: 14px;
           }
           input {
             border: 1px solid #979797;
@@ -708,12 +708,12 @@
       }
       .keyBoard2 {
         span {
-          border-radius: 3.6px;
           width: 110px;
           height: 78px;
           line-height: 78px;
           text-align: center;
-          background-color: #D8D8D8;
+          background-color: #f0f0f0;
+          border-radius: 12px;
           font-size: 34px;
           margin: 0 25px 25px 0;
           cursor: pointer;
