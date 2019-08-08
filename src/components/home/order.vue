@@ -765,9 +765,9 @@
             }
             .list_content {
               border-bottom: 1px solid #E5E5E5;
-              padding: 20px 0 30px;
+              padding: 20px 0 20px;
               .list_cell {
-                width: 25%;
+                width: 18%;
                 display: inline-flex;
                 text-align: left;
                 .img {
@@ -786,6 +786,9 @@
                     margin-bottom: 5px;
                   }
                 }
+              }
+              .list_cell:nth-of-type(2) {
+                width: 33%;
               }
               .list_cell:last-of-type {
                 width: 48%;
