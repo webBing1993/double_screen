@@ -20,10 +20,10 @@
         <div class="content">
           <div class="order_lists" v-if="showList">
             <div class="list" v-for="item in orderLists">
-              <div class="list_header">
-                <div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>
-                <div class="list_time"></div>
-              </div>
+              <!--<div class="list_header">-->
+                <!--<div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>-->
+                <!--<div class="list_time"></div>-->
+              <!--</div>-->
               <div class="list_content">
                 <div class="list_cell">
                   <div class="img"><img src="../../assets/fangjian.png" alt=""></div>
@@ -45,11 +45,11 @@
                     <p class="name"><span v-for="(i, index) in item.guestList">{{i.name ? i.name + ((index+1) < item.guestList.length ? '/' : '') : '-'}}</span>
                     </p>
                     <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest">添加同住人</div>
-                    <div class="tongbu_status add_status" v-else>添加同住人</div>
+                    <div class="tongbu_status add_status" v-else>人数已满</div>
                   </div>
                 </div>
               </div>
-              <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
+              <!--<div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>-->
             </div>
           </div>
           <el-pagination

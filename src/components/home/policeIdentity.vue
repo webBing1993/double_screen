@@ -34,7 +34,7 @@
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page.sync="page"
-              :page-size="4"
+              :page-size="5"
               layout="total, prev, pager, next"
               :total="total" v-if="unhandleList.length != 0">
             </el-pagination>
@@ -69,7 +69,7 @@
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange1"
               :current-page.sync="page1"
-              :page-size="4"
+              :page-size="5"
               layout="total, prev, pager, next"
               :total="total1" v-if="handleList.length != 0">
             </el-pagination>
@@ -314,8 +314,8 @@
             desc: true,
             name: this.searchString  // 搜索
           },
-          limit: 4,
-          offset: (page-1)*4,
+          limit: 5,
+          offset: (page-1)*5,
           onsuccess: (body, headers) => {
             if (body.errcode == 0 && body.data.content) {
               body.data.content.forEach(item => {
@@ -419,7 +419,7 @@
     .police_fl {
       width: calc(100vw - 480px);
       .doSthContent {
-        margin-top: 100px;
+        padding-top: 100px;
         .changTabs {
           padding: 40px;
           text-align: left;
@@ -440,7 +440,7 @@
           }
         }
         .identityList {
-          padding: 0 40px 115px;
+          padding: 0 40px 0;
           .list {
             padding: 0 30px;
             background: #FFFFFF;

@@ -51,7 +51,7 @@
                       {{room.roomTypeName}} &nbsp; *{{room.count}}间
                     </p>
                   </div>
-                  <div class="tongbu_status" @click="getRefresh(item.id)">同步</div>
+                  <div class="tongbu_status" @click="getRefresh(item.id)" v-if="pmsFlag">同步</div>
                   <div class="banli_status" @click="checkGoIn(item)">办理入住</div>
                 </div>
               </div>
