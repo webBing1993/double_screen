@@ -358,17 +358,23 @@
       // 不发卡
       btnCancel () {
         this.fakaTig = false;
-        this.goAdd();
+        this.goAdd(0);
       },
 
       // 发卡
       btnSure () {
         this.fakaTig = false;
-        this.goAdd();
+        this.goAdd(1);
       },
 
-      goAdd () {
-        this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, this.fakaTig, false, false, true);
+      goAdd (isTrue) {
+        let istrue = null;
+        if (isTrue == 0) {
+            istrue = false;
+        }else {
+            istrue = true;
+        }
+        this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
       },
 
       SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
@@ -399,9 +405,9 @@
     align-items: center;
     .order_fl {
       padding: 0 40px;
-      width: -moz-calc(100% - 560px);
-      width: -webkit-calc(100% - 560px);
-      width: calc(100% - 560px);
+      width: -moz-calc(100% - 480px);
+      width: -webkit-calc(100% - 480px);
+      width: calc(100% - 480px);
       position: relative;
       min-height: calc(100vh - 100px);
       .header {
@@ -481,7 +487,6 @@
             border-radius: 6px;
             margin-top: 20px;
             padding: 0 40px;
-            width: calc(100% - 80px);
             position: relative;
             .list_header {
               border-bottom: 1px solid #D5D5D5;

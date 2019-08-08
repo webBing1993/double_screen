@@ -669,9 +669,9 @@
     align-items: center;
     .order_fl {
       padding: 0 40px;
-      width: -moz-calc(100% - 560px);
-      width: -webkit-calc(100% - 560px);
-      width: calc(100% - 560px);
+      width: -moz-calc(100% - 480px);
+      width: -webkit-calc(100% - 480px);
+      width: calc(100% - 480px);
       position: relative;
       min-height: calc(100vh - 100px);
       .header {
@@ -751,7 +751,6 @@
             border-radius: 6px;
             margin-top: 20px;
             padding: 0 40px;
-            width: calc(100% - 80px);
             position: relative;
             .list_header {
               border-bottom: 1px solid #D5D5D5;

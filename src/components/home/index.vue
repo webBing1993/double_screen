@@ -1,17 +1,17 @@
 <template>
   <div>
-    <div class="homeIndex">
+    <div class="homeIndex" v-show="homeIndexShow">
       <div class="header">
         <div class="header_fl">
           <div class="changeScreen" @click="OpenExternalScreen('OpenExternalScreen')">
             <img src="../../assets/qiehuan.png" alt="">
             <span>切换外屏</span>
           </div>
-          <div class="tabs">
-            <span :class="tabIndex == 1 ? 'tab active' : 'tab'" @click="tabClick(1)">办理入住</span>
-            <span :class="tabIndex == 2 ? 'tab active' : 'tab'" @click="tabClick(2)">在住房间</span>
-            <span :class="tabIndex == 3 ? 'tab active' : 'tab'" @click="tabClick(3)">交易管理</span>
-            <span :class="tabIndex == 4 ? 'tab active' : 'tab'" @click="tabClick(4)">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
+          <div class="tabs" ref="tabs">
+            <span :class="tabIndex == 1 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(1)" data-id="1" v-if="getAllConfigList.qyOrders">办理入住</span>
+            <span :class="tabIndex == 2 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(2)" data-id="2" v-if="getAllConfigList.qyCheckIn">在住房间</span>
+            <span :class="tabIndex == 3 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(3)" data-id="3" v-if="getAllConfigList.isQyPay">交易管理</span>
+            <span :class="tabIndex == 4 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(4)" data-id="4" v-if="getAllConfigList.isRztCheck">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
           </div>
         </div>
         <div class="header_fr">
@@ -54,6 +54,7 @@
     name: 'home',
     data () {
       return {
+        homeIndexShow: false,  // 模板显示隐藏
         tabIndex: 1,  // tab切换
         myInfo: {
           img: sessionStorage.getItem('avatar') ? sessionStorage.getItem('avatar') : require('../../assets/morentouxiang.png'),
@@ -64,11 +65,17 @@
         websock: null,
         timer: null,
         unhandleNum: 0,  // 公安核验数量
+        getAllConfigList: {
+          qyOrders: false,   // 办理入住
+          qyCheckIn: false,  // 在住列表
+          isQyPay: false,     // 交易管理
+          isRztCheck: false, // 公安验证
+        },  // 权限
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList', 'newIdentityList'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'getAllConfig'
       ]),
 
       // tab切换
@@ -156,6 +163,38 @@
         document.title = new Date().getSeconds() + "@" + type;
       },
 
+      getConfigList() {
+        this.getAllConfig({
+          onsuccess: body => {
+            let list=[];
+            if(body.data.data != null) {
+              list = body.data.data[0].subPermissions;
+              list.forEach(item => {
+                if (item.tag == 'qy_orders') {
+                  this.getAllConfigList.qyOrders = true;
+                }else if(item.tag=="qy_checkin"){
+                  this.getAllConfigList.qyCheckIn=true;
+                }else if(item.tag=="qy_pay") {
+                  this.getAllConfigList.isQyPay=true;
+                }else if(item.tag=="qy_rzt") {
+                  item.subPermissions.forEach(i => {
+                    if (i.tag == 'qy_rzt_check') {
+                      this.getAllConfigList.isRztCheck = true;
+                      this.unhandleList();
+                    }
+                  });
+                }
+              })
+            }else {
+              for(let item in this.getAllConfigList){
+                this.getAllConfigList[item] = true;
+              }
+            }
+            this.homeIndexShow = true;
+          }
+        });
+      },
+
       //初始化weosocket
       initWebSocket(){
         //ws地址
@@ -192,13 +231,17 @@
     },
 
     mounted () {
-      this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : 1);
+      this.getConfigList();
+      setTimeout(() => {
+        let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
+        console.log(dataId.value);
+        this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+      },1000);
       this.doSthList();
-      this.unhandleList();
       this.initWebSocket();
       this.timer = setInterval(() => {
-//        this.websocketsend(88888);
-      },1500)
+        this.websocketsend(88888);
+      },1500);
     },
   }
 </script>
@@ -231,6 +274,7 @@
           display: flex;
           align-items: center;
           margin-right: 60px;
+          line-height: 1;
           img {
             display: inline-block;
             width: 24px;
@@ -242,6 +286,9 @@
             color: #fff;
             font-family: "Microsoft Himalaya";
           }
+        }
+        .changeScreen * {
+          vertical-align:middle;
         }
         .tabs {
           height: 100%;

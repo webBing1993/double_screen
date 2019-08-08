@@ -668,12 +668,12 @@
       }
     }
     .paymentAll {
-      width: 100vw;
+      width: 100%;
     }
     .paymentLists {
-      width: -moz-calc(100% - 560px);
-      width: -webkit-calc(100% - 560px);
-      width: calc(100% - 560px);
+      width: -moz-calc(100% - 480px);
+      width: -webkit-calc(100% - 480px);
+      width: calc(100% - 480px);
       padding: 0 40px 115px;
       .list {
         padding: 0 40px;

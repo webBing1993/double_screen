@@ -34,7 +34,7 @@ const actions = {
 
   request: (ctx, param) => {
     axios({
-      url: httpTool.httpUrlEnv() + 'ecard-wechat' + param.url,
+      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: {
@@ -70,7 +70,7 @@ const actions = {
   resource: (ctx, param) => {
     // openFullScreen();
     axios({
-      url: httpTool.httpUrlEnv() + 'ecard-wechat' + param.url,
+      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -114,7 +114,7 @@ const actions = {
   resource_: (ctx, param) => {
     // openFullScreen();
     axios({
-      url: httpTool.httpUrlEnv() + 'ecard-wechat' + param.url,
+      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -224,6 +224,17 @@ const actions = {
       },
       onFail: body => {
         param.onfail ? param.onfail(body) : null
+      }
+    })
+  },
+
+  // 首页权限
+  getAllConfig(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/permission/getByUserId',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
       }
     })
   },
