@@ -10,9 +10,9 @@
       </div>
       <div class="checkInChange">
         <div class="checkIn_header">
-          <div class="order_origin">
-            订单来源：{{changeItem.sourceId ? changeItem.sourceId : '-'}}
-          </div>
+          <!--<div class="order_origin">-->
+            <!--订单来源：{{changeItem.sourceId ? changeItem.sourceId : '-'}}-->
+          <!--</div>-->
           <div class="order_info">
             <div class="order_person">
               <img src="../../assets/renyuan.png" alt="">
@@ -195,7 +195,7 @@
 
   .checkIn {
     background-color: #fff;
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 28px);
     width: calc(100vw - 80px);
     padding-top: 100px;
     margin-left: 40px;

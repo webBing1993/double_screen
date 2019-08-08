@@ -56,7 +56,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="4"
+            :page-size="5"
             layout="total, prev, pager, next"
             :total="total" v-if="orderLists.length != 0 && showList_">
           </el-pagination>
@@ -310,7 +310,7 @@
             start:"",
             end:"",
             page: page,
-            pageSize: 4,
+            pageSize: 5,
             statusList:'4',
             orderByClause: this.orderByFiled||'',
             checkInStatus:'CHECKIN',

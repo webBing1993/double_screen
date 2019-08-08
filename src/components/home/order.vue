@@ -767,7 +767,7 @@
               border-bottom: 1px solid #E5E5E5;
               padding: 20px 0 20px;
               .list_cell {
-                width: 18%;
+                width: 19%;
                 display: inline-flex;
                 text-align: left;
                 .img {
@@ -788,7 +788,8 @@
                 }
               }
               .list_cell:nth-of-type(2) {
-                width: 33%;
+                width: 30%;
+                margin-left: 20px;
               }
               .list_cell:last-of-type {
                 width: 48%;
@@ -798,7 +799,7 @@
             .remark {
               color: rgba(0, 0, 0, 1);
               font-size: 20px;
-              padding: 10px 0;
+              padding: 20px 0;
               text-align: left;
             }
             .tongbu_status {
