@@ -86,7 +86,7 @@ const actions = {
     }).then(response => {
       console.log("response",response);
       // closeFullScreen (openFullScreen());
-      if (response.data.code == 0 || response.data.errcode == 0 || response.body.code === 888000) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {

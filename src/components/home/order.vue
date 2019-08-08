@@ -464,6 +464,7 @@
       // 请先将团队主单入住后才能操作 我知道了
       tigTeamKnow() {
         this.tigTeamShow = false;
+        sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
         this.$emit('gocheckIn', this.changeItem.id);
       },
 
