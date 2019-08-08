@@ -170,19 +170,15 @@
             if(body.data.data != null) {
               list = body.data.data[0].subPermissions;
               list.forEach(item => {
-                if (item.tag == 'qy_orders') {
+                if (item.tag == 'sp_checkin') {
                   this.getAllConfigList.qyOrders = true;
-                }else if(item.tag=="qy_checkin"){
+                }else if(item.tag=="sp_inroom"){
                   this.getAllConfigList.qyCheckIn=true;
-                }else if(item.tag=="qy_pay") {
+                }else if(item.tag=="sp_trade") {
                   this.getAllConfigList.isQyPay=true;
-                }else if(item.tag=="qy_rzt") {
-                  item.subPermissions.forEach(i => {
-                    if (i.tag == 'qy_rzt_check') {
-                      this.getAllConfigList.isRztCheck = true;
-                      this.unhandleList();
-                    }
-                  });
+                }else if(item.tag=="sp_check") {
+                  this.getAllConfigList.isRztCheck = true;
+                  this.unhandleList();
                 }
               })
             }else {
@@ -285,6 +281,7 @@
             font-size: 26px;
             color: #fff;
             font-family: "Microsoft Himalaya";
+            margin-top: 10px;
           }
         }
         .changeScreen * {

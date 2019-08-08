@@ -21,7 +21,7 @@
           <div class="order_lists" v-if="showList">
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
-                <div class="list_origin">订单来源：{{item.sourceId ? item.sourceId : '-'}}</div>
+                <div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>
                 <div class="list_time"></div>
               </div>
               <div class="list_content">
@@ -485,7 +485,7 @@
             background: #FFFFFF;
             box-shadow: 0 4px 11px 0 rgba(0,0,0,0.10);
             border-radius: 6px;
-            margin-top: 20px;
+            margin-bottom: 20px;
             padding: 0 40px;
             position: relative;
             .list_header {
@@ -493,10 +493,10 @@
               display: flex;
               align-items: center;
               justify-content: space-between;
-              padding: 30px 0 20px;
+              padding: 15px 0 15px;
               div {
                 color: #909399;
-                font-size: 24px;
+                font-size: 20px;
               }
             }
             .list_content {
@@ -533,7 +533,7 @@
             }
             .remark {
               color: rgba(0, 0, 0, 1);
-              font-size: 16px;
+              font-size: 20px;
               padding: 10px 0;
               text-align: left;
             }

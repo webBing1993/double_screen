@@ -5,7 +5,7 @@
         <div class="bgCheckTop"></div>
         <div class="goback">
           <div @click="gobanck">
-            <img src="../../assets/fanhui2.png" alt="">
+            <img src="../../assets/fanhui1.png" alt="">
             <span>返回</span>
           </div>
         </div>
@@ -28,7 +28,7 @@
           </div>
           <div class="time_origin">
             <span>拍照时间：{{datetimeparse(detail.createdTime,'YYYY/MM/DD hh:mm:ss')}}</span>
-            <span  v-if="hotelConfig.show_similarity==='true'">相似度：<i class="blue">{{detail.similarity}}</i></span>
+            <span  v-if="hotelConfig.show_similarity==='true'">相似度：<i class="blue">{{detail.similarity}}%</i></span>
           </div>
           <div class="detail_content">
             <div class="now_info">
@@ -72,9 +72,25 @@
         </div>
       </div>
       <div class="detail_fr" v-if="!loadingShow">
-        <div class="keyBoard">
-          <span v-for="item in keyBords" @click="item == '清除' ? clear($event) : keyEntry(item)">{{item}}</span>
-          <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
+        <div>
+          <div class="changTabs">
+            <span :class="changeTabFr == 1 ? 'active' : ''" @click="changeTabClick(1)">英文</span>
+            <span :class="changeTabFr == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
+          </div>
+          <div class="change_tabs">
+            <div class="tab" v-if="changeTabFr == 1">
+              <div class="keyBoard">
+                <span v-for="item in keyBords1" @click="keyEntry($event, item)">{{item}}</span>
+                <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
+              </div>
+            </div>
+            <div class="tab" v-else>
+              <div class="keyBoard2">
+                <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item)">{{item}}</span>
+                <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
@@ -98,7 +114,9 @@
         loadingCheckIn: false,  // 上传旅业loading
         loadingRefund: false,  // 拒绝loading
         roomNum: '',  // 房间号
-        keyBords: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],   // 数字键盘
+        changeTabFr: 1,  // 右侧筛选tab切换
+        keyBords1: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K','L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],     // 字母键盘
+        keyBords2: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],   // 数字键盘
         roomList: [],  // 酒店房间所有的列表
         detail: {},   // 详情
         guestType:'LODGER',
@@ -126,8 +144,15 @@
         this.$router.go(-1);
       },
 
-      // 键盘事件
-      keyEntry(item) {
+
+      // 右侧筛选tab切换
+      changeTabClick(index) {
+        this.changeTabFr = index;
+      },
+
+      // 字母键盘事件
+      keyEntry(event, item) {
+        event.preventDefault();
         if (this.buttonGroupShow) {
           this.roomNum += item;
           this.roomShow = false;
@@ -315,7 +340,7 @@
         padding-left: 60px;
         text-align: left;
         div {
-          padding: 30px 0;
+          padding: 24px 0;
           display: inline-flex;
           align-items: center;
           img {
@@ -325,8 +350,8 @@
             margin-right: 10px;
           }
           span {
-            color: #000;
-            font-size: 36px;
+            color: #1AAD19;
+            font-size: 30px;
           }
         }
       }
@@ -338,13 +363,13 @@
           display: flex;
           align-items: center;
           span {
-            font-size: 32px;
+            font-size: 30px;
             color: #000;
             text-align: left;
           }
           span:first-of-type {
             width: 250px;
-            margin-right: 15px;
+            margin-right: 16px;
           }
           input {
             border: 1px solid #979797;
@@ -352,7 +377,7 @@
             line-height: 72px;
             padding-left: 30px;
             width: 480px;
-            font-size: 32px;
+            font-size: 30px;
             color: #000;
             background-color: #fff;
             outline: none;
@@ -364,7 +389,7 @@
           }
         }
         .outTime {
-          font-size: 32px;
+          font-size: 30px;
           color: #000;
           text-align: left;
           margin-bottom: 30px;
@@ -383,11 +408,11 @@
             height: 72px;
             border: 1px solid #979797;
             color: #303133;
-            font-size: 32px;
+            font-size: 30px;
             padding-left: 30px;
           }
           /deep/ .ivu-input-suffix {
-            right: 15px;
+            display: none;
           }
           /deep/ .ivu-input-suffix i {
             font-size: 32px;
@@ -446,8 +471,8 @@
           align-items: center;
           margin-top: 30px;
           .now_info {
-            width: 360px;
-            height: 360px;
+            width: 320px;
+            height: 320px;
             img {
               display: inline-flex;
               width: 100%;
@@ -458,27 +483,27 @@
             margin-left: 60px;
             background: #F2F8FF;
             border-radius: 20px;
-            height: 360px;
-            padding: 0 44px 0 58px;
-            width: calc(100% - 460px);
+            height: 320px;
+            padding: 0 44px 0 46px;
+            width: 514px;
             .idCard_info_shang {
               display: flex;
               justify-content: space-between;
               .lists {
                 padding: 36px 26px 0 0;
-                width: calc(100% - 222px);
+                width: calc(100% - 154px);
                 .list {
                   display: flex;
                   align-items: center;
-                  margin-bottom: 26px;
+                  margin-bottom: 18px;
                   text-align: left;
                   .title {
-                    font-size: 22px;
+                    font-size: 18px;
                     color: #000000;
                     opacity: 0.4;
                   }
                   .content {
-                    font-size: 28px;
+                    font-size: 18px;
                     color: #000000;
                     opacity: .8;
                     margin: 0 27px 0 25px;
@@ -497,10 +522,10 @@
                 }
               }
               .idCard_img {
-                width: 173px;
-                height: 225px;
+                width: 154px;
+                height: 200px;
                 background-color: #fff;
-                margin-top: 56px;
+                margin-top: 36px;
                 img {
                   display: block;
                   width: 100%;
@@ -509,16 +534,16 @@
               }
             }
             .idCard_info_xia {
-              margin-top: 27px;
+              margin-top: 20px;
               .list {
                 text-align: left;
                 .title {
-                  font-size: 22px;
+                  font-size: 18px;
                   color: #000000;
                   opacity: .4;
                 }
                 .content {
-                  font-size: 26px;
+                  font-size: 18px;
                   color: #000000;
                   opacity: .8;
                   margin-left: 35px;
@@ -533,10 +558,10 @@
           display: flex;
           justify-content: flex-start;
           .tig_btn {
-            margin-right: 98px;
-            width: 480px;
-            height: 98px;
-            font-size: 34px;
+            margin-right: 80px;
+            width: 390px;
+            height: 80px;
+            font-size: 28px;
             color: #fff;
             border-radius: 49px;
             border: none;
@@ -557,39 +582,171 @@
     .detail_fr {
       width: 480px;
       background-color: #fff;
-      min-height: calc(100vh - 120px);
-      position: relative;
-      .keyBoard {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: calc(100% - 66px);
+      .fast_title {
+        position: relative;
+        margin: 40px 0;
+        font-size: 28px;
+        color: #303133;
+        text-align: center;
+        font-weight: bold;
+        img {
+          position: absolute;
+          left: 30px;
+          top: 9px;
+          width: calc(100% - 60px);
+        }
+      }
+      .changTabs {
+        border-bottom: 1px solid #D8D8D8;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
         span {
-          background: #D7D7D7;
-          border: 1px solid #979797;
-          border-radius: 3.6px;
-          color: #0B0B0B;
-          font-weight: bold;
-          font-size: 58px;
+          padding: 52px 0 10px;
           display: inline-block;
-          width: 115px;
-          height: 80px;
-          line-height: 80px;
+          position: relative;
+          color: #909399;
+          font-size: 24px;
+          cursor: pointer;
+          font-weight: bold;
+        }
+        span.active {
+          color: #1AAD19;
+        }
+        span.active:after {
+          content: '';
+          display: block;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #1AAD19;
+        }
+      }
+      .change_tabs {
+        padding: 40px 15px 0;
+        .tab {
+          .input {
+            padding: 30px 0;
+            position: relative;
+            input {
+              border: 1px solid #9A9A9A;
+              border-radius: 44px;
+              padding-left: 30px;
+              font-size: 20px;
+              color: #333;
+              height: 64px;
+              line-height: 64px;
+              width: calc(100% - 30px);
+              outline: none;
+            }
+            input:-moz-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            input:-ms-input-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            input::-moz-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            input::-webkit-input-placeholder {
+              font-size: 20px;
+              color: #606266;
+            }
+            img {
+              position: absolute;
+              right: 20px;
+              top: 50%;
+              display: inline-block;
+              width: 40px;
+              height: 40px;
+              transform: translateY(-50%);
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      .keyBoard {
+        span {
+          display: inline-block;
+          border: 1px solid #dcdcdc;
+          background-color: #f0f0f0;
+          border-radius: 12px;
+          width: 78px;
+          height: 56px;
+          font-size: 36px;
+          line-height: 56px;
           text-align: center;
-          margin-right: 27px;
-          margin-bottom: 27px;
+          font-weight: bold;
+          margin: 0 42px 22px 0;
+          cursor: pointer;
+          -moz-user-select:none;
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          user-select: none;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        span:nth-of-type(4n) {
+          margin-right: 0;
+        }
+        span:last-of-type {
+          width: 194px;
+          margin-right: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            width: 50px;
+            height: 28px;
+            display: inline-block;
+          }
+        }
+      }
+      .keyBoard2 {
+        span {
+          border-radius: 3.6px;
+          width: 110px;
+          height: 78px;
+          line-height: 78px;
+          text-align: center;
+          background-color: #D8D8D8;
+          font-size: 34px;
+          margin: 0 25px 25px 0;
+          cursor: pointer;
+          display: inline-block;
+          font-weight: bold;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         }
         span:nth-of-type(3n) {
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 38px;
-          padding: 11px 0;
-          margin-top: 0px;
-          line-height: 70px;
+          font-size: 28px;
+          color: #EC8B2F;
+        }
+        span:last-of-type {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            width: 50px;
+            height: 28px;
+            display: inline-block;
+          }
         }
       }
+    }
+    .detail_fr>div {
+      position: fixed;
+      top: 100px;
+      right: 0;
+      width: 480px;
+      height: calc(100vh - 100px);
+      background-color: #fff;
     }
   }
 

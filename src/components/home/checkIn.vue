@@ -209,7 +209,7 @@
       padding-left: 60px;
       text-align: left;
       div {
-        padding: 40px 0;
+        padding: 24px 0;
         display: inline-flex;
         align-items: center;
         img {
@@ -220,7 +220,7 @@
         }
         span {
           color: #1AAD19;
-          font-size: 36px;
+          font-size: 30px;
         }
       }
     }
@@ -309,11 +309,12 @@
         }
         .btns {
           margin-top: 110px;
+          text-align: left;
           /deep/ button {
-            width: 480px;
-            height: 98px;
+            width: 390px;
+            height: 80px;
             border-radius: 50px;
-            font-size: 34px;
+            font-size: 28px;
             color: #fff;
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
           }
