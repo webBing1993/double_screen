@@ -148,6 +148,8 @@
         searchString1: '',  // 字母搜索
         searchString2: '',  // 数字搜索
         timer: null,
+        todayStart: '',  // 今日起始时间
+        todayEnd: '',    // 今日结束时间
       }
     },
     filters: {
@@ -184,10 +186,10 @@
         this.page1 = 1;
         if (index == 1) {
           this.total1 = 0;
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
         }else {
           this.total = 0;
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
         }
       },
 
@@ -209,9 +211,9 @@
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
             if (this.changeTabString == 1) {
-              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
             }
           }
         }else {
@@ -219,9 +221,9 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             if (this.changeTabString == 1) {
-              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
             }
           }
         }
@@ -233,9 +235,9 @@
         this.searchString2 = '';
         this.searchString = '';
         if (this.changeTabString == 1) {
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
         }
       },
 
@@ -247,18 +249,18 @@
           this.searchString1 += item;
           this.searchString = this.searchString1;
           if (this.changeTabString == 1) {
-            this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+            this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
           }else {
-            this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+            this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
           }
         }else {
           this.searchString2 += item;
           this.searchString = this.searchString2;
           this.timer = setTimeout(() => {
             if (this.changeTabString == 1) {
-              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
             }
           },1500)
         }
@@ -269,18 +271,18 @@
         this.searchString1 = '';
         this.searchString = this.searchString1;
         if (this.changeTabString == 1) {
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
         }
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
         if (this.changeTabString == 1) {
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
         }
       },
 
@@ -294,22 +296,22 @@
         this.showList = false;
         this.loadingShow = true;
         this.page = val;
-        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), val, 1);
+        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', val, 1);
       },
       handleCurrentChange1(val) {
         console.log(`当前页: ${val}`);
         this.showList = false;
         this.loadingShow = true;
         this.page1 = val;
-        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), val, 2);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, val, 2);
       },
 
       // 获取列表
-      policeIdentityList(reportInStatuses, page, type) {
+      policeIdentityList(reportInStatuses, startTime, endTime, page, type) {
         this.newIdentityList ({
           data: {
-            createTimeStart: '',
-            createTimeEnd: '',
+            createTimeStart: startTime,
+            createTimeEnd: endTime,
             reportInStatuses: JSON.parse(reportInStatuses),//需要的入住上报旅业状态
             desc: true,
             name: this.searchString  // 搜索
@@ -354,10 +356,12 @@
       this.page = 1;
       this.page1 = 1;
       this.changeTabString = sessionStorage.getItem('changeTabString') ? sessionStorage.getItem('changeTabString') : 1;
+      this.todayStart = this.timeFetch().todayStart;
+      this.todayEnd = this.timeFetch().todayEnd;
       if (this.changeTabString == 1) {
-        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), this.page, 1);
+        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
       }else {
-        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.page1, 2);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
       }
     }
   }
