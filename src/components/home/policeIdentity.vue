@@ -443,7 +443,7 @@
           padding: 40px;
           text-align: left;
           span {
-            padding: 15px 30px;
+            padding: 18px 30px;
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.1);
             border-radius: 40px;
@@ -454,8 +454,9 @@
             cursor: pointer;
           }
           span.active {
-            color: #1AAD19;
+            background-color: #C8E1C8;
             border: 1px solid #1AAD19;
+            color: #1AAD19;
           }
         }
         .identityList {
@@ -514,7 +515,7 @@
                 right: 30px;
                 background-color: #1AAD19;
                 width: 160px;
-                padding: 15px 0;
+                padding: 17px 0;
                 border-radius: 32px;
                 text-align: center;
                 box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);

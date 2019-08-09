@@ -22,7 +22,7 @@
             <div class="order_remark">备注：{{changeItem.remark ? changeItem.remark : '-'}}</div>
           </div>
         </div>
-        <div class="checkIn_content">
+        <div class="checkIn_content" v-if="changeItem.type == 0">
           <div class="lists">
             <div class="list">
               <div class="title">是否发卡：</div>
@@ -75,6 +75,51 @@
             <el-button type="primary" round :loading="loadingSure" @click="checkIn()">开始办理</el-button>
           </div>
         </div>
+        <div class="checkIn_content checkIn_content_" v-else>
+          <div class="lists">
+            <div class="list">
+              <div class="title"><span>总房费：</span><span>300元</span></div>
+              <div class="changeItem">
+                <div class="item_tab" @click="payModeChange(1)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>当面付</span>
+                </div>
+                <div class="item_tab" @click="payModeChange(2)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>已预付</span>
+                </div>
+                <div class="item_tab" @click="payModeChange(3)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>挂账</span>
+                </div>
+              </div>
+            </div>
+            <div class="list">
+              <div class="title"><span>押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
+              <div class="changeItem">
+                <div class="item_tab" @click="changeFreeDeposit(1)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>免押金</span>
+                </div>
+                <div class="item_tab" @click="changeFreeDeposit(2)"  v-if="!cashFeeTrue">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>收押金</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="btns">
+            <el-button type="danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
+            <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
+            <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
+            <el-button type="primary" class="tig_info" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
+          </div>
+        </div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
@@ -98,11 +143,16 @@
         loadingSure: false,  // 办理入住按钮加载状态
         changeItem: '',   // 临时数据
         checkInShow: false,  // 模块显示隐藏
+        roomFeeShow: 0,  // 总房费
+        paidFeeShow: 0,  // 已付房费
+        cashFee: 0,      // 押金
+        cashFeeTrue: false,  // 判断是否有无押金配置
+        payMode: 0,  // 判断房费支付状态
       }
     },
     methods: {
       ...mapActions([
-         'checkInGetOptions', 'checkInPostOptions'
+         'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode'
       ]),
 
       // 返回上一页
@@ -133,26 +183,64 @@
         }
       },
 
+      // 房费更改
+      payModeChange(index) {
+        this.payMode = index;
+      },
+
+      // 选择是否免押金
+      changeFreeDeposit(num) {
+        if (num == 1) {
+          this.changeItem.isFreeDeposit = true;
+        }else {
+          this.changeItem.isFreeDeposit = false;
+        }
+      },
+
       // 开始办理
       checkIn() {
         this.loadingSure = true;
-        this.checkInPostOptions({
-          orderId: this.$route.params.id,
-          data: {
-            sendCard: this.isfaka,
-            printRc: this.isrcpdf,
-            needPhoneNum: this.isphone,
-            hotelId: sessionStorage.hotel_id
-          },
-          onsuccess: body => {
-            if (body.data.code == 0) {
-              this.SendTeamOrderMessage(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
+        if (this.changeItem.type == 0) {
+          this.checkInPostOptions({
+            orderId: this.$route.params.id,
+            data: {
+              sendCard: this.isfaka,
+              printRc: this.isrcpdf,
+              needPhoneNum: this.isphone,
+              hotelId: sessionStorage.hotel_id
+            },
+            onsuccess: body => {
+              if (body.data.code == 0) {
+                this.SendTeamOrderMessage(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
+              }
+              this.loadingSure = false;
+              this.gobanck();
+            },onfail: body => {
+              this.loadingSure = false;
             }
-            this.loadingSure = false;
-          },onfail: body => {
-            this.loadingSure = false;
-          }
-        });
+          });
+        }else {
+          this.updatePaidMode({
+            orderId: this.changeItem.id,
+            isFreeDeposit: this.changeItem.isFreeDeposit,
+            modeId: this.payMode,
+            onsuccess: body => {
+              this.loadingShow = false;
+              if (body.data.code == 0) {
+                this.loadingSure = false;
+                this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'');
+                this.gobanck();
+              }
+            },
+            onfail: (body, headers) => {
+              this.loadingSure = false;
+            }
+          });
+        }
+      },
+
+      OpenExternalScreen(type) {
+        document.title = new Date().getSeconds() + "@" + type;
       },
 
       SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
@@ -180,12 +268,56 @@
           })
       },
 
+      // 散客
+      getOrderFreeList() {
+        this.getOrderFree({
+          data: {
+            orderId: this.changeItem.id
+          },
+          onsuccess: body => {
+            console.log('body.code',body.data);
+            if (body.data.code == 0) {
+              this.loadingShow = false;
+              if (body.data.data.cashFeeShow == '免押') {
+                this.cashFee = 0;
+                this.cashFeeTrue = true;
+              }else {
+                this.cashFeeTrue = false;
+                this.cashFee = body.data.data.cashFeeShow;
+              }
+              if (body.data.data.roomFeeShow == '预付房费') {
+                if (body.data.data.cashFeeShow == '免押') {
+                  this.roomFeeShow = body.data.data.totalFeeShow;
+                }else {
+                  this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                }
+              }else {
+                this.roomFeeShow = body.data.data.roomFeeShow;
+              }
+              this.payMode = body.data.data.payMode;
+              this.checkInShow = true;
+            }else {
+              this.checkInShow = true;
+              this.loadingShow = false;
+            }
+          },
+          onfail: (body, headers) => {
+            this.checkInShow = true;
+            this.loadingShow = false;
+          }
+        });
+      },
+
     },
 
     mounted () {
       this.loadingShow = true;
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
-      this.getCheckList();
+      if (this.changeItem.type == 0) {
+        this.getCheckList();
+      }else {
+        this.getOrderFreeList();
+      }
     },
   }
 </script>
@@ -264,6 +396,7 @@
       .checkIn_content {
         padding: 40px 60px;
         .lists {
+          margin-bottom: 200px;
           .list {
             display: flex;
             align-items: center;
@@ -275,6 +408,13 @@
               text-shadow: 0 2px 3px rgba(0,0,0,0.04);
               width: 358px;
               text-align: left;
+              span:first-of-type {
+                width: 150px;
+                display: inline-block;
+              }
+              span:last-of-type {
+                color: #F55825;
+              }
             }
             .changeItem {
               display: inline-flex;
@@ -327,6 +467,15 @@
           /deep/ .el-button--primary {
             background-color: #1AAD19;
           }
+          .tig_info {
+            background-color: #d7d7d7;
+            color: #a4a4a4;
+          }
+        }
+      }
+      .checkIn_content_ {
+        .lists {
+          margin-bottom: 300px;
         }
       }
     }

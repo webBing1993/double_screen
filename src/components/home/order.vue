@@ -392,7 +392,9 @@
                           this.payMode = body.data.data.payMode;
                           this.ispaid = body.data.data.paid;
                           if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
-                            this.teamTig = true;
+//                            this.teamTig = true;
+                            sessionStorage.setItem('changeItem', JSON.stringify(item));
+                            this.$emit('gocheckIn', item.id);
                           }else {
                             this.page = 1;
                             this.getPreOrder(1);
@@ -645,8 +647,8 @@
       if(!this.$route.meta.isBack){
         this.getPreOrder(1);
       }else {
-        this.tabIndex = sessionStorage.getItem('tabIndex_') ? sessionStorage.getItem('tabIndex_') : 1;
-        this.getPreOrder(sessionStorage.getItem('currentChange') ? sessionStorage.getItem('currentChange') : 1);
+        this.tabIndex = sessionStorage.getItem('tabIndex_') != null ? sessionStorage.getItem('tabIndex_') : 1;
+        this.getPreOrder(sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1);
       }
       this.$route.meta.isBack = false;
     },
@@ -682,7 +684,7 @@
         .tabs {
           padding: 40px 0;
           .tab {
-            padding: 15px 30px;
+            padding: 18px 30px;
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
@@ -703,8 +705,10 @@
         .synchronism, .replayList {
           display: inline-flex;
           align-items: center;
-          padding: 10px 30px;
-          line-height: 36px;
+          justify-content: center;
+          width: 146px;
+          height: 56px;
+          line-height: 56px;
           margin-left: 30px;
           background: #FFFFFF;
           box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
@@ -805,13 +809,13 @@
             }
             .tongbu_status {
               position: absolute;
-              right: 180px;
+              right: 164px;
               top: 0;
               background: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
-              width: 160px;
-              padding: 15px 0;
+              width: 146px;
+              padding: 13px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
@@ -825,8 +829,8 @@
               background: #1AAD19;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
-              width: 160px;
-              padding: 15px 0;
+              width: 146px;
+              padding: 13px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;

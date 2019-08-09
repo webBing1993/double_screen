@@ -639,7 +639,7 @@
         border-radius: 40px;
         box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.1);
         width: 354px;
-        height: 54px;
+        height: 56px;
         margin: 0 30px;
         padding: 0 40px;
         display: inline-flex;
@@ -656,8 +656,8 @@
         background: #FFFFFF;
         box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
         border-radius: 40px;
-        height: 54px;
-        line-height: 54px;
+        height: 56px;
+        line-height: 56px;
         padding: 0 40px;
         margin-right: 30px;
         display: inline-block;
@@ -1164,9 +1164,9 @@
   }
 
   /deep/ .el-input--prefix .el-input__inner {
-    line-height: 54px;
+    line-height: 56px;
     font-size: 24px;
-    height: 54px;
+    height: 56px;
     border: none;
   }
 

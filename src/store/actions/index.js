@@ -365,6 +365,20 @@ const actions = {
     })
   },
 
+  // 添加入住人判断是否满住
+  guestCount(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/subOrder/'+param.subOrderId+'/guestCount',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
   // 退款
   reimburse(ctx,param){
     ctx.dispatch('resource', {

@@ -267,7 +267,36 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-
+            let getRoom_id='';
+            let room = this.detail.roomNum;
+            this.roomList.forEach(item=>{
+              if(room == item.room_number){
+                getRoom_id= item.room_id;
+              }
+              return;
+            });
+            this.reportLvYe({
+              data:{
+                roomId: getRoom_id || '',
+                mobile:'',
+                lvyeReportRecordIds: this.detail.lvyeReportRecordId.split(' '),//旅业上报记录Id
+                roomNumber: this.roomNum,//房间号
+                nights: this.days,//入住晚数
+                inTime: this.inTimeFilter,//入住时间
+                outTime: Date.parse(this.outTime),//离店时间
+                guestType:this.guestType,
+              },
+              onsuccess: (body) => {
+                if (body.errcode == 0) {
+                  this.$message({
+                    type: 'success',
+                    message: '旅业上传成功'
+                  });
+                  this.$emit('getMessage', this.$route.params.id);
+                  this.gobanck();
+                }
+              }
+            })
           }).catch(() => {
             this.$message({
               type: 'info',
@@ -577,6 +606,9 @@
             color: #a4a4a4;
           }
         }
+      }
+      /deep/ .el-message-box__message p {
+        font-size: 20px;
       }
     }
     .detail_fr {

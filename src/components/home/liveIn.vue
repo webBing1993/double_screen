@@ -161,7 +161,7 @@
     },
     methods: {
       ...mapActions([
-        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime'
+        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount'
       ]),
 
       // tab切换
@@ -351,8 +351,25 @@
 
       // 添加同住人
       add (item) {
-        this.fakaTig = true;
-        this.changeItem = item;
+        // 判断是否满住
+        this.guestCount({
+          subOrderId: item.subOrderId,
+          onsuccess: body => {
+            if (body.data.code == 0) {
+                if (body.data.data < item.maxGuest) {
+                  this.fakaTig = true;
+                  this.changeItem = item;
+                }else {
+                  this.$message({
+                    message: '该房间已住满',
+                    type: 'warning'
+                  });
+                  this.page = 1;
+                  this.getPreOrder(1);
+                }
+            }
+          }
+        });
       },
 
       // 不发卡
@@ -374,6 +391,8 @@
         }else {
             istrue = true;
         }
+        this.page = 1;
+        this.getPreOrder(1);
         this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
       },
 
@@ -417,7 +436,7 @@
         .tabs {
           padding: 40px 0;
           .tab {
-            padding: 15px 30px;
+            padding: 18px 30px;
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
@@ -438,8 +457,10 @@
         .synchronism, .replayList {
           display: inline-flex;
           align-items: center;
-          padding: 10px 30px;
-          line-height: 36px;
+          justify-content: center;
+          width: 146px;
+          height: 56px;
+          line-height: 56px;
           margin-left: 30px;
           background: #FFFFFF;
           box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
@@ -544,8 +565,8 @@
               background: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
-              width: 160px;
-              padding: 15px 0;
+              width: 146px;
+              padding: 13px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
@@ -564,8 +585,8 @@
               background: #1AAD19;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
-              width: 160px;
-              padding: 15px 0;
+              width: 146px;
+              padding: 13px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
