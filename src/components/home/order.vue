@@ -51,7 +51,7 @@
                       {{room.roomTypeName}} &nbsp; *{{room.count}}间
                     </p>
                   </div>
-                  <div class="tongbu_status" @click="getRefresh(item.id)" v-if="pmsFlag">同步</div>
+                  <el-button type="primary" class="tongbu_status" :loading="item.loadingTongbu"  @click="getRefresh(item)"  v-if="pmsFlag">同步</el-button>
                   <div class="banli_status" @click="checkGoIn(item)">办理入住</div>
                 </div>
               </div>
@@ -471,11 +471,10 @@
       },
 
       // 单个订单同步
-      getRefresh(orderId) {
-        this.loadingText = '同步中...';
-        this.loadingShow = true;
+      getRefresh(item) {
+        item.loadingTongbu = true;
         this.refreshOne({
-          orderId: orderId,
+          orderId: item.id,
           onsuccess: body => {
             if (body.data.data == '同步成功') {
               this.getPreOrder(this.page);
@@ -571,6 +570,9 @@
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data.list) {
+              body.data.data.list.forEach(item => {
+                item.loadingTongbu = false;
+              });
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
               this.showList = true;
