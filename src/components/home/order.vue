@@ -766,7 +766,7 @@
             }
             .list_content {
               border-bottom: 1px solid #E5E5E5;
-              padding: 20px 0 20px;
+              padding: 15px 0;
               .list_cell {
                 width: 19%;
                 display: inline-flex;
@@ -800,7 +800,7 @@
             .remark {
               color: rgba(0, 0, 0, 1);
               font-size: 20px;
-              padding: 20px 0;
+              padding: 15px 0;
               text-align: left;
             }
             .tongbu_status {

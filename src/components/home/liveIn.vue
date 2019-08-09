@@ -501,7 +501,7 @@
             }
             .list_content {
               border-bottom: 1px solid #E5E5E5;
-              padding: 20px 0 20px;
+              padding: 25px 0;
               .list_cell {
                 width: 18%;
                 display: inline-flex;
@@ -555,6 +555,7 @@
             .add_status {
               background: #d7d7d7;
               color: #a4a4a4;
+              box-shadow: none;
             }
             .banli_status {
               position: absolute;

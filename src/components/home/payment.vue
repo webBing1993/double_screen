@@ -687,7 +687,7 @@
         margin-bottom: 20px;
         .list_header {
           border-bottom: 1px solid #E5E5E5;
-          padding: 20px 0;
+          padding: 15px 0;
           display: flex;
           justify-content: space-between;
           align-items: center;
