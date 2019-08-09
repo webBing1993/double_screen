@@ -78,7 +78,7 @@
         <div class="checkIn_content checkIn_content_" v-else>
           <div class="lists">
             <div class="list">
-              <div class="title"><span>总房费：</span><span>300元</span></div>
+              <div class="title"><span>总房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
               <div class="changeItem">
                 <div class="item_tab" @click="payModeChange(1)">
                   <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
@@ -333,7 +333,6 @@
     margin-left: 40px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
     .bgCheckTop {
-      width: 100vw;
       height: 20px;
       background-color: #DEE7F8;
     }
