@@ -648,7 +648,8 @@
         this.getPreOrder(1);
       }else {
         this.tabIndex = sessionStorage.getItem('tabIndex_') != null ? sessionStorage.getItem('tabIndex_') : 1;
-        this.getPreOrder(sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1);
+        this.page = sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1;
+        this.getPreOrder(this.page);
       }
       this.$route.meta.isBack = false;
     },
