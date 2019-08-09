@@ -206,6 +206,7 @@
           this.total = 0;
           this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
         }
+        this.$emit('getMessage', index);
       },
 
       // 右侧筛选tab切换

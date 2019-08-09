@@ -25,6 +25,7 @@
               :value="outTime"
               >
             </DatePicker>
+            <i><img src="../../assets/gengduo.png" alt=""></i>
           </div>
           <div class="time_origin">
             <span>拍照时间：{{datetimeparse(detail.createdTime,'YYYY/MM/DD hh:mm:ss')}}</span>
@@ -74,19 +75,19 @@
       <div class="detail_fr" v-if="!loadingShow">
         <div>
           <div class="changTabs">
-            <span :class="changeTabFr == 1 ? 'active' : ''" @click="changeTabClick(1)">英文</span>
-            <span :class="changeTabFr == 2 ? 'active' : ''" @click="changeTabClick(2)">数字</span>
+            <span :class="changeTabFr == 1 ? 'active' : ''" @click="changeTabClick(1)">数字</span>
+            <span :class="changeTabFr == 2 ? 'active' : ''" @click="changeTabClick(2)">英文</span>
           </div>
           <div class="change_tabs">
             <div class="tab" v-if="changeTabFr == 1">
-              <div class="keyBoard">
-                <span v-for="item in keyBords1" @click="keyEntry($event, item)">{{item}}</span>
+              <div class="keyBoard2">
+                <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item)">{{item}}</span>
                 <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
             <div class="tab" v-else>
-              <div class="keyBoard2">
-                <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item)">{{item}}</span>
+              <div class="keyBoard">
+                <span v-for="item in keyBords1" @click="keyEntry($event, item)">{{item}}</span>
                 <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
@@ -398,7 +399,7 @@
           }
           span:first-of-type {
             width: 250px;
-            margin-right: 14px;
+            margin-right: 13px;
           }
           input {
             border: 1px solid #979797;
@@ -422,6 +423,7 @@
           color: #000;
           text-align: left;
           margin-bottom: 30px;
+          position: relative;
           span {
             width: 250px;
             display: inline-block;
@@ -479,6 +481,16 @@
           /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
             padding: 0;
             text-align: center;
+          }
+          i {
+            position: absolute;
+            left: 680px;
+            top: 50%;
+            transform: translateY(-50%);
+            img {
+              width: 14px;
+              display: inline-block;
+            }
           }
         }
         .time_origin {
