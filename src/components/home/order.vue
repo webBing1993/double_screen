@@ -818,7 +818,7 @@
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 13px 0;
+              padding: 17px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
