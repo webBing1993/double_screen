@@ -243,7 +243,7 @@
       isRejectDialogShow(){
         this.rejectStatus({
           status: 'REFUSED',
-          identity_id: this.$route.params.id,
+          identity_id: this.detail.identityId,
           onsuccess: body => {
             if (body.errcode != '' && body.errcode == 0) {
               this.$message({
