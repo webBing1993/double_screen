@@ -60,7 +60,7 @@
                   </div>
                   <div class="li">
                     <span>房间号：</span>
-                    <span class="blue">{{item.roomNumber}}</span>
+                    <span class="blue">{{item.roomNumber ? item.roomNumber : '无'}}</span>
                   </div>
                 </div>
               </div>

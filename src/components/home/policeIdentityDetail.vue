@@ -12,7 +12,7 @@
         <div class="detail">
           <div class="search">
             <span>房间号：</span>
-            <input type="text" placeholder="请输入房间号" v-model="detail.roomNumber" disabled v-if="!buttonGroupShow">
+            <input type="text" placeholder="请输入房间号" :value="detail.roomNumber ? detail.roomNumber : '无'" disabled v-if="!buttonGroupShow">
             <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else>
             <span class="tig" v-if="!roomShow && roomNum != ''">酒店无该房间，请重新输入</span>
           </div>
