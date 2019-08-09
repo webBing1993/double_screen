@@ -126,6 +126,7 @@
   export default {
     name: 'policeIdentity',
     components: {ElCol, loadingList},
+    props: ['searchVal'],
     data () {
       return {
         loadingShow: false,  // loading
@@ -154,6 +155,20 @@
     },
     filters: {
 
+    },
+    watch: {
+      searchVal: function (val) {
+        console.log(val);   // 接收父组件的值
+        this.page = 1;
+        this.page1 = 1;
+        if (this.changeTabString == 1) {
+          this.total1 = 0;
+          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+        }else {
+          this.total = 0;
+          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+        }
+      }
     },
     methods: {
       ...mapActions([

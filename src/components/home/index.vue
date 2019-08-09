@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn"></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal"></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -71,6 +71,7 @@
           isQyPay: false,     // 交易管理
           isRztCheck: false, // 公安验证
         },  // 权限
+        searchVal: 0,
       }
     },
     methods: {
@@ -213,7 +214,8 @@
         if (date == '"refresh"') {
           this.speakShow = true;
           this.speckText('您有待办事项未处理，点击查看');
-          this.initWebSocket();
+          this.unhandleList();
+          this.searchVal++;
         }
       },
       websocketsend(agentData){//数据发送

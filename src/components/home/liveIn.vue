@@ -75,13 +75,13 @@
             快速筛选
           </div>
           <div class="changTabs">
-            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">预订人</span>
+            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">入住人</span>
             <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
           </div>
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -91,7 +91,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入入住人手机号查询" v-model="searchString2" maxlength="11">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
               </div>
               <div class="keyBoard2">
