@@ -52,7 +52,7 @@
                     </p>
                   </div>
                   <el-button type="primary" class="tongbu_status" :loading="item.loadingTongbu"  @click="getRefresh(item)"  v-if="pmsFlag">同步</el-button>
-                  <div class="banli_status" @click="checkGoIn(item)">办理入住</div>
+                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli"  @click="checkGoIn(item)"  v-if="pmsFlag">办理入住</el-button>
                 </div>
               </div>
               <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
@@ -348,8 +348,7 @@
 
       //办理入住
       checkGoIn(item) {
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
+        item.loadingBanli = true;
         // 判断是否为今日订单
         this.sendCheck({
             id: item.id,
@@ -406,27 +405,33 @@
                       }else {
                         this.loadingShow = false;
                       }
+                      item.loadingBanli = false;
                     },
                     onfail: (body, headers) => {
+                      item.loadingBanli = false;
                       this.loadingShow = false;
                     }
                   });
                 }else {
                   // 团队订单办理入住进行跳转
                   this.loadingShow = false;
+                  item.loadingBanli = false;
                   sessionStorage.setItem('changeItem', JSON.stringify(item));
                   this.$emit('gocheckIn', item.id);
                 }
               }else if (body.data.code == 888000) {
                 this.loadingShow = false;
+                item.loadingBanli = false;
                 this.changeItem = item;
                 this.tigTeamShow = true;
               }else {
+                item.loadingBanli = false;
                 this.loadingShow = false;
               }
             },
             onfail: (body, headers) => {
               console.log('body',body.data);
+              item.loadingBanli = false;
               if (body.data.code == 89000 || body.data.code == 79000 || body.data.code == 69000) {
                 this.page = 1;
                 this.getPreOrder(1);
@@ -572,6 +577,7 @@
             if (body.data.code == 0 && body.data.data.list) {
               body.data.data.list.forEach(item => {
                 item.loadingTongbu = false;
+                item.loadingBanli = false;
               });
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
@@ -833,7 +839,7 @@
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 13px 0;
+              padding: 17px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;

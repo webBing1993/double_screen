@@ -23,6 +23,7 @@
               format="yyyy/MM/dd HH:mm"
               placeholder="请选择最晚离店时间"
               :value="outTime"
+              @on-change="datePickerTime"
               >
             </DatePicker>
             <i><img src="../../assets/gengduo.png" alt=""></i>
@@ -143,6 +144,12 @@
       // 返回上一页
       gobanck() {
         this.$router.go(-1);
+      },
+
+      // 日期选择
+      datePickerTime(val) {
+        this.outTime = val;
+        console.log('datePickerTime', val);
       },
 
 
@@ -481,6 +488,9 @@
           /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
             padding: 0;
             text-align: center;
+          }
+          /deep/ .ivu-btn-default {
+            display: none;
           }
           i {
             position: absolute;

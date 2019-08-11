@@ -187,6 +187,11 @@
                 this.getAllConfigList[item] = true;
               }
             }
+            setTimeout(() => {
+              let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
+              console.log(dataId.value);
+              this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+            },500);
             this.homeIndexShow = true;
           }
         });
@@ -230,11 +235,6 @@
 
     mounted () {
       this.getConfigList();
-      setTimeout(() => {
-        let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
-        console.log(dataId.value);
-        this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
-      },1000);
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
