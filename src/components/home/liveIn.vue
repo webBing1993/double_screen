@@ -76,7 +76,7 @@
           </div>
           <div class="changTabs">
             <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">入住人</span>
-            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
+            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">房间号</span>
           </div>
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
@@ -91,7 +91,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入入住人手机号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
               </div>
               <div class="keyBoard2">
@@ -148,6 +148,7 @@
         pmsFlag: true,   // 判断是否对接pms
         orderByFiled: 'room_no ASC',  // 筛选方式
         fakaTig: false,   // 发卡提示选择
+        timer: null,
       }
     },
     filters: {
@@ -220,20 +221,17 @@
       // 字母键盘事件
       keyEntry(event, item,type) {
         event.preventDefault();
+        clearTimeout(this.timer);
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
           this.getPreOrder(1);
         }else {
-          if (this.searchString2.length < 11) {
-            this.searchString2 += item;
-            if (this.searchString2.length == 11) {
-              this.searchString = this.searchString2;
-              this.getPreOrder(1);
-            }
-          }else {
-            return;
-          }
+          this.searchString2 += item;
+          this.searchString = this.searchString2;
+          this.timer = setTimeout(() => {
+            this.getPreOrder(1);
+          },1500)
         }
       },
 

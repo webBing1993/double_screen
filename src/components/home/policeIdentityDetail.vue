@@ -16,7 +16,7 @@
             <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else>
             <span class="tig" v-if="!roomShow && roomNum != ''">酒店无该房间，请重新输入</span>
           </div>
-          <div class="outTime">
+          <div class="outTime" v-if="buttonGroupShow">
             <span>最晚离店时间：</span>
             <DatePicker
               type="datetime"
@@ -26,6 +26,11 @@
               @on-change="datePickerTime"
               >
             </DatePicker>
+            <i><img src="../../assets/gengduo.png" alt=""></i>
+          </div>
+          <div class="outTime" v-else>
+            <span>最晚离店时间：</span>
+            <div v-if="!buttonGroupShow" class="outtime">{{outTime}}</div>
             <i><img src="../../assets/gengduo.png" alt=""></i>
           </div>
           <div class="time_origin">
@@ -434,6 +439,16 @@
           span {
             width: 250px;
             display: inline-block;
+          }
+          .outtime {
+            display: inline-block;
+            width: 480px;
+            font-size: 30px;
+            color: #000;
+            border: 1px solid #979797;
+            height: 72px;
+            line-height: 72px;
+            padding-left: 30px;
           }
           /deep/ .ivu-icon-ios-close-circle {
             display: none;
