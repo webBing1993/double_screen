@@ -44,7 +44,7 @@
                   <div class="listCell">
                     <p class="name"><span v-for="(i, index) in item.guestList">{{i.name ? i.name + ((index+1) < item.guestList.length ? '/' : '') : '-'}}</span>
                     </p>
-                    <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest">添加同住人</div>
+                    <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest && item.guestList.length < 5 ">添加同住人</div>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
                   </div>
                 </div>
@@ -355,7 +355,7 @@
           subOrderId: item.subOrderId,
           onsuccess: body => {
             if (body.data.code == 0) {
-                if (body.data.data < item.maxGuest) {
+                if (body.data.data < item.maxGuest && body.data.data < 5) {
                   this.fakaTig = true;
                   this.changeItem = item;
                 }else {
