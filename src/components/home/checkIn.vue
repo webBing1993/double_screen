@@ -469,6 +469,7 @@
           .tig_info {
             background-color: #d7d7d7;
             color: #a4a4a4;
+            border: none;
           }
         }
       }
