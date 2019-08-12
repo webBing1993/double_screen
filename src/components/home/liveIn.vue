@@ -75,21 +75,11 @@
             快速筛选
           </div>
           <div class="changTabs">
-            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">入住人</span>
-            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">房间号</span>
+            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">房间号</span>
+            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">入住人</span>
           </div>
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
-              <div class="input">
-                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
-                <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
-              </div>
-              <div class="keyBoard">
-                <span v-for="item in keyBords1" @click="keyEntry($event, item, 1)">{{item}}</span>
-                <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
-              </div>
-            </div>
-            <div class="tab" v-else>
               <div class="input">
                 <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
@@ -97,6 +87,16 @@
               <div class="keyBoard2">
                 <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
                 <span @click="keyCancel($event, 2)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+              </div>
+            </div>
+            <div class="tab" v-else>
+              <div class="input">
+                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
+                <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
+              </div>
+              <div class="keyBoard">
+                <span v-for="item in keyBords1" @click="keyEntry($event, item, 1)">{{item}}</span>
+                <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
           </div>
@@ -231,7 +231,7 @@
           this.searchString = this.searchString2;
           this.timer = setTimeout(() => {
             this.getPreOrder(1);
-          },1500)
+          },300)
         }
       },
 

@@ -368,7 +368,7 @@
             this.searchString = this.searchString2;
             this.timer = setTimeout(() => {
               this.paymentList(1);
-            },1500)
+            },300)
           }
         }
       },
