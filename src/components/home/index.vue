@@ -184,7 +184,7 @@
               })
             }else {
               for(let item in this.getAllConfigList){
-                this.getAllConfigList[item] = true;
+                this.getAllConfigList[item] = false;
               }
             }
             setTimeout(() => {
