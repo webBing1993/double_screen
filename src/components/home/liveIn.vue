@@ -544,10 +544,10 @@
                 }
               }
               .list_cell:nth-of-type(2) {
-                width: 41%;
+                width: 32%;
               }
               .list_cell:last-of-type {
-                width: 40%;
+                width: 49%;
                 position: relative;
               }
             }
