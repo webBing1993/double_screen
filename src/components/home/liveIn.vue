@@ -177,6 +177,7 @@
         }else{
           this.orderByFiled = 'out_time ASC';  //按时间排序
         }
+        this.page = 1;
         this.getPreOrder(1);
       },
 

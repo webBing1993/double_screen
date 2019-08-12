@@ -24,8 +24,8 @@
         </div>
         <div class="checkIn_content" v-if="changeItem.type == 0">
           <div class="lists">
-            <div class="list">
-              <div class="title">是否发卡：</div>
+            <div class="list" v-if="cardShow">
+              <div class="title">是否需要发房卡：</div>
               <div class="changeItem">
                 <div class="item_tab" @click="changeStatus(1, 1)">
                   <img src="../../assets/xuanzhongle.png" alt="" v-if="isfaka">
@@ -39,7 +39,7 @@
                 </div>
               </div>
             </div>
-            <div class="list">
+            <div class="list" v-if="rcShow">
               <div class="title">是否需要RC单：</div>
               <div class="changeItem">
                 <div class="item_tab" @click="changeStatus(1, 2)">
@@ -148,11 +148,13 @@
         cashFee: 0,      // 押金
         cashFeeTrue: false,  // 判断是否有无押金配置
         payMode: 0,  // 判断房费支付状态
+        cardShow: false,  // 发卡dab权限
+        rcShow: false,    // rc单dab权限
       }
     },
     methods: {
       ...mapActions([
-         'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode'
+         'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule'
       ]),
 
       // 返回上一页
@@ -308,10 +310,27 @@
         });
       },
 
+      // 获取权限
+      getCard(cardStatus) {
+        this.cardRule({
+          cardStatus: cardStatus,
+          onsuccess: body => {
+            if (cardStatus == 'issued_card_rule' && body.data.code == 0 && body.data.data == 'OTO') {
+                this.cardShow = true;
+            }
+            if (cardStatus == 'rc_status' && body.data.code == 0 && body.data.data == 'true') {
+                this.rcShow = true;
+            }
+          }
+        })
+      },
+
     },
 
     mounted () {
       this.loadingShow = true;
+      this.getCard('issued_card_rule');
+      this.getCard('rc_status');
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
       if (this.changeItem.type == 0) {
         this.getCheckList();

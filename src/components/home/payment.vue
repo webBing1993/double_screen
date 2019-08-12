@@ -13,11 +13,11 @@
           </el-date-picker>
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
-        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
         <span class="items">
           <span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)">微信支付</span>
           <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)">支付宝</span>
         </span>
+        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
       </div>
       <div class="paymentAll">
         <div class="paymentLists" v-if="showList">
@@ -37,7 +37,7 @@
                 <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
                 <span v-if="item.channel == 6" class="red">已撤销</span>
                 <span v-if="item.channel == 4" class="blue">快速结算</span>
-                <span v-if="item.channel == 5" class="grey">{{item.founder}} {{item.timeEndStr}} 已结算</span>
+                <span v-if="item.channel == 5" class="grey">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已结算</span>
                 <img src="../../assets/gengduo.png" alt="">
               </div>
             </div>
