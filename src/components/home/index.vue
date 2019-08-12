@@ -76,7 +76,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'getAllConfig'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList'
       ]),
 
       // tab切换
@@ -164,39 +164,6 @@
         document.title = new Date().getSeconds() + "@" + type;
       },
 
-      getConfigList() {
-        this.getAllConfig({
-          onsuccess: body => {
-            let list=[];
-            if(body.data.data != null) {
-              list = body.data.data[0].subPermissions;
-              list.forEach(item => {
-                if (item.tag == 'sp_checkin') {
-                  this.getAllConfigList.qyOrders = true;
-                }else if(item.tag=="sp_inroom"){
-                  this.getAllConfigList.qyCheckIn=true;
-                }else if(item.tag=="sp_trade") {
-                  this.getAllConfigList.isQyPay=true;
-                }else if(item.tag=="sp_check") {
-                  this.getAllConfigList.isRztCheck = true;
-                  this.unhandleList();
-                }
-              })
-            }else {
-              for(let item in this.getAllConfigList){
-                this.getAllConfigList[item] = false;
-              }
-            }
-            setTimeout(() => {
-              let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
-              console.log(dataId.value);
-              this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
-            },500);
-            this.homeIndexShow = true;
-          }
-        });
-      },
-
       //初始化weosocket
       initWebSocket(){
         //ws地址
@@ -234,7 +201,25 @@
     },
 
     mounted () {
-      this.getConfigList();
+      let list = JSON.parse(sessionStorage.getItem('subPermissions'));
+      list.forEach(item => {
+        if (item.tag == 'sp_checkin') {
+          this.getAllConfigList.qyOrders = true;
+        }else if(item.tag=="sp_inroom"){
+          this.getAllConfigList.qyCheckIn=true;
+        }else if(item.tag=="sp_trade") {
+          this.getAllConfigList.isQyPay=true;
+        }else if(item.tag=="sp_check") {
+          this.getAllConfigList.isRztCheck = true;
+          this.unhandleList();
+        }
+      });
+      setTimeout(() => {
+        let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
+        console.log(dataId.value);
+        this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+      },500);
+      this.homeIndexShow = true;
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
