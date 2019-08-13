@@ -274,6 +274,7 @@
       sessionStorage.removeItem('pmsFlag');
       sessionStorage.removeItem('changeItem');
       sessionStorage.removeItem('changeTabString');
+      sessionStorage.removeItem('gotoCheckIn');
       clearInterval(this.getTimer);
       next();
     }

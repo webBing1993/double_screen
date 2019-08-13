@@ -393,6 +393,8 @@
                           if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
 //                            this.teamTig = true;
                             sessionStorage.setItem('changeItem', JSON.stringify(item));
+                            sessionStorage.setItem('currentChange', this.page);
+                            sessionStorage.setItem('gotoCheckIn', true);
                             this.$emit('gocheckIn', item.id);
                           }else {
                             this.page = 1;
@@ -417,6 +419,8 @@
                   this.loadingShow = false;
                   item.loadingBanli = false;
                   sessionStorage.setItem('changeItem', JSON.stringify(item));
+                  sessionStorage.setItem('currentChange', this.page);
+                  sessionStorage.setItem('gotoCheckIn', true);
                   this.$emit('gocheckIn', item.id);
                 }
               }else if (body.data.code == 888000) {
@@ -472,6 +476,8 @@
       tigTeamKnow() {
         this.tigTeamShow = false;
         sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
+        sessionStorage.setItem('currentChange', this.page);
+        sessionStorage.setItem('gotoCheckIn', true);
         this.$emit('gocheckIn', this.changeItem.id);
       },
 
@@ -600,7 +606,6 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
-        sessionStorage.setItem('currentChange', val);
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.showList = false;
@@ -653,7 +658,7 @@
       this.loadingShow = true;
       this.showList = false;
       this.showList_ = false;
-      if(!this.$route.meta.isBack){
+      if(!this.$route.meta.isBack || sessionStorage.getItem('gotoCheckIn') == 'false'){
         this.getPreOrder(1);
       }else {
         this.tabIndex = sessionStorage.getItem('tabIndex_') != null ? sessionStorage.getItem('tabIndex_') : 1;
