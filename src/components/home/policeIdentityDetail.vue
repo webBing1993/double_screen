@@ -415,7 +415,7 @@
           }
           span:first-of-type {
             width: 250px;
-            margin-right: 13px;
+            margin-right: 10px;
           }
           input {
             border: 1px solid #979797;
@@ -547,6 +547,7 @@
               display: inline-flex;
               width: 100%;
               height: 100%;
+              border-radius: 20px;
             }
           }
           .idCard_info {
