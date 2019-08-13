@@ -413,7 +413,7 @@
       },
 
       SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
-        document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + rcStatus + '@' + phoneStatus + '@' + status;
+        document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
       },
 
     },
