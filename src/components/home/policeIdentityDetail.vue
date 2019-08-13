@@ -80,6 +80,10 @@
       </div>
       <div class="detail_fr" v-if="!loadingShow">
         <div>
+          <div class="fast_title">
+            <img src="../../assets/xiantiao.png" alt="">
+            输入房号
+          </div>
           <div class="changTabs">
             <span :class="changeTabFr == 1 ? 'active' : ''" @click="changeTabClick(1)">数字</span>
             <span :class="changeTabFr == 2 ? 'active' : ''" @click="changeTabClick(2)">英文</span>
