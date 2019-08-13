@@ -315,7 +315,7 @@
         this.cardRule({
           cardStatus: cardStatus,
           onsuccess: body => {
-            if (cardStatus == 'issued_card_rule' && body.data.code == 0 && body.data.data == 'OTO') {
+            if (cardStatus == 'support_room_card' && body.data.code == 0 && body.data.data == 'true') {
                 this.cardShow = true;
             }
             if (cardStatus == 'rc_status' && body.data.code == 0 && body.data.data == 'true') {
@@ -329,7 +329,7 @@
 
     mounted () {
       this.loadingShow = true;
-      this.getCard('issued_card_rule');
+      this.getCard('support_room_card');
       this.getCard('rc_status');
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
       if (this.changeItem.type == 0) {
