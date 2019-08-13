@@ -149,6 +149,7 @@
         orderByFiled: 'room_no ASC',  // 筛选方式
         fakaTig: false,   // 发卡提示选择
         timer: null,
+        cardShow: false,  // 发卡dab配置
       }
     },
     filters: {
@@ -162,8 +163,20 @@
     },
     methods: {
       ...mapActions([
-        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount'
+        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule'
       ]),
+
+      // 获取权限
+      getCard(cardStatus) {
+        this.cardRule({
+          cardStatus: cardStatus,
+          onsuccess: body => {
+            if (cardStatus == 'support_room_card' && body.data.code == 0 && body.data.data == 'true') {
+              this.cardShow = true;
+            }
+          }
+        })
+      },
 
       // tab切换
       tabClick (index) {
@@ -356,8 +369,12 @@
           onsuccess: body => {
             if (body.data.code == 0) {
                 if (body.data.data < item.maxGuest && body.data.data < 4) {
-                  this.fakaTig = true;
                   this.changeItem = item;
+                  if (this.cardShow) {
+                    this.fakaTig = true;
+                  }else {
+                    this.goAdd(0);
+                  }
                 }else {
                   this.$message({
                     message: '该房间已住满',
@@ -404,6 +421,7 @@
     mounted () {
       this.pmsFlag = sessionStorage.getItem('pmsFlag') == 'true' ? true : false;
       this.loadingText = '加载中...';
+      this.getCard('support_room_card');
       this.loadingShow = true;
       this.showList = false;
       this.showList_ = false;
