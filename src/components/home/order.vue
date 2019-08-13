@@ -638,9 +638,7 @@
       dateDiff(outTime) {
         let newTime = new Date().getTime();
         let totalSecs = Math.abs(newTime - outTime) / 1000;
-        let days = Math.floor(totalSecs/3600/24);
-        let hours = Math.floor((totalSecs-days*24*3600)/3600);
-        let mins = Math.floor((totalSecs-days*24*3600-hours*3600)/60);
+        let mins = Math.floor(totalSecs / 60);
         if (mins == 0) {
             mins = 1;
         }
