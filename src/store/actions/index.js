@@ -390,6 +390,20 @@ const actions = {
     })
   },
 
+  // 发卡
+  sendCardRule(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/sendCardRule/subOrderId/'+param.subOrderId+'?sendCard='+param.sendCard,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
   // 退款
   reimburse(ctx,param){
     ctx.dispatch('resource', {
