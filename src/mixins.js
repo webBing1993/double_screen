@@ -64,7 +64,26 @@ Vue.mixin({
           output = prefix ? (prefix + output) : output
 
           return newtimestamp ? output : ''
-      }
+      },
+
+      idnumber: id => {
+        return id.replace(id.slice(3, 14), '***********')
+      },
+
+      timeFetch () {
+        var todayZero = new Date ();
+        var todayEleven = new Date ();
+        var today = {};
+        todayZero.setHours (0);
+        todayZero.setMinutes (0);
+        todayZero.setSeconds (0);
+        todayEleven.setHours (23);
+        todayEleven.setMinutes (59);
+        todayEleven.setSeconds (59);
+        console.log ('今天零点：' + todayZero.getTime ());
+        console.log ('23:59：' + todayEleven.getTime ());
+        return today = {todayStart: todayZero.getTime (), todayEnd: todayEleven.getTime ()}
+      },
   },
   mounted () {
     let httpUrl = apiTool.httpUrlEnv();

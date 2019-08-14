@@ -62,7 +62,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'getCode', 'loginEntry'
+        'goto', 'getCode', 'loginEntry', 'getAllConfig'
       ]),
 
       // 键盘清除事件
@@ -238,7 +238,16 @@
                   sessionStorage.setItem('name',body.data.data.name);
                   sessionStorage.session_id = body.data.data.token;
                   sessionStorage.hotel_id = body.data.data.hotelId;
-                  this.goto('/home');
+                  this.getAllConfig({
+                    onsuccess: body => {
+                      if(body.data.data != null) {
+                        sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
+                        this.goto('/home');
+                      }else {
+                        this.$message.error('该账号无权限');
+                      }
+                    }
+                  });
                 }else {
                   this.$message.error(body.data.msg);
                 }
@@ -259,6 +268,13 @@
        },1000)
     },
     beforeRouteLeave(to,from,next) {
+      sessionStorage.removeItem('tabIndex');
+      sessionStorage.removeItem('tabIndex_');
+      sessionStorage.removeItem('currentChange');
+      sessionStorage.removeItem('pmsFlag');
+      sessionStorage.removeItem('changeItem');
+      sessionStorage.removeItem('changeTabString');
+      sessionStorage.removeItem('gotoCheckIn');
       clearInterval(this.getTimer);
       next();
     }

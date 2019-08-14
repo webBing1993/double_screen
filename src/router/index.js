@@ -19,11 +19,35 @@ export default new Router({
           path: '/order',
           name: 'order',
           component: resolve => require(['../components/home/order.vue'],resolve),
+          meta: {
+            requireAuth: true,
+            isBack: false,//判断是否是点击返回按钮进入页面的，默认是false
+          }
+        },
+        {
+          path: '/liveIn',
+          name: 'liveIn',
+          component: resolve => require(['../components/home/liveIn.vue'],resolve),
         },
         {
           path: '/payment',
           name: 'payment',
           component: resolve => require(['../components/home/payment.vue'],resolve),
+        },
+        {
+          path: '/policeIdentity',
+          name: 'policeIdentity',
+          component: resolve => require(['../components/home/policeIdentity.vue'],resolve),
+        },
+        {
+          path: '/policeIdentityDetail/:id',
+          name: 'policeIdentityDetail',
+          component: resolve => require(['../components/home/policeIdentityDetail.vue'],resolve),
+        },
+        {
+          path: '/checkIn/:id',
+          name: 'checkIn',
+          component: resolve => require(['../components/home/checkIn.vue'],resolve),
         }
       ],
     },

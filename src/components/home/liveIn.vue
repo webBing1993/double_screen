@@ -4,8 +4,8 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)">散客订单</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">团队订单</span>
+            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)">按房号排</span>
+            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">按离店时间</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -18,23 +18,18 @@
           </div>
         </div>
         <div class="content">
-          <!--<div class="order_table">-->
-            <!--<span class="table_cell">预订人</span>-->
-            <!--<span class="table_cell">入离时间</span>-->
-            <!--<span class="table_cell">房间信息</span>-->
-          <!--</div>-->
           <div class="order_lists" v-if="showList">
             <div class="list" v-for="item in orderLists">
-              <div class="list_header">
-                <div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>
-                <div class="list_time">更新时间：{{dateDiff(item.updateTime) >= 60 ? datetimeparse(item.updateTime, 'MM-dd hh:mm') : dateDiff(item.updateTime)+'分钟前'}}</div>
-              </div>
+              <!--<div class="list_header">-->
+                <!--<div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>-->
+                <!--<div class="list_time"></div>-->
+              <!--</div>-->
               <div class="list_content">
                 <div class="list_cell">
-                  <div class="img"><img src="../../assets/renyuan.png" alt=""></div>
+                  <div class="img"><img src="../../assets/fangjian.png" alt=""></div>
                   <div class="listCell">
-                    <p class="name">{{item.owner}}</p>
-                    <p class="phone">{{item.ownerTel}}</p>
+                    <p>{{item.roomName}}</p>
+                    <p>{{item.roomType}}</p>
                   </div>
                 </div>
                 <div class="list_cell">
@@ -45,24 +40,23 @@
                   </div>
                 </div>
                 <div class="list_cell">
-                  <div class="img"><img src="../../assets/fangjian.png" alt=""></div>
+                  <div class="img"><img src="../../assets/renyuan.png" alt=""></div>
                   <div class="listCell">
-                    <p v-for="(room,index) in item.rooms" :key="index">
-                      {{room.roomTypeName}} &nbsp; *{{room.count}}间
+                    <p class="name"><span v-for="(i, index) in item.guestList">{{i.name ? i.name + ((index+1) < item.guestList.length ? '/' : '') : '-'}}</span>
                     </p>
+                    <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 ">添加同住人</div>
+                    <div class="tongbu_status add_status" v-else>人数已满</div>
                   </div>
-                  <el-button type="primary" class="tongbu_status" :loading="item.loadingTongbu"  @click="getRefresh(item)"  v-if="pmsFlag">同步</el-button>
-                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli"  @click="checkGoIn(item)"  v-if="pmsFlag">办理入住</el-button>
                 </div>
               </div>
-              <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
+              <!--<div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>-->
             </div>
           </div>
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="4"
+            :page-size="5"
             layout="total, prev, pager, next"
             :total="total" v-if="orderLists.length != 0 && showList_">
           </el-pagination>
@@ -72,74 +66,6 @@
           </div>
         </div>
 
-        <!-- 开始办理弹框-->
-        <div class="teamTig" v-if="teamTig">
-          <div class="shadow"></div>
-          <div class="tigContent">
-            <div class="title">
-              请确认订单支付状态
-              <!--<img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">-->
-              <span @click="teamTig = false;">关闭</span>
-            </div>
-            <div class="tigLists">
-              <div class="tig_list">
-                <div class="list_title_total">
-                  <div class="list_title">总房费：</div>
-                  <div class="list_total">{{(roomFeeShow/100).toFixed(2)}}元</div>
-                </div>
-                <div class="list_tabs">
-                  <div class="list_tab" @click="payModeChange(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    当面付
-                  </div>
-                  <div class="list_tab" @click="payModeChange(2)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    已预付
-                  </div>
-                  <div class="list_tab" @click="payModeChange(3)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    后付/挂账
-                  </div>
-                </div>
-              </div>
-              <div class="tig_list">
-                <div class="list_title_total">
-                  <div class="list_title">押金：</div>
-                  <div class="list_total">{{(cashFee/100).toFixed(2)}}元</div>
-                </div>
-                <div class="list_tabs">
-                  <div class="list_tab" @click="changeFreeDeposit(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
-                    <img src="../../assets/weixuan.png" alt="" v-esle>
-                    免押金
-                  </div>
-                  <div class="list_tab" @click="changeFreeDeposit(2)" v-if="!cashFeeTrue">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    收押金
-                  </div>
-                </div>
-              </div>
-              <p class="tigRemark" v-if="changeItem.remark">订单备注：{{changeItem.remark}}</p>
-            </div>
-            <el-button type="primary" class="tig_btn" :loading="loadingCheckIn"  @click="teamCheckIn()" v-if="payMode != 0">开始办理</el-button>
-            <el-button type="info" disabled class="tig_btn tig_info" :loading="loadingCheckIn"  v-else>开始办理</el-button>
-          </div>
-        </div>
-
-        <!-- 是否分房-->
-        <div class="isShowScreen" v-if="isShowScreen">
-          <div class="shadow"></div>
-          <div class="isShowScreen_content">
-            <div class="isShowScreen_title">请先对房间进行分房，才可办理入住</div>
-            <div class="isShowScreen_tabs">
-              <span class="cancel" @click="isShowScreen=false">我知道了</span>
-            </div>
-          </div>
-        </div>
         <loadingList v-if="loadingShow" :loadingText="loadingText" style="width: calc(100vw - 480px)"></loadingList>
       </div>
       <div class="order_fr">
@@ -149,23 +75,13 @@
             快速筛选
           </div>
           <div class="changTabs">
-            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">预订人</span>
-            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">手机号</span>
+            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">房间号</span>
+            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">入住人</span>
           </div>
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
-                <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
-              </div>
-              <div class="keyBoard">
-                <span v-for="item in keyBords1" @click="keyEntry($event, item, 1)">{{item}}</span>
-                <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
-              </div>
-            </div>
-            <div class="tab" v-else>
-              <div class="input">
-                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
               </div>
               <div class="keyBoard2">
@@ -173,19 +89,31 @@
                 <span @click="keyCancel($event, 2)"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
             </div>
+            <div class="tab" v-else>
+              <div class="input">
+                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
+                <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
+              </div>
+              <div class="keyBoard">
+                <span v-for="item in keyBords1" @click="keyEntry($event, item, 1)">{{item}}</span>
+                <span @click="keyCancel($event, 1)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 请先将团队主单入住后才能操作-->
-      <div class="tigTeamShow" v-if="tigTeamShow">
+      <!-- 发卡选择提示框-->
+      <div class="fakaTig" v-if="fakaTig">
         <div class="shadow"></div>
         <div class="tig_content">
           <div class="tig_title">
-            请先将团队主单入住后才能操作
+            是否确认发卡？
+            <img src="../../assets/guanbi.png" alt="" @click="fakaTig = false;">
           </div>
           <div class="tig_btns">
-            <span @click="tigTeamKnow">我知道了</span>
+            <span @click="btnCancel">不发卡</span>
+            <span @click="btnSure">发卡</span>
           </div>
         </div>
       </div>
@@ -214,20 +142,14 @@
         total: 0,      // 总数
         orderLists: [], // 总数据
         changeItem: {},  // 接受临时数据
-        teamTig: false,   // 办理入住提示框
         changeTabString: 1,  // 右侧筛选tab切换
         keyBords1: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K','L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],     // 字母键盘
         keyBords2: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],   // 数字键盘
-        roomFeeShow: 0,  // 总房费
-        paidFeeShow: 0,  // 已付房费
-        cashFee: 0,      // 押金
-        cashFeeTrue: false,  // 判断是否有无押金配置
-        ispaid: false,  // 判断是否付过款了
-        payMode: 0,  // 判断房费支付状态
-        isShowScreen: false, // 是否分房
         pmsFlag: true,   // 判断是否对接pms
-        loadingCheckIn: false,  // 判断是否办理 加载中
-        tigTeamShow: false,     // 团队主单入住后
+        orderByFiled: 'room_no ASC',  // 筛选方式
+        fakaTig: false,   // 发卡提示选择
+        timer: null,
+        cardShow: false,  // 发卡dab配置
       }
     },
     filters: {
@@ -241,8 +163,20 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag', 'refreshOne'
+        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule'
       ]),
+
+      // 获取权限
+      getCard(cardStatus) {
+        this.cardRule({
+          cardStatus: cardStatus,
+          onsuccess: body => {
+            if (cardStatus == 'support_room_card' && body.data.code == 0 && body.data.data == 'true') {
+              this.cardShow = true;
+            }
+          }
+        })
+      },
 
       // tab切换
       tabClick (index) {
@@ -251,7 +185,12 @@
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = false;
-        sessionStorage.setItem('tabIndex_', this.tabIndex);
+        if(index == 1){
+          this.orderByFiled = 'room_no ASC';   //按房间号排序
+        }else{
+          this.orderByFiled = 'out_time ASC';  //按时间排序
+        }
+        this.page = 1;
         this.getPreOrder(1);
       },
 
@@ -272,9 +211,6 @@
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
-//            this.loadingText = '加载中...';
-//            this.loadingShow = true;
-//            this.showList = false;
             this.getPreOrder(1);
           }
         }else {
@@ -282,9 +218,6 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             if (this.searchString2.length == 0) {
-//              this.loadingText = '加载中...';
-//              this.loadingShow = true;
-//              this.showList = false;
               this.getPreOrder(1);
             }
           }
@@ -296,35 +229,23 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
-//        this.loadingText = '加载中...';
-//        this.loadingShow = true;
-//        this.showList = false;
         this.getPreOrder(1);
       },
 
       // 字母键盘事件
       keyEntry(event, item,type) {
         event.preventDefault();
+        clearTimeout(this.timer);
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
-//          this.loadingText = '加载中...';
-//          this.loadingShow = true;
-//          this.showList = false;
           this.getPreOrder(1);
         }else {
-          if (this.searchString2.length < 11) {
-            this.searchString2 += item;
-            if (this.searchString2.length == 11) {
-//              this.loadingText = '加载中...';
-//              this.loadingShow = true;
-//              this.showList = false;
-              this.searchString = this.searchString2;
-              this.getPreOrder(1);
-            }
-          }else {
-            return;
-          }
+          this.searchString2 += item;
+          this.searchString = this.searchString2;
+          this.timer = setTimeout(() => {
+            this.getPreOrder(1);
+          },300)
         }
       },
 
@@ -332,182 +253,12 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
-//        this.loadingText = '加载中...';
-//        this.loadingShow = true;
-//        this.showList = false;
         this.getPreOrder(1);
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
-//        this.loadingText = '加载中...';
-//        this.loadingShow = true;
-//        this.showList = false;
         this.getPreOrder(1);
-      },
-
-      //办理入住
-      checkGoIn(item) {
-        item.loadingBanli = true;
-        // 判断是否为今日订单
-        this.sendCheck({
-            id: item.id,
-            subOrderId: '',
-            onsuccess: body => {
-              if (body.data.code == 0) {
-                if (item.type == 1) {
-                  this.getOrderFree({
-                    data: {
-                      orderId: item.id
-                    },
-                    onsuccess: body => {
-                      console.log('body.code',body.data);
-                      if (body.data.code == 0) {
-                        this.loadingShow = false;
-                        if (body.data.data == null || !body.data.data) {
-                          this.$message({
-                            message: '订单已取消',
-                            type: 'warning'
-                          });
-                          this.page = 1;
-                          this.getPreOrder(1);
-                        }else {
-                          if (body.data.data.cashFeeShow == '免押') {
-                            this.cashFee = 0;
-                            this.cashFeeTrue = true;
-                          }else {
-                            this.cashFeeTrue = false;
-                            this.cashFee = body.data.data.cashFeeShow;
-                          }
-                          if (body.data.data.roomFeeShow == '预付房费') {
-                            if (body.data.data.cashFeeShow == '免押') {
-                              this.roomFeeShow = body.data.data.totalFeeShow;
-                            }else {
-                              this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
-                            }
-                          }else {
-                            this.roomFeeShow = body.data.data.roomFeeShow;
-                          }
-                          this.payMode = body.data.data.payMode;
-                          this.ispaid = body.data.data.paid;
-                          if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
-//                            this.teamTig = true;
-                            sessionStorage.setItem('changeItem', JSON.stringify(item));
-                            sessionStorage.setItem('currentChange', this.page);
-                            sessionStorage.setItem('gotoCheckIn', true);
-                            this.$emit('gocheckIn', item.id);
-                          }else {
-                            this.page = 1;
-                            this.getPreOrder(1);
-                            this.OpenExternalScreen('SendMessage@'+item.id+'')
-                          }
-                          this.changeItem = item;
-                        }
-
-                      }else {
-                        this.loadingShow = false;
-                      }
-                      item.loadingBanli = false;
-                    },
-                    onfail: (body, headers) => {
-                      item.loadingBanli = false;
-                      this.loadingShow = false;
-                    }
-                  });
-                }else {
-                  // 团队订单办理入住进行跳转
-                  this.loadingShow = false;
-                  item.loadingBanli = false;
-                  sessionStorage.setItem('changeItem', JSON.stringify(item));
-                  sessionStorage.setItem('currentChange', this.page);
-                  sessionStorage.setItem('gotoCheckIn', true);
-                  this.$emit('gocheckIn', item.id);
-                }
-              }else if (body.data.code == 888000) {
-                this.loadingShow = false;
-                item.loadingBanli = false;
-                this.changeItem = item;
-                this.tigTeamShow = true;
-              }else {
-                item.loadingBanli = false;
-                this.loadingShow = false;
-              }
-            },
-            onfail: (body, headers) => {
-              console.log('body',body.data);
-              item.loadingBanli = false;
-              if (body.data.code == 89000 || body.data.code == 79000 || body.data.code == 69000) {
-                this.page = 1;
-                this.getPreOrder(1);
-              }else {
-                this.loadingShow = false;
-              }
-            }
-        });
-      },
-      teamCheckIn(){
-        this.loadingCheckIn = true;
-        this.updatePaidMode({
-          orderId: this.changeItem.id,
-          isFreeDeposit: this.changeItem.isFreeDeposit,
-          modeId: this.payMode,
-          onsuccess: body => {
-            this.loadingShow = false;
-            if (body.data.code == 0) {
-              this.teamTig = false;
-              this.page = 1;
-              this.getPreOrder(1);
-              this.loadingCheckIn = false;
-              this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'')
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        });
-
-      },
-
-      OpenExternalScreen(type) {
-        document.title = new Date().getSeconds() + "@" + type;
-      },
-
-      // 请先将团队主单入住后才能操作 我知道了
-      tigTeamKnow() {
-        this.tigTeamShow = false;
-        sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
-        sessionStorage.setItem('currentChange', this.page);
-        sessionStorage.setItem('gotoCheckIn', true);
-        this.$emit('gocheckIn', this.changeItem.id);
-      },
-
-      // 单个订单同步
-      getRefresh(item) {
-        item.loadingTongbu = true;
-        this.refreshOne({
-          orderId: item.id,
-          onsuccess: body => {
-            if (body.data.data == '同步成功') {
-              this.getPreOrder(this.page);
-            }else {
-              this.loadingShow = false;
-            }
-            this.$message({
-              message: body.data.data,
-              type: 'success'
-            });
-          },onfail: (body, headers) => {
-            this.loadingShow = false;
-          },
-          onerror: error => {
-            this.loadingShow = false;
-            this.$message({
-              message: "同步超时，请稍后再试",
-              type: 'error'
-            });
-            this.getPreOrder(this.page);
-          }
-        })
       },
 
       //同步订单
@@ -566,25 +317,21 @@
 
       // 订单列表
       getPreOrder (page) {
-        this.getQueryByPage({
+        this.getNoPmsQueryCheckInList({
           data: {
-            start: '',
-            end: '',
+            start:"",
+            end:"",
             page: page,
-            pageSize: 4,
-            payMode: '',
-            precheckinStatus: '',
-            status: "1",
-            type: this.tabIndex == 1 ? 1 : 0,
-            searchString: this.searchString
+            pageSize: 5,
+            statusList:'4',
+            orderByClause: this.orderByFiled||'',
+            checkInStatus:'CHECKIN',
+            hotelId: sessionStorage.hotel_id,
+            searchString: this.searchString,
           },
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data.list) {
-              body.data.data.list.forEach(item => {
-                item.loadingTongbu = false;
-                item.loadingBanli = false;
-              });
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
               this.showList = true;
@@ -606,6 +353,7 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        sessionStorage.setItem('currentChange', val);
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.showList = false;
@@ -613,65 +361,71 @@
         this.getPreOrder(val);
       },
 
-      // 房费更改
-      payModeChange(index) {
-        this.payMode = index;
-      },
-
-      // 选择是否免押金
-      changeFreeDeposit(num) {
-        if (num == 1) {
-          this.changeItem.isFreeDeposit = true;
-        }else {
-          this.changeItem.isFreeDeposit = false;
-        }
-      },
-
-      // 判断是否是对接pms
-      initPmsFlag(){
-        this.getPmsFlag({
-          onsuccess: (body)=>{
-            if(body.data.code==0 && body.data.data!=null){
-              this.pmsFlag = body.data.data;
-              sessionStorage.setItem('pmsFlag', this.pmsFlag)
+      // 添加同住人
+      add (item) {
+        // 判断是否满住
+        this.guestCount({
+          subOrderId: item.subOrderId,
+          onsuccess: body => {
+            if (body.data.code == 0) {
+                if (body.data.data < item.maxGuest && body.data.data < 4) {
+                  this.changeItem = item;
+                  if (this.cardShow) {
+                    this.fakaTig = true;
+                  }else {
+                    this.goAdd(0);
+                  }
+                }else {
+                  this.$message({
+                    message: '该房间已住满',
+                    type: 'warning'
+                  });
+                  this.page = 1;
+                  this.getPreOrder(1);
+                }
             }
-          },
+          }
         });
       },
 
-      // 距离现在相差几分钟
-      dateDiff(outTime) {
-        let newTime = new Date().getTime();
-        let totalSecs = Math.abs(newTime - outTime) / 1000;
-        let mins = Math.floor(totalSecs / 60);
-        if (mins == 0) {
-            mins = 1;
+      // 不发卡
+      btnCancel () {
+        this.fakaTig = false;
+        this.goAdd(0);
+      },
+
+      // 发卡
+      btnSure () {
+        this.fakaTig = false;
+        this.goAdd(1);
+      },
+
+      goAdd (isTrue) {
+        let istrue = null;
+        if (isTrue == 0) {
+            istrue = false;
+        }else {
+            istrue = true;
         }
-        return mins;
+        this.page = 1;
+        this.getPreOrder(1);
+        this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
+      },
+
+      SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
+        document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
       },
 
     },
 
     mounted () {
-      this.initPmsFlag();
+      this.pmsFlag = sessionStorage.getItem('pmsFlag') == 'true' ? true : false;
       this.loadingText = '加载中...';
+      this.getCard('support_room_card');
       this.loadingShow = true;
       this.showList = false;
       this.showList_ = false;
-      if(!this.$route.meta.isBack || sessionStorage.getItem('gotoCheckIn') == 'false'){
-        this.getPreOrder(1);
-      }else {
-        this.tabIndex = sessionStorage.getItem('tabIndex_') != null ? sessionStorage.getItem('tabIndex_') : 1;
-        this.page = sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1;
-        this.getPreOrder(this.page);
-      }
-      this.$route.meta.isBack = false;
-    },
-    beforeRouteEnter(to,from,next){
-      if(from.name == 'checkIn'){
-        to.meta.isBack = true;
-      }
-      next();
+      this.getPreOrder(1);
     },
   }
 </script>
@@ -785,9 +539,9 @@
             }
             .list_content {
               border-bottom: 1px solid #E5E5E5;
-              padding: 15px 0;
+              padding: 25px 0;
               .list_cell {
-                width: 19%;
+                width: 18%;
                 display: inline-flex;
                 text-align: left;
                 .img {
@@ -808,34 +562,38 @@
                 }
               }
               .list_cell:nth-of-type(2) {
-                width: 30%;
-                margin-left: 20px;
+                width: 32%;
               }
               .list_cell:last-of-type {
-                width: 48%;
+                width: 49%;
                 position: relative;
               }
             }
             .remark {
               color: rgba(0, 0, 0, 1);
               font-size: 20px;
-              padding: 15px 0;
+              padding: 10px 0;
               text-align: left;
             }
             .tongbu_status {
               position: absolute;
-              right: 164px;
+              right: 0;
               top: 0;
               background: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 17px 0;
+              padding: 13px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
               cursor: pointer;
               -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+            .add_status {
+              background: #d7d7d7;
+              color: #a4a4a4;
+              box-shadow: none;
             }
             .banli_status {
               position: absolute;
@@ -845,7 +603,7 @@
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 17px 0;
+              padding: 13px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
@@ -1025,7 +783,7 @@
       height: calc(100vh - 100px);
       background-color: #fff;
     }
-    .tigTeamShow {
+    .fakaTig {
       .shadow {
         position: fixed;
         z-index: 10;
@@ -1064,142 +822,30 @@
         }
         .tig_btns {
           border-top: 1px solid #D8D8D8;
-          color:#4378BA;
-          padding: 38px 0;
-          font-size: 32px;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.04);
-        }
-      }
-    }
-    .teamTig {
-      .shadow {
-        position: fixed;
-        z-index: 10;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, .6);
-      }
-      .tigContent {
-        background: #FFFFFF;
-        border-radius: 20px;
-        width: 960px;
-        position: fixed;
-        z-index: 12;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        .title {
-          color: #303133;
-          font-size: 30px;
-          position: relative;
-          padding: 30px 50px;
-          font-weight: bold;
+          display: flex;
+          align-items: center;
           span {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            cursor: pointer;
-            font-size: 30px;
+            position: relative;
+            width: 49.3%;
+            padding: 38px 0;
+            font-size: 32px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.04);
+          }
+          span:first-of-type {
+            color: #909399;
+          }
+          span:last-of-type {
             color: #1AAD19;
           }
-          img {
+          span:first-of-type:after {
             position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
+            content: '';
+            width: 1px;
+            background-color: #D8D8D8;
+            height: 72px;
+            right: 0;
+            top: 1px;
           }
-        }
-        .tigLists {
-          margin: 30px 0;
-          padding: 0 50px;
-          position: relative;
-          .tig_list {
-            margin-bottom: 60px;
-            width: 100%;
-            .list_title_total {
-              width: 100%;
-              display: inline-flex;
-              justify-content: flex-start;
-              margin-bottom: 20px;
-              .list_title {
-                color: #303133;
-                font-size: 28px;
-                font-weight: bold;
-              }
-              .list_total {
-                font-size: 30px;
-                font-weight: bold;
-                color: #F55825;
-              }
-            }
-            .list_tabs {
-              width: 100%;
-              display: inline-flex;
-              justify-content: flex-start;
-              .list_tab {
-                position: relative;
-                font-size: 22px;
-                color: #000;
-                font-weight: bold;
-                line-height: 80px;
-                width: 233px;
-                text-align: center;
-                margin-right: 84px;
-                img {
-                  position: absolute;
-                  z-index: -1;
-                  width: 233px;
-                  height: 80px;
-                  left: 0;
-                  top: 0;
-                }
-              }
-              .list_tab:last-of-type {
-                margin-right: 0;
-              }
-            }
-          }
-          .tigRemark {
-            text-align: left;
-            font-size: 30px;
-            color: #000;
-          }
-        }
-        .tigLists:before {
-          position: absolute;
-          top: -30px;
-          left: 50px;
-          display: inline-block;
-          content: '';
-          width: calc(100% - 100px);
-          height: 1px;
-          background-color: #D8D8D8;
-        }
-        .tig_btn {
-          background: #1AAD19;
-          border-radius: 44px;
-          width: 340px;
-          height: 68px;
-          /*line-height: 68px;*/
-          color: #fff;
-          font-size: 20px;
-          cursor: pointer;
-          text-align: center;
-          margin: 30px auto;
-          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }
-        .tig_info {
-          background-color: #d7d7d7;
-          color: #a4a4a4;
-          border: none;
         }
       }
     }

@@ -1,15 +1,17 @@
 <template>
   <div>
-    <div class="homeIndex">
+    <div class="homeIndex" v-show="homeIndexShow">
       <div class="header">
         <div class="header_fl">
           <div class="changeScreen" @click="OpenExternalScreen('OpenExternalScreen')">
             <img src="../../assets/qiehuan.png" alt="">
             <span>切换外屏</span>
           </div>
-          <div class="tabs">
-            <span :class="tabIndex == 1 ? 'tab active' : 'tab'" @click="tabClick(1)">办理入住</span>
-            <span :class="tabIndex == 2 ? 'tab active' : 'tab'" @click="tabClick(2)">交易管理</span>
+          <div class="tabs" ref="tabs">
+            <span :class="tabIndex == 1 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(1)" data-id="1" v-if="getAllConfigList.qyOrders">办理入住</span>
+            <span :class="tabIndex == 2 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(2)" data-id="2" v-if="getAllConfigList.qyCheckIn">在住房间</span>
+            <span :class="tabIndex == 3 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(3)" data-id="3" v-if="getAllConfigList.isQyPay">交易管理</span>
+            <span :class="tabIndex == 4 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(4)" data-id="4" v-if="getAllConfigList.isRztCheck">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
           </div>
         </div>
         <div class="header_fr">
@@ -28,7 +30,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal"></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -52,6 +54,7 @@
     name: 'home',
     data () {
       return {
+        homeIndexShow: false,  // 模板显示隐藏
         tabIndex: 1,  // tab切换
         myInfo: {
           img: sessionStorage.getItem('avatar') ? sessionStorage.getItem('avatar') : require('../../assets/morentouxiang.png'),
@@ -61,21 +64,37 @@
         speakShow: false,  // 判断是否有新代办来了
         websock: null,
         timer: null,
+        unhandleNum: 0,  // 公安核验数量
+        getAllConfigList: {
+          qyOrders: false,   // 办理入住
+          qyCheckIn: false,  // 在住列表
+          isQyPay: false,     // 交易管理
+          isRztCheck: false, // 公安验证
+        },  // 权限
+        searchVal: 0,
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList'
       ]),
 
       // tab切换
       tabClick (index) {
         this.tabIndex = index;
         if (index == 1) {
+          sessionStorage.removeItem('changeTabString');
           this.replaceto('/order');
-        }else {
+        }else if (index == 2) {
+          sessionStorage.removeItem('changeTabString');
+          this.replaceto('/liveIn');
+        }else if (index == 3) {
+          sessionStorage.removeItem('changeTabString');
           this.replaceto('/payment');
+        }else {
+          this.replaceto('/policeIdentity');
         }
+        sessionStorage.setItem('tabIndex', index);
       },
 
       // 语音播报
@@ -107,6 +126,40 @@
         })
       },
 
+      // 获取公安核验未处理数据
+      unhandleList() {
+        this.newIdentityList ({
+          data: {
+            createTimeStart: '',
+            createTimeEnd: '',
+            reportInStatuses: ["NONE","PENDING","FAILED"],//需要的入住上报旅业状态
+            desc: true,
+            name: ''  // 搜索
+          },
+          limit: 4,
+          offset: 1,
+          onsuccess: (body, headers) => {
+            if (body.errcode == 0) {
+              this.unhandleNum = headers['x-total-count'];
+            }
+          }
+        });
+      },
+
+      showMsg (val) {
+        this.unhandleList();
+      },
+
+      // 进公安核验详情
+      policeIdentity(val) {
+        this.goto('/policeIdentityDetail/'+val);
+      },
+
+      // 进入团队投屏前选择
+      gotocheckIn(val) {
+        this.goto('/checkIn/'+val);
+      },
+
       OpenExternalScreen(type) {
         document.title = new Date().getSeconds() + "@" + type;
       },
@@ -116,7 +169,7 @@
         //ws地址
         let mymessage = encodeURIComponent(sessionStorage.session_id+sessionStorage.hotel_id);
         let wsuri = '';
-        wsuri = "wss://wqt.fortrun.cn/p/v2.7.9/todolistws?wsCode=" + mymessage;  // qa
+        wsuri = "wss://wqt.fortrun.cn/p/v2.8.1/todolistws?wsCode=" + mymessage;  // qa
         this.websock = new WebSocket(wsuri);
         this.websock.onopen = this.websocketonopen;
         this.websock.onmessage = this.websocketonmessage;
@@ -133,6 +186,8 @@
         if (date == '"refresh"') {
           this.speakShow = true;
           this.speckText('您有待办事项未处理，点击查看');
+          this.unhandleList();
+          this.searchVal++;
         }
       },
       websocketsend(agentData){//数据发送
@@ -146,12 +201,30 @@
     },
 
     mounted () {
-      this.tabClick(1);
+      let list = JSON.parse(sessionStorage.getItem('subPermissions'));
+      list.forEach(item => {
+        if (item.tag == 'sp_checkin') {
+          this.getAllConfigList.qyOrders = true;
+        }else if(item.tag=="sp_inroom"){
+          this.getAllConfigList.qyCheckIn=true;
+        }else if(item.tag=="sp_trade") {
+          this.getAllConfigList.isQyPay=true;
+        }else if(item.tag=="sp_check") {
+          this.getAllConfigList.isRztCheck = true;
+          this.unhandleList();
+        }
+      });
+      setTimeout(() => {
+        let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
+        console.log(dataId.value);
+        this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+      },500);
+      this.homeIndexShow = true;
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
         this.websocketsend(88888);
-      },1500)
+      },1500);
     },
   }
 </script>
@@ -184,6 +257,7 @@
           display: flex;
           align-items: center;
           margin-right: 60px;
+          line-height: 1;
           img {
             display: inline-block;
             width: 24px;
@@ -194,7 +268,11 @@
             font-size: 26px;
             color: #fff;
             font-family: "Microsoft Himalaya";
+            margin-top: 10px;
           }
+        }
+        .changeScreen * {
+          vertical-align:middle;
         }
         .tabs {
           height: 100%;
@@ -207,6 +285,17 @@
             display: inline-flex;
             align-items: center;
             font-weight: bold;
+            i {
+              font-style:normal;
+              background-color: #F5222D;
+              border-radius: 50%;
+              font-size: 20px;
+              color: #fff;
+              margin-left: 6px;
+              width: 28px;
+              height: 28px;
+              line-height: 28px;
+            }
           }
           .active {
             color: #303133;

@@ -86,7 +86,7 @@ const actions = {
     }).then(response => {
       console.log("response",response);
       // closeFullScreen (openFullScreen());
-      if (response.data.code == 0 || response.data.errcode == 0) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
@@ -115,6 +115,50 @@ const actions = {
     // openFullScreen();
     axios({
       url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      method: param.method || 'GET',
+      baseURL: '/',
+      headers: param.headers || {
+        Session: sessionStorage.session_id,
+        token: sessionStorage.session_id
+      },
+      params: param.params || null,
+      data: param.body || null,
+      timeout: param.timeout || 60000,
+      credentials: false,
+      emulateHTTP: false,
+      emulateJSON: param.emulateJSON ? param.emulateJSON:true,
+    }).then(response => {
+      console.log("response",response);
+      // closeFullScreen (openFullScreen());
+      if (response.data.code == 0 || response.data.errcode == 0) {
+        param.onSuccess && param.onSuccess(response)
+      }
+      else if (response.data.code === 10004) {
+        router.replace('/');
+      }
+      else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
+        Vue.prototype.$message.error(response.data.msg);
+        param.onFail && param.onFail(response)
+      }
+      else {
+        Vue.prototype.$message.error(response.data.msg);
+        param.onFail && param.onFail(response)
+      }
+    }).catch(
+      error => {
+        // closeFullScreen (openFullScreen());
+        if(error){
+          console.log("error",error)
+        }
+
+      }
+    )
+  },
+
+  resourceGemini: (ctx, param) => {
+    // openFullScreen();
+    axios({
+      url: httpTool.httpUrlEnv() + 'gemini' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -184,6 +228,17 @@ const actions = {
     })
   },
 
+  // 首页权限
+  getAllConfig(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/permission/getByUserId',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      }
+    })
+  },
+
   //查看是否对接PMS
   getPmsFlag(ctx, param) {
     ctx.dispatch('resource', {
@@ -195,10 +250,25 @@ const actions = {
     })
   },
 
-  // 获取列表
+  // 获取预订单列表
   getQueryByPage (ctx, param) {
     ctx.dispatch('resource', {
       url: '/ecard/orders/queryByPage',
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 获取在住单列表
+  getNoPmsQueryCheckInList (ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/workWechat/room/checkInOutList',
       method: 'POST',
       body: param.data,
       onSuccess: (body, headers) => {
@@ -239,6 +309,17 @@ const actions = {
     })
   },
 
+  // 发卡和rc单的dab权限
+  cardRule(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/get/hotel/config?key='+param.cardStatus,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      }
+    })
+  },
+
   // 判断是否为今日的订单
   sendCheck(ctx, param) {
     ctx.dispatch('resource', {
@@ -267,10 +348,38 @@ const actions = {
     })
   },
 
-  //获得同步时间
+  // 单个同步
+  refreshOne(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/pms/refreshOne/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 获得同步时间
   getRefreshTime(ctx, param) {
     ctx.dispatch('resource', {
       url: '/ecard/hotel/hotelInfo?refresh=1',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 添加入住人判断是否满住
+  guestCount(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/subOrder/'+param.subOrderId+'/guestCount',
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
@@ -407,6 +516,121 @@ const actions = {
       body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 已处理按钮是否显示
+  getShowPoliceConfigs(ctx, param){
+    ctx.dispatch('resourceGemini', {
+      url: '/getHotelConfig/enable_show_plice_processed',
+      method: 'GET',
+      onSuccess: body=>{
+        param.onsuccess ? param.onsuccess(body) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 获取公安核验列表
+  newIdentityList(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/lvye/searchLvyeReportInfos?limit='+ param.limit+'&offset='+param.offset,
+      method: 'POST',
+      body: param.data,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 获取酒店房间列表
+  getRoomNumberList(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/room/list',
+      method: 'GET',
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 公安核验详情
+  newIdentityDetail(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/lvye/lvyeReportInfo/' + param.identity_id,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 拒绝
+  rejectStatus(ctx, param){
+    ctx.dispatch('resourceGemini',{
+      url:'/lvye/checkStatus/'+param.identity_id+'/'+param.status,
+      method:'PUT',
+      body:param.body,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 上传旅业
+  reportLvYe(ctx, param) {
+    ctx.dispatch('resourceGemini', {
+      url: '/lvye/lvyeReport',
+      method: 'PUT',
+      body: param.data,
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+    })
+  },
+
+  // 团队订单获取投屏选项
+  checkInGetOptions(ctx, param){
+    ctx.dispatch('resource', {
+      url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
+      method: 'GET',
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 团队订单办理入住
+  checkInPostOptions(ctx, param){
+    ctx.dispatch('resource_', {
+      url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
