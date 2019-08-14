@@ -163,7 +163,7 @@
     },
     methods: {
       ...mapActions([
-        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule'
+        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule', 'sendCardRule'
       ]),
 
       // 获取权限
@@ -407,9 +407,17 @@
         }else {
             istrue = true;
         }
-        this.page = 1;
-        this.getPreOrder(1);
-        this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
+        this.sendCardRule({
+          subOrderId: this.changeItem.subOrderId,
+          sendCard: istrue,
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.page = 1;
+              this.getPreOrder(1);
+              this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
+            }
+          }
+        });
       },
 
       SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
