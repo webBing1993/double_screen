@@ -166,7 +166,7 @@
             <div class="tab" v-else>
               <div class="input">
                 <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
-                <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
+                <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
                 <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
