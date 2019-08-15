@@ -415,7 +415,7 @@
           }
           span:first-of-type {
             width: 250px;
-            margin-right: 12px;
+            margin-right: 12.5px;
           }
           input {
             border: 1px solid #979797;

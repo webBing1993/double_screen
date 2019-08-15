@@ -82,7 +82,7 @@
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
                 <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
-                <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2 > 0">
+                <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
                 <span v-for="item in keyBords2" @click="item == '清除' ? clear($event) : keyEntry($event, item, 2)">{{item}}</span>
@@ -220,10 +220,8 @@
           if (this.searchString2.length > 0) {
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
-            if (this.searchString2.length == 0) {
-              this.page = 1;
-              this.getPreOrder(1);
-            }
+            this.page = 1;
+            this.getPreOrder(1);
           }
         }
       },
@@ -240,7 +238,6 @@
       // 字母键盘事件
       keyEntry(event, item,type) {
         event.preventDefault();
-        clearTimeout(this.timer);
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
@@ -249,10 +246,8 @@
         }else {
           this.searchString2 += item;
           this.searchString = this.searchString2;
-          this.timer = setTimeout(() => {
-            this.page = 1;
-            this.getPreOrder(1);
-          },300)
+          this.page = 1;
+          this.getPreOrder(1);
         }
       },
 
