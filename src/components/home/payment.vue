@@ -351,6 +351,8 @@
           this.searchString1 = '';
         }
         this.searchString = '';
+        this.page = 1;
+        this.paymentList(1);
       },
 
       keyCancel (event, type) {
