@@ -203,6 +203,8 @@
           this.searchString1 = '';
         }
         this.searchString = '';
+        this.page = 1;
+        this.getPreOrder(1);
       },
 
       keyCancel (event, type) {
