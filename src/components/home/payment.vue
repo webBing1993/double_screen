@@ -362,6 +362,7 @@
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
+            this.page = 1;
             this.paymentList(1);
           }
         }else {
@@ -369,6 +370,7 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             this.timer = setTimeout(() => {
+              this.page = 1;
               this.paymentList(1);
             },300)
           }
@@ -380,6 +382,7 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
+        this.page = 1;
         this.paymentList(1);
       },
 
@@ -390,11 +393,13 @@
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
+          this.page = 1;
           this.paymentList(1);
         }else {
           this.searchString2 += item;
           this.searchString = this.searchString2;
           this.timer = setTimeout(() => {
+            this.page = 1;
             this.paymentList(1);
           },1500)
         }
@@ -404,11 +409,13 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
+        this.page = 1;
         this.paymentList(1);
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
+        this.page = 1;
         this.paymentList(1);
       },
 
@@ -417,6 +424,7 @@
         this.loadingShow = true;
         this.filterObj.payFlag = index;
         this.showList = false;
+        this.page = 1;
         this.paymentList(1);
       },
 
@@ -425,6 +433,7 @@
         this.loadingShow = true;
         this.isPreauthorize = !this.isPreauthorize;
         this.showList = false;
+        this.page = 1;
         this.paymentList(1);
       },
 
@@ -550,6 +559,7 @@
               this.isScreen = false;
               if(body.data.code == 0){
                 this.payTig = false;
+                this.page = 1;
                 this.paymentList(1)
               }
             },
@@ -579,6 +589,7 @@
               this.isScreen = false;
               if (body.data.code == 0) {
                 this.payTig = false;
+                this.page = 1;
                 this.paymentList(1);
               }
             },

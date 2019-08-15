@@ -252,6 +252,7 @@
         this.showList = false;
         this.showList_ = false;
         sessionStorage.setItem('tabIndex_', this.tabIndex);
+        this.page = 1;
         this.getPreOrder(1);
       },
 
@@ -277,6 +278,7 @@
 //            this.loadingText = '加载中...';
 //            this.loadingShow = true;
 //            this.showList = false;
+            this.page = 1;
             this.getPreOrder(1);
           }
         }else {
@@ -287,6 +289,7 @@
 //              this.loadingText = '加载中...';
 //              this.loadingShow = true;
 //              this.showList = false;
+              this.page = 1;
               this.getPreOrder(1);
             }
           }
@@ -301,6 +304,7 @@
 //        this.loadingText = '加载中...';
 //        this.loadingShow = true;
 //        this.showList = false;
+        this.page = 1;
         this.getPreOrder(1);
       },
 
@@ -313,6 +317,7 @@
 //          this.loadingText = '加载中...';
 //          this.loadingShow = true;
 //          this.showList = false;
+          this.page = 1;
           this.getPreOrder(1);
         }else {
           if (this.searchString2.length < 11) {
@@ -322,6 +327,7 @@
 //              this.loadingShow = true;
 //              this.showList = false;
               this.searchString = this.searchString2;
+              this.page = 1;
               this.getPreOrder(1);
             }
           }else {
@@ -337,6 +343,7 @@
 //        this.loadingText = '加载中...';
 //        this.loadingShow = true;
 //        this.showList = false;
+        this.page = 1;
         this.getPreOrder(1);
       },
       clearSearch1() {
@@ -345,6 +352,7 @@
 //        this.loadingText = '加载中...';
 //        this.loadingShow = true;
 //        this.showList = false;
+        this.page = 1;
         this.getPreOrder(1);
       },
 
