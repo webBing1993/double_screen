@@ -213,6 +213,7 @@
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
+            this.page = 1;
             this.getPreOrder(1);
           }
         }else {
@@ -220,6 +221,7 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             if (this.searchString2.length == 0) {
+              this.page = 1;
               this.getPreOrder(1);
             }
           }
@@ -231,6 +233,7 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
+        this.page = 1;
         this.getPreOrder(1);
       },
 
@@ -241,11 +244,13 @@
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
+          this.page = 1;
           this.getPreOrder(1);
         }else {
           this.searchString2 += item;
           this.searchString = this.searchString2;
           this.timer = setTimeout(() => {
+            this.page = 1;
             this.getPreOrder(1);
           },300)
         }
@@ -255,11 +260,13 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
+        this.page = 1;
         this.getPreOrder(1);
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
+        this.page = 1;
         this.getPreOrder(1);
       },
 
