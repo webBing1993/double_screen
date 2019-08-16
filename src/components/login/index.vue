@@ -377,6 +377,10 @@
                   display: inline-block;
                 }
               }
+              span:active {
+                background-color: #1AAD19;
+                color: #f1f1f1;
+              }
             }
           }
         }
