@@ -779,6 +779,10 @@
             display: inline-block;
           }
         }
+        span:active {
+          background-color: #1AAD19;
+          color: #f1f1f1;
+        }
       }
       .keyBoard2 {
         span {
@@ -811,6 +815,10 @@
             height: 28px;
             display: inline-block;
           }
+        }
+        span:active {
+          background-color: #1AAD19;
+          color: #f1f1f1;
         }
       }
     }
