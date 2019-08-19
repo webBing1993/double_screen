@@ -121,7 +121,7 @@
             <div class="lists">
               <div class="list">
                 <span>冻结金额</span>
-                <span>￥{{detailVal.totalFeeStr}}</span>
+                <span>¥{{detailVal.totalFeeStr}}</span>
               </div>
               <div class="list">
                 <span>操作人员</span>
@@ -146,7 +146,7 @@
             <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
               <div class="list">
                 <span>结算金额</span>
-                <span>￥{{(detailVal.refundModel.totalFee/100).toFixed(2)}}</span>
+                <span>¥{{(detailVal.refundModel.totalFee/100).toFixed(2)}}</span>
               </div>
               <div class="list">
                 <span>操作人员</span>
@@ -165,7 +165,7 @@
             <div class="lists" v-if="detailVal.channel == 4 && detailVal.refundModel && detailVal.refundModel.channel == 5">
               <div class="list">
                 <span>解冻金额</span>
-                <span>￥{{(detailVal.refundModel.refund_fee/100).toFixed(2)}}</span>
+                <span>¥{{(detailVal.refundModel.refund_fee/100).toFixed(2)}}</span>
               </div>
               <div class="list">
                 <span>操作人员</span>
@@ -214,7 +214,7 @@
             <div class="lists">
               <div class="list">
                 <span>支付金额</span>
-                <span>￥{{detailVal.totalFeeStr}}</span>
+                <span>¥{{detailVal.totalFeeStr}}</span>
               </div>
               <div class="list">
                 <span>操作人员</span>
@@ -243,7 +243,7 @@
             <div class="lists"  v-if="detailVal.refundModel || detailVal.refundModel != null">
               <div class="list">
                 <span>退款金额</span>
-                <span>￥{{detailVal.refundModel.totalFeeStr}}</span>
+                <span>¥{{detailVal.refundModel.totalFeeStr}}</span>
               </div>
               <div class="list">
                 <span>操作人员</span>
