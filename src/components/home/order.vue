@@ -4,8 +4,9 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)">散客订单</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">团队订单</span>
+            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)">散客订单</span>
+            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)">团队订单</span>
+            <span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)">今日预抵</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -197,6 +198,7 @@
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
 
+  let today=new Date().getTime();
   export default {
     name: 'order',
     components: {ElCol, loadingList},
@@ -207,6 +209,7 @@
         showList: false,
         showList_: false,
         tabIndex: 1,  // tab切换
+        tabToDay: true,  // tab今日预抵
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
         searchString2: '',  // 数字搜索
@@ -228,6 +231,8 @@
         pmsFlag: true,   // 判断是否对接pms
         loadingCheckIn: false,  // 判断是否办理 加载中
         tigTeamShow: false,     // 团队主单入住后
+        startTime: '',  // 开始时间
+        endTime: '',  // 结束时间
       }
     },
     filters: {
@@ -245,13 +250,25 @@
       ]),
 
       // tab切换
-      tabClick (index) {
-        this.tabIndex = index;
+      tabClick (type, index) {
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = false;
-        sessionStorage.setItem('tabIndex_', this.tabIndex);
+        if (type == 1) {
+          this.tabIndex = index;
+          sessionStorage.setItem('tabIndex_', this.tabIndex);
+        }else {
+          this.tabToDay = !this.tabToDay;
+          sessionStorage.setItem('tabToDay', this.tabToDay);
+          if (this.tabToDay) {
+            this.startTime = this.datetimeparse(today,'YYYY-MM-DD')+' 00:00:00';
+            this.endTime = this.datetimeparse(today,'YYYY-MM-DD')+' 23:59:59';
+          }else {
+            this.startTime = '';
+            this.endTime = '';
+          }
+        }
         this.page = 1;
         this.getPreOrder(1);
       },
@@ -578,8 +595,8 @@
       getPreOrder (page) {
         this.getQueryByPage({
           data: {
-            start: '',
-            end: '',
+            start: this.startTime,
+            end: this.endTime,
             page: page,
             pageSize: 4,
             payMode: '',
@@ -669,12 +686,20 @@
       this.showList = false;
       this.showList_ = false;
       if(!this.$route.meta.isBack || sessionStorage.getItem('gotoCheckIn') == 'false'){
-        this.getPreOrder(1);
+        this.page = 1;
       }else {
         this.tabIndex = sessionStorage.getItem('tabIndex_') != null ? sessionStorage.getItem('tabIndex_') : 1;
+        this.tabToDay = sessionStorage.getItem('tabToDay') == 'false' ? false : true;
         this.page = sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1;
-        this.getPreOrder(this.page);
       }
+      if (this.tabToDay) {
+        this.startTime = this.datetimeparse(today,'YYYY-MM-DD')+' 00:00:00';
+        this.endTime = this.datetimeparse(today,'YYYY-MM-DD')+' 23:59:59';
+      }else {
+        this.startTime = '';
+        this.endTime = '';
+      }
+      this.getPreOrder(this.page);
       this.$route.meta.isBack = false;
     },
     beforeRouteEnter(to,from,next){
