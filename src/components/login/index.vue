@@ -270,6 +270,7 @@
     beforeRouteLeave(to,from,next) {
       sessionStorage.removeItem('tabIndex');
       sessionStorage.removeItem('tabIndex_');
+      sessionStorage.removeItem('tabToDay');
       sessionStorage.removeItem('currentChange');
       sessionStorage.removeItem('pmsFlag');
       sessionStorage.removeItem('changeItem');
