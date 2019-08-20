@@ -1,123 +1,150 @@
 <template>
   <div>
     <div class="checkIn" v-show="checkInShow">
-      <div class="bgCheckTop"></div>
-      <div class="goback">
-        <div @click="gobanck">
-          <img src="../../assets/fanhui1.png" alt="">
-          <span>返回</span>
+      <div class="check_fl">
+        <div class="bgCheckTop"></div>
+        <div class="check_fl_content">
+          <div class="goback">
+            <div @click="gobanck">
+              <img src="../../assets/fanhui1.png" alt="">
+              <span>返回</span>
+            </div>
+          </div>
+          <div class="checkInChange">
+            <div class="checkIn_header">
+              <!--<div class="order_origin">-->
+              <!--订单来源：{{changeItem.sourceId ? changeItem.sourceId : '-'}}-->
+              <!--</div>-->
+              <div class="order_info">
+                <div class="order_person">
+                  <img src="../../assets/renyuan.png" alt="">
+                  <span>{{changeItem.owner}}</span>
+                  <span>{{changeItem.ownerTel}}</span>
+                </div>
+                <div class="order_remark">备注：{{changeItem.remark ? changeItem.remark : '-'}}</div>
+              </div>
+            </div>
+            <div class="checkIn_content" v-if="changeItem.type == 0">
+              <div class="lists">
+                <div class="list" v-if="cardShow">
+                  <div class="title">是否需要发房卡：</div>
+                  <div class="changeItem">
+                    <div class="item_tab" @click="changeStatus(1, 1)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="isfaka">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>发卡</span>
+                    </div>
+                    <div class="item_tab" @click="changeStatus(2, 1)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="!isfaka">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>不发卡</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="list" v-if="rcShow">
+                  <div class="title">是否需要RC单：</div>
+                  <div class="changeItem">
+                    <div class="item_tab" @click="changeStatus(1, 2)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="isrcpdf">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>需要</span>
+                    </div>
+                    <div class="item_tab" @click="changeStatus(2, 2)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="!isrcpdf">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>不需要</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="list">
+                  <div class="title">是否需要手机号：</div>
+                  <div class="changeItem">
+                    <div class="item_tab" @click="changeStatus(1, 3)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="isphone">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>需要</span>
+                    </div>
+                    <div class="item_tab" @click="changeStatus(2, 3)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="!isphone">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>不需要</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btns">
+                <el-button type="danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
+                <el-button type="primary" round :loading="loadingSure" @click="checkIn()">开始办理</el-button>
+              </div>
+            </div>
+            <div class="checkIn_content checkIn_content_" v-else>
+              <div class="lists">
+                <div class="list">
+                  <div class="title"><span>总房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
+                  <div class="changeItem">
+                    <div class="item_tab" @click="payModeChange(1)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>当面付</span>
+                    </div>
+                    <div class="item_tab" @click="payModeChange(2)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>已预付</span>
+                    </div>
+                    <div class="item_tab" @click="payModeChange(3)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>挂账</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="list">
+                  <div class="title"><span>押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
+                  <div class="changeItem">
+                    <div class="item_tab" @click="changeFreeDeposit(1)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>免押金</span>
+                    </div>
+                    <div class="item_tab" @click="changeFreeDeposit(2)"  v-if="!cashFeeTrue">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>收押金</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btns">
+                <el-button type="danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
+                <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
+                <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
+                <el-button type="primary" class="tig_info" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="bgCheckTop"></div>
       </div>
-      <div class="checkInChange">
-        <div class="checkIn_header">
-          <!--<div class="order_origin">-->
-            <!--订单来源：{{changeItem.sourceId ? changeItem.sourceId : '-'}}-->
-          <!--</div>-->
-          <div class="order_info">
-            <div class="order_person">
-              <img src="../../assets/renyuan.png" alt="">
-              <span>{{changeItem.owner}}</span>
-              <span>{{changeItem.ownerTel}}</span>
-            </div>
-            <div class="order_remark">备注：{{changeItem.remark ? changeItem.remark : '-'}}</div>
+      <div class="check_fr">
+        <div>
+          <div class="fast_title">
+            <img src="../../assets/xiantiao.png" alt="">
+            待入住房间
           </div>
-        </div>
-        <div class="checkIn_content" v-if="changeItem.type == 0">
-          <div class="lists">
-            <div class="list" v-if="cardShow">
-              <div class="title">是否需要发房卡：</div>
-              <div class="changeItem">
-                <div class="item_tab" @click="changeStatus(1, 1)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="isfaka">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>发卡</span>
-                </div>
-                <div class="item_tab" @click="changeStatus(2, 1)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="!isfaka">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>不发卡</span>
+          <div class="roomLists">
+            <div class="list" v-for="item in rooms">
+              <div class="title" @click="roomListShow(item)">
+                <span>{{item.roomTypeName}}（{{item.count}}）</span>
+                <img src="../../assets/shouqi.png" alt="" v-if="!item.roomList">
+                <img src="../../assets/zhankai.png" alt="" v-else>
+              </div>
+              <div class="content"  v-if="item.roomList">
+                <div class="lis">
+                  <span class="li" v-for="i in item.roomNo">{{i}}</span>  <!-- <i>脏</i>-->
                 </div>
               </div>
             </div>
-            <div class="list" v-if="rcShow">
-              <div class="title">是否需要RC单：</div>
-              <div class="changeItem">
-                <div class="item_tab" @click="changeStatus(1, 2)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="isrcpdf">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>需要</span>
-                </div>
-                <div class="item_tab" @click="changeStatus(2, 2)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="!isrcpdf">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>不需要</span>
-                </div>
-              </div>
-            </div>
-            <div class="list">
-              <div class="title">是否需要手机号：</div>
-              <div class="changeItem">
-                <div class="item_tab" @click="changeStatus(1, 3)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="isphone">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>需要</span>
-                </div>
-                <div class="item_tab" @click="changeStatus(2, 3)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="!isphone">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>不需要</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="btns">
-            <el-button type="danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
-            <el-button type="primary" round :loading="loadingSure" @click="checkIn()">开始办理</el-button>
-          </div>
-        </div>
-        <div class="checkIn_content checkIn_content_" v-else>
-          <div class="lists">
-            <div class="list">
-              <div class="title"><span>总房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
-              <div class="changeItem">
-                <div class="item_tab" @click="payModeChange(1)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>当面付</span>
-                </div>
-                <div class="item_tab" @click="payModeChange(2)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>已预付</span>
-                </div>
-                <div class="item_tab" @click="payModeChange(3)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>挂账</span>
-                </div>
-              </div>
-            </div>
-            <div class="list">
-              <div class="title"><span>押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
-              <div class="changeItem">
-                <div class="item_tab" @click="changeFreeDeposit(1)">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>免押金</span>
-                </div>
-                <div class="item_tab" @click="changeFreeDeposit(2)"  v-if="!cashFeeTrue">
-                  <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
-                  <img src="../../assets/weixuan.png" alt="" v-else>
-                  <span>收押金</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="btns">
-            <el-button type="danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
-            <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
-            <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
-            <el-button type="primary" class="tig_info" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
           </div>
         </div>
       </div>
@@ -150,11 +177,12 @@
         payMode: 0,  // 判断房费支付状态
         cardShow: false,  // 发卡dab权限
         rcShow: false,    // rc单dab权限
+        rooms: [],  // 房间号列表
       }
     },
     methods: {
       ...mapActions([
-         'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule'
+         'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule', 'getRooms'
       ]),
 
       // 返回上一页
@@ -325,6 +353,30 @@
         })
       },
 
+      // 展开隐藏房号列表
+      roomListShow(item) {
+        item.roomList = !item.roomList;
+      },
+
+      // 获取房间号列表
+      getRoomsList() {
+        this.getRooms({
+          orderId: this.changeItem.id,
+          onsuccess: body => {
+            if (body.data.code == 0 && body.data.data) {
+              body.data.data.forEach((item, index) => {
+                if (index == 0) {
+                  item.roomList = true;
+                }else {
+                  item.roomList = false;
+                }
+              });
+              this.rooms = body.data.data;
+            }
+          }
+        })
+      },
+
     },
 
     mounted () {
@@ -332,6 +384,7 @@
       this.getCard('support_room_card');
       this.getCard('rc_status');
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
+      this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
       }else {
@@ -345,158 +398,245 @@
 <style scoped lang="less">
 
   .checkIn {
-    background-color: #fff;
-    min-height: calc(100vh - 28px);
-    width: calc(100vw - 80px);
+    width: 100vw;
     padding-top: 100px;
-    margin-left: 40px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
-    .bgCheckTop {
-      height: 20px;
-      background-color: #DEE7F8;
-    }
-    .goback {
-      padding-left: 60px;
-      text-align: left;
-      div {
-        padding: 24px 0;
-        display: inline-flex;
-        align-items: center;
-        img {
-          width: 18px;
-          height: 30px;
-          display: inline-flex;
-          margin-right: 10px;
-        }
-        span {
-          color: #1AAD19;
-          font-size: 30px;
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .check_fl {
+      padding: 0 40px;
+      width: calc(100vw - 480px);
+      .bgCheckTop {
+        height: 20px;
+        background-color: #DEE7F8;
       }
-    }
-    .checkInChange {
-      .checkIn_header {
-        padding: 0 50px;
-        background: #F8F8F8;
-        border-top: 1px solid #D5D5D5;
-        text-align: left;
-        .order_origin {
-          padding: 30px 0 20px 10px;
-          font-size: 24px;
-          color: #909399;
-          border-bottom: 1px solid #D5D5D5;
-        }
-        .order_info {
-          padding: 30px 0 30px 10px;
-          .order_person {
+      .check_fl_content {
+        width: 100%;
+        min-height: calc(100vh - 140px);
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
+        background-color: #fff;
+        .goback {
+          padding-left: 60px;
+          text-align: left;
+          div {
+            padding: 24px 0;
             display: inline-flex;
             align-items: center;
-            margin-bottom: 30px;
             img {
-              width: 24px;
-              height: 24px;
-              margin-right: 16px;
+              width: 18px;
+              height: 30px;
+              display: inline-flex;
+              margin-right: 10px;
             }
             span {
-              font-size: 24px;
-              color: #000;
-            }
-            span:first-of-type {
-              margin-right: 32px;
+              color: #1AAD19;
+              font-size: 30px;
             }
           }
         }
-        .order_remark {
-          color: #303133;
-          font-size: 24px;
-        }
-      }
-      .checkIn_content {
-        padding: 40px 60px;
-        .lists {
-          margin-bottom: 200px;
-          .list {
-            display: flex;
-            align-items: center;
-            margin-bottom: 40px;
-            .title {
-              color: #303133;
-              font-weight: bold;
-              font-size: 26px;
-              text-shadow: 0 2px 3px rgba(0,0,0,0.04);
-              width: 358px;
-              text-align: left;
-              span:first-of-type {
-                width: 150px;
-                display: inline-block;
-              }
-              span:last-of-type {
-                color: #F55825;
-              }
+        .checkInChange {
+          .checkIn_header {
+            padding: 0 50px;
+            background: #F8F8F8;
+            border-top: 1px solid #D5D5D5;
+            text-align: left;
+            .order_origin {
+              padding: 30px 0 20px 10px;
+              font-size: 24px;
+              color: #909399;
+              border-bottom: 1px solid #D5D5D5;
             }
-            .changeItem {
-              display: inline-flex;
-              justify-content: flex-start;
-              .item_tab {
-                position: relative;
-                font-size: 22px;
-                color: #000;
-                line-height: 64px;
-                height: 64px;
-                width: 172px;
-                text-align: center;
-                margin-right: 44px;
+            .order_info {
+              padding: 30px 0 30px 10px;
+              .order_person {
+                display: inline-flex;
+                align-items: center;
+                margin-bottom: 30px;
                 img {
-                  position: absolute;
-                  z-index: 1;
-                  width: 172px;
-                  height: 64px;
-                  left: 0;
-                  top: 0;
+                  width: 24px;
+                  height: 24px;
+                  margin-right: 16px;
                 }
                 span {
-                  position: absolute;
-                  left: 50%;
-                  top: 50%;
-                  z-index: 2;
-                  transform: translate(-50%, -50%);
+                  font-size: 24px;
+                  color: #000;
                 }
+                span:first-of-type {
+                  margin-right: 32px;
+                }
+              }
+            }
+            .order_remark {
+              color: #303133;
+              font-size: 24px;
+            }
+          }
+          .checkIn_content {
+            padding: 40px 60px;
+            .lists {
+              margin-bottom: 200px;
+              .list {
+                display: flex;
+                align-items: center;
+                margin-bottom: 40px;
+                .title {
+                  color: #303133;
+                  font-weight: bold;
+                  font-size: 26px;
+                  text-shadow: 0 2px 3px rgba(0,0,0,0.04);
+                  width: 358px;
+                  text-align: left;
+                  span:first-of-type {
+                    width: 150px;
+                    display: inline-block;
+                  }
+                  span:last-of-type {
+                    color: #F55825;
+                  }
+                }
+                .changeItem {
+                  display: inline-flex;
+                  justify-content: flex-start;
+                  .item_tab {
+                    position: relative;
+                    font-size: 22px;
+                    color: #000;
+                    line-height: 64px;
+                    height: 64px;
+                    width: 172px;
+                    text-align: center;
+                    margin-right: 44px;
+                    img {
+                      position: absolute;
+                      z-index: 1;
+                      width: 172px;
+                      height: 64px;
+                      left: 0;
+                      top: 0;
+                    }
+                    span {
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      z-index: 2;
+                      transform: translate(-50%, -50%);
+                    }
+                  }
+                }
+              }
+            }
+            .btns {
+              margin-top: 110px;
+              text-align: left;
+              /deep/ button {
+                width: 390px;
+                height: 80px;
+                border-radius: 50px;
+                font-size: 28px;
+                color: #fff;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+              }
+
+              /deep/ .el-button--danger {
+                background-color: #F5222D;
+                margin-right: 60px;
+              }
+
+              /deep/ .el-button--primary {
+                background-color: #1AAD19;
+              }
+              .tig_info {
+                background-color: #d7d7d7;
+                color: #a4a4a4;
+                border: none;
+              }
+            }
+          }
+          .checkIn_content_ {
+            .lists {
+              margin-bottom: 300px;
+            }
+          }
+        }
+      }
+    }
+    .check_fr {
+      width: 480px;
+      height: calc(100vh - 100px);
+      background-color: #fff;
+      overflow-y: scroll;
+      -webkit-overflow-scrolling: touch; // 为了滚动顺畅
+      .fast_title {
+        position: relative;
+        margin: 40px 0;
+        font-size: 28px;
+        color: #303133;
+        text-align: center;
+        font-weight: bold;
+        img {
+          position: absolute;
+          left: 30px;
+          top: 9px;
+          width: calc(100% - 60px);
+        }
+      }
+      .roomLists {
+        .list {
+          margin-top: 36px;
+          .title {
+            position: relative;
+            border-bottom: 1px solid #D8D8D8;
+            padding: 16px 0 16px 40px;
+            font-size: 26px;
+            color: #1AAD19;
+            text-align: left;
+            img {
+              position: absolute;
+              right: 40px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 24px;
+              height: 14px;
+            }
+          }
+          .content {
+            .lis {
+              padding: 0 40px;
+              text-align: left;
+              .li {
+                display: inline-block;
+                width: 116px;
+                height: 64px;
+                line-height: 64px;
+                text-align: center;
+                font-size: 24px;
+                border: 1px solid #D8D8D8;
+                margin: 30px 25px 0 0;
+                position: relative;
+                i {
+                  font-style: normal;
+                  background-color: #F5222D;
+                  font-size: 18px;
+                  color: #fff;
+                  width: 22px;
+                  height: 22px;
+                  text-align: center;
+                  line-height: 22px;
+                  position: absolute;
+                  right: 0;
+                  top: 0;
+                }
+              }
+              .li:nth-of-type(3n) {
+                margin-right: 0;
               }
             }
           }
         }
-        .btns {
-          margin-top: 110px;
-          text-align: left;
-          /deep/ button {
-            width: 390px;
-            height: 80px;
-            border-radius: 50px;
-            font-size: 28px;
-            color: #fff;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-          }
-
-          /deep/ .el-button--danger {
-            background-color: #F5222D;
-            margin-right: 60px;
-          }
-
-          /deep/ .el-button--primary {
-            background-color: #1AAD19;
-          }
-          .tig_info {
-            background-color: #d7d7d7;
-            color: #a4a4a4;
-            border: none;
-          }
-        }
       }
-      .checkIn_content_ {
-        .lists {
-          margin-bottom: 300px;
-        }
-      }
+    }
+    .check_fr::-webkit-scrollbar {
+      display: none; // 隐藏滚动条
     }
   }
 

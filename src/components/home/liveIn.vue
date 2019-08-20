@@ -46,6 +46,7 @@
                     </p>
                     <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 ">添加同住人</div>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
+                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="">退房</el-button>
                   </div>
                 </div>
               </div>
@@ -336,6 +337,9 @@
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data.list) {
+              body.data.data.list.forEach(item => {
+                  item.quitLoading = false;
+              });
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
               this.showList = true;
@@ -589,7 +593,7 @@
             }
             .tongbu_status {
               position: absolute;
-              right: 0;
+              right: 164px;
               top: 0;
               background: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
@@ -615,7 +619,7 @@
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 13px 0;
+              padding: 17px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;

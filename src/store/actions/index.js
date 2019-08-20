@@ -320,6 +320,17 @@ const actions = {
     })
   },
 
+  // 获取房间号列表
+  getRooms(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/preOrderRoom/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      }
+    })
+  },
+
   // 判断是否为今日的订单
   sendCheck(ctx, param) {
     ctx.dispatch('resource', {
