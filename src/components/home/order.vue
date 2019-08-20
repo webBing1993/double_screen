@@ -689,7 +689,7 @@
         this.page = 1;
       }else {
         this.tabIndex = sessionStorage.getItem('tabIndex_') != null ? sessionStorage.getItem('tabIndex_') : 1;
-        this.tabToDay = sessionStorage.getItem('tabToDay') == 'true' ? true : false;
+        this.tabToDay = sessionStorage.getItem('tabToDay') == 'false' ? false : true;
         this.page = sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1;
       }
       if (this.tabToDay) {
