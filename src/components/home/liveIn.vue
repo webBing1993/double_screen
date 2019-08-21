@@ -46,7 +46,7 @@
                     </p>
                     <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 ">添加同住人</div>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
-                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="">退房</el-button>
+                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item.orderId)">退房</el-button>
                   </div>
                 </div>
               </div>
@@ -430,6 +430,11 @@
 
       SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
         document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+      },
+
+      // 退房跳转
+      gotoCheckOut(orderId) {
+        this.$emit('goToCheckOut', orderId)
       },
 
     },

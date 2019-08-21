@@ -48,6 +48,11 @@ export default new Router({
           path: '/checkIn/:id',
           name: 'checkIn',
           component: resolve => require(['../components/home/checkIn.vue'],resolve),
+        },
+        {
+          path: '/checkOut/:id',
+          name: 'checkOut',
+          component: resolve => require(['../components/home/checkOut.vue'],resolve),
         }
       ],
     },

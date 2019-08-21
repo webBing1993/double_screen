@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal"></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut"></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -158,6 +158,11 @@
       // 进入团队投屏前选择
       gotocheckIn(val) {
         this.goto('/checkIn/'+val);
+      },
+
+      // 进入退房详情
+      goCheckOut(val) {
+          this.goto('/checkOut/'+val)
       },
 
       OpenExternalScreen(type) {
