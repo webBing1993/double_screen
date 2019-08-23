@@ -608,15 +608,26 @@
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data.list) {
-              body.data.data.list.forEach(item => {
-                item.loadingTongbu = false;
-                item.loadingBanli = false;
-              });
-              this.orderLists = body.data.data.list;
-              this.total = body.data.data.total;
-              this.showList = true;
-              this.showList_ = true;
+              if (body.data.data.list) {
+                body.data.data.list.forEach(item => {
+                  item.loadingTongbu = false;
+                  item.loadingBanli = false;
+                });
+                this.orderLists = body.data.data.list;
+                this.total = body.data.data.total;
+              }
+              if (body.data.data.list.length == 0) {
+                if (this.page > 1) {
+                  this.page--;
+                  this.getPreOrder(this.page);
+                }else {
+                  this.orderLists = [];
+                  this.total = body.data.data.total;
+                }
+              }
             }
+            this.showList = true;
+            this.showList_ = true;
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
