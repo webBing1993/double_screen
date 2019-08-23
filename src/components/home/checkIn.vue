@@ -365,11 +365,7 @@
           onsuccess: body => {
             if (body.data.code == 0 && body.data.data) {
               body.data.data.forEach((item, index) => {
-                if (index == 0) {
-                  item.roomList = true;
-                }else {
-                  item.roomList = false;
-                }
+                item.roomList = true;
               });
               this.rooms = body.data.data;
             }

@@ -5,12 +5,14 @@
         <span>交易时间</span>
         <span class="time_change">
           <i @click="preDay"><img src="../../assets/shaungyige.png" alt=""></i>
-          <el-date-picker
-            v-model="timeVal"
+          <DatePicker
             type="date"
-            @change="datePicker"
-            placeholder="选择日期">
-          </el-date-picker>
+            format="yyyy/MM/dd"
+            placeholder="选择日期"
+            :value="timeVal"
+            @on-change="datePicker"
+          >
+            </DatePicker>
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
         <span class="items">
@@ -18,10 +20,11 @@
           <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)">支付宝</span>
         </span>
         <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
+        <span class="change_item sweeping" @click="sweepingClick">扫码结算</span>
       </div>
       <div class="paymentAll">
         <div class="paymentLists" v-if="showList">
-          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.channel, item.tradeType)">
+          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType)">
             <div class="list_header">
               <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
               <span>交易单号：{{item.orderId}}</span>
@@ -106,7 +109,7 @@
               <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
               <span @click="keyCancel_()"><img src="../../assets/shanchuanniu.png" alt=""></span>
             </div>
-            <div class="btn" @click="payTigStatus == 1 ? refundMoney() : accountMoney()">确定</div>
+            <el-button type="primary" :loading="infoLoading" class="btn" @click="payTigStatus == 1 ? refundMoney() : accountMoney()">确定</el-button>
           </div>
         </div>
       </div>
@@ -262,7 +265,22 @@
               <span class="refund" @click="refund">退款</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- 扫码结算弹框步骤-->
+      <div class="sweepingTig" v-if="sweepingTig">
+        <div class="shadow"></div>
+        <div class="sweeping_content">
+          <div class="title">
+            <img src="../../assets/guanbi.png" alt="" @click="sweepingTig=false">
           </div>
+          <div class="content">
+            <img src="../../assets/sweeping.gif" alt="">
+            <p class="waringTig" v-if="sweepingTig_">二维码不正确</p>
+            <p v-else>请将结算单上的二维码靠近扫码设备</p>
+          </div>
+        </div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText" :style="isScreen ? 'width: 100vw' : 'width: calc(100vw - 480px)'"></loadingList>
     </div>
@@ -272,10 +290,11 @@
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
+  import {DatePicker} from 'iview'
 
   export default {
     name: 'payment',
-    components: {ElCol, loadingList},
+    components: {ElCol, loadingList, DatePicker},
     data () {
       return {
         loadingShow: false,  // loading
@@ -287,6 +306,7 @@
         page: 1,  // 当前页数
         total: 0, // 总条数
         payTig: false,   // 结算/退款弹框
+        infoLoading: false, // 结算loading
         payTigStatus: '',  // 判断是否为退款还是结算
         payMoney: '',   // 退款，结算金额
         keyBoard: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'],   // 键盘
@@ -308,6 +328,8 @@
         searchString2: '',  // 数字搜索
         timer: null,
         isScreen: false,
+        sweepingTig: false,   // 扫码结算步骤提示框
+        sweepingTig_: false,   // 扫码结算错误提示框
       }
     },
     filters: {
@@ -449,8 +471,6 @@
           data: {
             page: page,  //页数
             roomNo: '',//房号 (房间名字：如303)
-//            startTime: this.datetimeparse(this.timeVal[0].getTime(), 'yy-MM-dd hh:mm:ss'),
-//            endTime: this.datetimeparse(this.timeVal[1].getTime() + 24*60*60*1000-1, 'yy-MM-dd hh:mm:ss'),
             founder: 'All',
             timeEnd:  this.datetimeparse(this.timeVal.getTime(), 'yy-MM-dd') + ' ' + 15 + ':' + 33 + ':' + 40,
             isPreauthorize: this.isPreauthorize ? 1 : '',
@@ -473,24 +493,33 @@
       },
 
       // 獲取詳情
-      detailTig(id, channel,tradeType) {
+      detailTig(id,tradeType) {
         this.loadingShow = true;
-        this.paymentAndUnfinish({
-          data:{
+        let data = {};
+        if (tradeType) {
+          data = {
             orderId: id,
             isRefund: tradeType == 'refund' ? true : false
-          },
+          }
+        }else {
+          data = {
+            orderId: id
+          }
+        }
+        this.paymentAndUnfinish({
+          data: data,
           onsuccess: (body) => {
             this.loadingShow = false;
             if(body.data.code == 0){
-              this.detailVal = body.data.data;
-              if (channel == 4 || channel == 5 || channel == 6) {
-//                document.body.addEventListener('touchmove',this.bodyScroll,false);
-//                document.body.style.position = 'fixed';
-//                document.body.style.height = '100%';
-                this.channelDetail = true;
+              if (body.data.data != '' || body.data.data != null) {
+                this.detailVal = body.data.data;
+                if (this.detailVal.channel == 4 || this.detailVal.channel == 5 || this.detailVal.channel == 6) {
+                  this.channelDetail = true;
+                }else {
+                  this.channelDetail1 = true;
+                }
               }else {
-                this.channelDetail1 = true;
+                this.sweepingTig = true;
               }
             }
           },
@@ -538,18 +567,19 @@
       // 退款事件
       refundMoney () {
           console.log('this.detailVal',this.detailVal);
+        this.infoLoading = true;
         if ((this.payMoney * 100) > this.detailVal.totalFee) {
+          this.infoLoading = false;
           this.$message('退款金额大于总额');
         }else {
           this.isScreen = true;
-          this.loadingShow = true;
           this.reimburse({
             data:{
               orderId: this.detailVal.outTradeNo,
               refundfee: this.payMoney
             },
             onsuccess: (body) => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
               if(body.data.code == 0){
                 this.payTig = false;
@@ -558,7 +588,7 @@
               }
             },
             onfail: (body, headers) => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
             }
           });
@@ -567,11 +597,12 @@
 
       // 结算接口
       accountMoney() {
+        this.infoLoading = true;
         if ((this.payMoney * 100) > this.detailVal.totalFee) {
+          this.infoLoading = false;
           this.$message('退款金额大于总额');
         }else {
           this.isScreen = true;
-          this.loadingShow = true;
           this.depositConsume({
             data: {
               orderId: this.detailVal.outTradeNo || '',
@@ -579,7 +610,7 @@
               remark: ''
             },
             onsuccess: body => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
               if (body.data.code == 0) {
                 this.payTig = false;
@@ -588,7 +619,7 @@
               }
             },
             onfail: (body, headers) => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
             }
           });
@@ -609,14 +640,25 @@
       // 取消弹框
       channelDetailCancle () {
         this.channelDetail = false;
-//        document.body.removeEventListener('touchmove',this.bodyScroll,false);
-//        document.body.style.position = 'initial';
-//        document.body.style.height = 'auto';
       },
 
       bodyScroll(event){
         event.preventDefault();
-      }
+      },
+
+      // 扫码结算
+      sweepingClick() {
+        this.sweepingTig = true;
+      },
+
+      // 接受A屏返回的订单orderId
+      getSweepingSettlement (orderId) {
+        if (!orderId || orderId == null) {
+          this.sweepingTig = true;
+        }else {
+          this.detailTig(orderId);
+        }
+      },
 
     },
 
@@ -637,6 +679,7 @@
     .changeItem {
       padding: 40px;
       text-align: left;
+      position: relative;
       span {
         color: #303133;
         font-size: 24px;
@@ -658,6 +701,74 @@
             width: 15px;
           }
         }
+        /deep/ .ivu-icon-ios-close-circle {
+          display: none;
+        }
+        /deep/ .ivu-date-picker {
+          width: 480px;
+          height: 56px;
+        }
+        /deep/ .ivu-input {
+          height: 56px;
+          border: none;
+          color: #303133;
+          font-size: 30px;
+          padding-left: 30px;
+          outline: none;
+          text-align: center;
+        }
+        /deep/ .ivu-select-dropdown {
+          left: 112px !important;
+        }
+        /deep/ .ivu-input:hover {
+          border: none;
+        }
+        /deep/ .ivu-input-suffix {
+          display: none;
+        }
+        /deep/ .ivu-input-suffix i {
+          font-size: 32px;
+          line-height: 72px;
+        }
+        /deep/ .ivu-picker-panel-icon-btn i {
+          font-size: 32px;
+        }
+        /deep/ .ivu-date-picker-cells span {
+          width: 56px;
+          height: 56px;
+          line-height: 56px;
+          text-align: center;
+          margin: 5px 2px 2px 2px;
+        }
+        /deep/ .ivu-date-picker-cells {
+          width: 420px;
+          margin: 28px;
+        }
+        /deep/ .ivu-picker-panel-icon-btn {
+          width: 74px;
+          height: 48px;
+        }
+        /deep/ .ivu-date-picker-header {
+          height: 48px;
+          line-height: 48px;
+        }
+        /deep/ .ivu-btn-small {
+          font-size: 32px;
+        }
+        /deep/ .ivu-picker-confirm-time {
+          display: none;
+        }
+        /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
+          width: 239px;
+          max-height: 546px;
+        }
+        /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
+          padding: 0;
+          text-align: center;
+        }
+        /deep/ .ivu-btn-default {
+          display: none;
+        }
       }
       .change_item {
         background: #FFFFFF;
@@ -674,6 +785,13 @@
       .change_item.active {
         background-color: #C8E1C8;
         border: 1px solid #1AAD19;
+        color: #1AAD19;
+      }
+      .sweeping {
+        position: absolute;
+        right: 520px;
+        top: 50%;
+        transform: translateY(-50%);
         color: #1AAD19;
       }
     }
@@ -1045,7 +1163,7 @@
             border-radius: 44px;
             text-align: center;
             height: 78px;
-            line-height: 78px;
+            width: 100%;
             font-size: 26px;
             color: #fff;
             cursor: pointer;
@@ -1159,6 +1277,50 @@
       }
       .detail_content::-webkit-scrollbar {
         display: none;
+      }
+    }
+    .sweepingTig {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .sweeping_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        width: 800px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .title {
+          position: relative;
+          img {
+            position: absolute;
+            right: 40px;
+            top: 40px;
+            display: block;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+          }
+        }
+        .content {
+          p {
+            color: #303133;
+            font-size: 30px;
+            text-align: center;
+            padding: 40px 0;
+          }
+          .waringTig {
+            color: #F5222D;
+          }
+        }
       }
     }
   }

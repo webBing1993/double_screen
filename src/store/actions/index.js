@@ -86,7 +86,7 @@ const actions = {
     }).then(response => {
       console.log("response",response);
       // closeFullScreen (openFullScreen());
-      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000 || response.data.code === 20005) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
@@ -401,6 +401,32 @@ const actions = {
     })
   },
 
+  // 结账后退房
+  accountCheckout(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/checkOut',
+      body: param.data,
+      method: 'POST',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      }
+    })
+  },
+
+  // 获取结账列表详情
+  getCheckOutInfo(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/fee/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
   // 发卡
   sendCardRule(ctx, param) {
     ctx.dispatch('resource', {
@@ -437,6 +463,51 @@ const actions = {
       url: '/ecard/wechatPay/depositConsume',
       body: param.data,
       method: 'POST',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  //退款处理
+  refundHandle(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/updateRefundMoney',
+      method: 'POST',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  // 收款退款
+  accountRefund(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/getNeedRefundFee',
+      method: 'POST',
+      body:param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+    })
+  },
+
+  //获取支付纪录
+  getChargeRecard(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/workWechat/room/checkOut',
+      method: 'POST',
+      body:param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },

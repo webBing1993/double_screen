@@ -5,7 +5,7 @@
         <div class="header_fl">
           <div class="changeScreen" @click="OpenExternalScreen('OpenExternalScreen')">
             <img src="../../assets/qiehuan.png" alt="">
-            <span>切换外屏</span>
+            <span>查看外屏</span>
           </div>
           <div class="tabs" ref="tabs">
             <span :class="tabIndex == 1 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(1)" data-id="1" v-if="getAllConfigList.qyOrders">办理入住</span>

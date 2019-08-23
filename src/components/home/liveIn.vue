@@ -46,7 +46,7 @@
                     </p>
                     <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 ">添加同住人</div>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
-                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item.orderId)">退房</el-button>
+                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">退房</el-button>
                   </div>
                 </div>
               </div>
@@ -164,7 +164,7 @@
     },
     methods: {
       ...mapActions([
-        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule', 'sendCardRule'
+        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule', 'sendCardRule', 'getChargeRecard'
       ]),
 
       // 获取权限
@@ -433,8 +433,30 @@
       },
 
       // 退房跳转
-      gotoCheckOut(orderId) {
-        this.$emit('goToCheckOut', orderId)
+      gotoCheckOut(item) {
+        item.quitLoading = !item.quitLoading;
+        this.getChargeRecard({
+          data:{
+            checkInRoomId: item.checkInRoomId,
+            orderId: item.orderId ? item.orderId : ''
+          },
+          onsuccess:(body,headers)=>{
+            if(body.data.code == 0){
+              this.$message({
+                message: '退房成功',
+                type: 'success'
+              });
+              this.page = 1;
+              this.getPreOrder(1);
+            }else {
+              sessionStorage.setItem('checkOutItem', JSON.stringify(item));
+              this.$emit('goToCheckOut', item.orderId);
+            }
+          },
+          onfail: body => {
+            item.quitLoading = false;
+          }
+        })
       },
 
     },

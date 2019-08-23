@@ -24,7 +24,7 @@
                   </div>
                   <div class="li"  v-if="hotelConfig.show_similarity==='true'">
                     <span>相似度：</span>
-                    <span class="blue">{{item.similarity}}%</span>
+                    <span :class="item.similarity == 0 ? 'red' : 'blue'">{{item.similarity}}%</span>
                   </div>
                 </div>
                 <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading">立即处理</el-button>
@@ -501,6 +501,9 @@
                   }
                   .blue {
                     color: #1AAD19;
+                  }
+                  .red {
+                    color: #F5222D;
                   }
                 }
                 .li:first-of-type {
