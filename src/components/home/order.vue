@@ -198,7 +198,6 @@
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
 
-  let today=new Date().getTime();
   export default {
     name: 'order',
     components: {ElCol, loadingList},
@@ -259,6 +258,7 @@
           this.tabIndex = index;
           sessionStorage.setItem('tabIndex_', this.tabIndex);
         }else {
+          let today=new Date().getTime();
           this.tabToDay = !this.tabToDay;
           sessionStorage.setItem('tabToDay', this.tabToDay);
           if (this.tabToDay) {
@@ -615,8 +615,6 @@
                 });
                 this.orderLists = body.data.data.list;
                 this.total = body.data.data.total;
-                this.showList = true;
-                this.showList_ = true;
               }
               if (body.data.data.list.length == 0) {
                 if (this.page > 1) {
@@ -625,11 +623,11 @@
                 }else {
                   this.orderLists = [];
                   this.total = body.data.data.total;
-                  this.showList = true;
-                  this.showList_ = true;
                 }
               }
             }
+            this.showList = true;
+            this.showList_ = true;
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
@@ -705,6 +703,7 @@
         this.tabToDay = sessionStorage.getItem('tabToDay') == 'false' ? false : true;
         this.page = sessionStorage.getItem('currentChange') != null ? parseInt(sessionStorage.getItem('currentChange')) : 1;
       }
+      let today = new Date().getTime();
       if (this.tabToDay) {
         this.startTime = this.datetimeparse(today,'YYYY-MM-DD')+' 00:00:00';
         this.endTime = this.datetimeparse(today,'YYYY-MM-DD')+' 23:59:59';
