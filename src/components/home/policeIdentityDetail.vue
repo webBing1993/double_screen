@@ -314,7 +314,7 @@
                 if (body.errcode == 0) {
                   this.$message({
                     type: 'success',
-                    message: '旅业上传成功'
+                    message: '正在上传旅业'
                   });
                   this.$emit('getMessage', this.$route.params.id);
                   this.gobanck();
@@ -356,7 +356,7 @@
               if (body.errcode == 0) {
                 this.$message({
                   type: 'success',
-                  message: '旅业上传成功'
+                  message: '正在上传旅业'
                 });
                 this.$emit('getMessage', this.$route.params.id);
                 this.gobanck();
