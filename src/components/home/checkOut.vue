@@ -248,7 +248,8 @@
 
       // 返回上一页
       gobanck() {
-        this.$router.go(-1);
+//        this.$router.go(-1);
+        this.$router.replace({name:'liveIn'})
       },
 
       // 结账
