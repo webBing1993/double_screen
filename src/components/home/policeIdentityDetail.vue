@@ -152,7 +152,8 @@
 
       // 返回上一页
       gobanck() {
-        this.$router.go(-1);
+//        this.$router.go(-1);
+        this.$router.replace({name:'policeIdentity'})
       },
 
       // 日期选择
@@ -258,6 +259,7 @@
 
       // 拒绝事件
       isRejectDialogShow(){
+        this.loadingRefund = true;
         this.rejectStatus({
           status: 'REFUSED',
           identity_id: this.detail.identityId,
@@ -272,12 +274,17 @@
             }else {
               this.$message.error(body.errmsg);
             }
+            this.loadingRefund = false;
+          },
+          onfail: body => {
+            this.loadingRefund = false;
           }
         })
       },
 
       // 上传旅业
       setMultiConfirm() {
+        this.loadingCheckIn = true;
         if (this.detail.similarity < 70) {
           this.$confirm('此人相似度太低, 是否确认上传?', '提示', {
             confirmButtonText: '确定',
@@ -312,13 +319,18 @@
                   this.$emit('getMessage', this.$route.params.id);
                   this.gobanck();
                 }
+                this.loadingCheckIn = false;
+              },
+              onfail: body => {
+                this.loadingCheckIn = false;
               }
-            })
+            });
           }).catch(() => {
             this.$message({
               type: 'info',
               message: '已取消上传'
             });
+            this.loadingCheckIn = false;
           });
         }else {
           let getRoom_id='';
@@ -349,8 +361,12 @@
                 this.$emit('getMessage', this.$route.params.id);
                 this.gobanck();
               }
+              this.loadingCheckIn = false;
+            },
+            onfail: body => {
+              this.loadingCheckIn = false;
             }
-          })
+          });
         }
       },
 

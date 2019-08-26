@@ -148,7 +148,8 @@ const actions = {
       error => {
         // closeFullScreen (openFullScreen());
         if(error){
-          console.log("error",error)
+          console.log("error",error);
+          router.replace('/');
         }
 
       }
@@ -192,7 +193,8 @@ const actions = {
       error => {
         // closeFullScreen (openFullScreen());
         if(error){
-          console.log("error",error)
+          console.log("error",error);
+          router.replace('/');
         }
 
       }

@@ -1331,6 +1331,10 @@
     width: 235px;
   }
 
+  /deep/ .ivu-date-picker-focused input {
+    box-shadow: none;
+  }
+
   /deep/ .el-input__icon {
     font-size: 24px;
     line-height: 56px;
