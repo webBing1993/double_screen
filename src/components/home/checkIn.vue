@@ -159,7 +159,8 @@
 
       // 返回上一页
       gobanck() {
-        this.$router.go(-1);
+//        this.$router.go(-1);
+        this.$router.replace({name:'order'})
       },
 
       // 办理选择
