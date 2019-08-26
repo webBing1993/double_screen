@@ -28,7 +28,7 @@
                   </div>
                 </div>
                 <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading" v-if="item.reportInStatus != 'PENDING'">立即处理</el-button>
-                <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading" v-else>处理中</el-button>
+                <el-button type="primary" class="tig_btn tig_btning" :loading="item.unhandleLoading" v-else>处理中</el-button>
               </div>
             </div>
             <el-pagination
@@ -524,6 +524,10 @@
                 font-size: 20px;
                 color: #fff;
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+              }
+              .tig_btning {
+                background-color: #8CD58B;
+                border-color: #8CD58B;
               }
             }
           }

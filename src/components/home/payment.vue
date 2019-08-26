@@ -106,7 +106,7 @@
               <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
               <span @click="keyCancel_()"><img src="../../assets/shanchuanniu.png" alt=""></span>
             </div>
-            <div class="btn" @click="payTigStatus == 1 ? refundMoney() : accountMoney()">确定</div>
+            <el-button type="primary" :loading="infoLoading" class="btn" @click="payTigStatus == 1 ? refundMoney() : accountMoney()">确定</el-button>
           </div>
         </div>
       </div>
@@ -287,6 +287,7 @@
         page: 1,  // 当前页数
         total: 0, // 总条数
         payTig: false,   // 结算/退款弹框
+        infoLoading: false, // 结算loading
         payTigStatus: '',  // 判断是否为退款还是结算
         payMoney: '',   // 退款，结算金额
         keyBoard: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'],   // 键盘
@@ -538,18 +539,22 @@
       // 退款事件
       refundMoney () {
           console.log('this.detailVal',this.detailVal);
-        if ((this.payMoney * 100) > this.detailVal.totalFee) {
+        this.infoLoading = true;
+        if (this.payMoney == 0) {
+          this.$message('请输入正确的退款金额!');
+          this.infoLoading = false;
+        }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
+          this.infoLoading = false;
           this.$message('退款金额大于总额');
         }else {
           this.isScreen = true;
-          this.loadingShow = true;
           this.reimburse({
             data:{
               orderId: this.detailVal.outTradeNo,
               refundfee: this.payMoney
             },
             onsuccess: (body) => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
               if(body.data.code == 0){
                 this.payTig = false;
@@ -558,7 +563,7 @@
               }
             },
             onfail: (body, headers) => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
             }
           });
@@ -567,11 +572,15 @@
 
       // 结算接口
       accountMoney() {
-        if ((this.payMoney * 100) > this.detailVal.totalFee) {
+        this.infoLoading = true;
+        if (this.payMoney == 0) {
+          this.$message('请输入正确的消费金额!');
+          this.infoLoading = false;
+        }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
+          this.infoLoading = false;
           this.$message('退款金额大于总额');
         }else {
           this.isScreen = true;
-          this.loadingShow = true;
           this.depositConsume({
             data: {
               orderId: this.detailVal.outTradeNo || '',
@@ -579,7 +588,7 @@
               remark: ''
             },
             onsuccess: body => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
               if (body.data.code == 0) {
                 this.payTig = false;
@@ -588,7 +597,7 @@
               }
             },
             onfail: (body, headers) => {
-              this.loadingShow = false;
+              this.infoLoading = false;
               this.isScreen = false;
             }
           });
@@ -1045,7 +1054,7 @@
             border-radius: 44px;
             text-align: center;
             height: 78px;
-            line-height: 78px;
+            width: 100%;
             font-size: 26px;
             color: #fff;
             cursor: pointer;
