@@ -53,7 +53,7 @@
                     </p>
                   </div>
                   <el-button type="primary" class="tongbu_status" :loading="item.loadingTongbu"  @click="getRefresh(item)"  v-if="pmsFlag">同步</el-button>
-                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli"  @click="checkGoIn(item)"  v-if="pmsFlag">办理入住</el-button>
+                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli"  @click="checkGoIn(item)" >办理入住</el-button>
                 </div>
               </div>
               <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
