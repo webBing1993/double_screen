@@ -568,7 +568,10 @@
       refundMoney () {
           console.log('this.detailVal',this.detailVal);
         this.infoLoading = true;
-        if ((this.payMoney * 100) > this.detailVal.totalFee) {
+        if (this.payMoney == 0) {
+          this.$message('请输入正确的退款金额!');
+          this.infoLoading = false;
+        }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.infoLoading = false;
           this.$message('退款金额大于总额');
         }else {
@@ -598,7 +601,10 @@
       // 结算接口
       accountMoney() {
         this.infoLoading = true;
-        if ((this.payMoney * 100) > this.detailVal.totalFee) {
+        if (this.payMoney == 0) {
+          this.$message('请输入正确的消费金额!');
+          this.infoLoading = false;
+        }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.infoLoading = false;
           this.$message('退款金额大于总额');
         }else {
