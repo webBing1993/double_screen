@@ -27,7 +27,8 @@
                     <span :class="item.similarity == 0 ? 'red' : 'blue'">{{item.similarity}}%</span>
                   </div>
                 </div>
-                <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading">立即处理</el-button>
+                <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading" v-if="item.reportInStatus != 'PENDING'">立即处理</el-button>
+                <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading" v-else>处理中</el-button>
               </div>
             </div>
             <el-pagination
