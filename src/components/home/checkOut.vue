@@ -9,7 +9,7 @@
             <span>返回</span>
           </div>
           <div class="roomNo">
-            <span v-for="(item, index) in orderDetail.roomNos">{{index == (orderDetail.roomNos.length - 1) ? item : item + '/'}}</span>
+            <span v-for="(item, index) in orderDetail.roomNos">房间号：{{index == (orderDetail.roomNos.length - 1) ? item : item + '/'}}</span>
           </div>
           <div class="replayList" @click="replayList">
             <img src="../../assets/tongbu.png" alt="">
@@ -27,7 +27,7 @@
               </div>
             </div>
             <div class="content">
-              <div class="lists">
+              <div class="lists" v-if="orderDetail.refundVO.roomFeeStr != '预付房费'">
                 <div class="list">
                   <span>房费</span>
                   <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : '翼支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
@@ -116,7 +116,7 @@
 
       <!-- 明细-->
       <div class="channelDetail" v-if="channelDetail">
-        <div class="shadow"></div>
+        <div class="shadow" @click="channelDetail=false"></div>
         <div class="detail">
           <div class="detail_content">
             <div class="title">{{payInfoType == 1 ? 'PMS收款' : 'PMS消费'}}<img src="../../assets/guanbi.png" alt="" @click="channelDetail=false"></div>
@@ -131,7 +131,7 @@
                   <span></span>
                 </p>
               </div>
-              <div class="list" v-else v-for="item in payConsumeList">
+              <div class="list" v-for="item in payConsumeList"  v-if="payInfoType == 2">
                 <p>
                   <span>{{item.payName}}  {{item.roomNo}}</span>
                   <span>¥{{(item.amount/100).toFixed(2)}}元</span>
@@ -412,6 +412,7 @@
                   if (item.type == 1) {
                     this.payConsumeList.push(item);
                     this.payInfoConsumeNum = this.payInfoConsumeNum + item.amount;
+                    console.log('this.payConsumeList', this.payConsumeList);
                   }else {
                     this.payInfoGetList.push(item);
                     this.payInfoGetNum = this.payInfoGetNum + item.amount;
@@ -437,9 +438,16 @@
       replayList() {
         this.loadingShow = true;
         this.checkOutShow = false;
+        this.payInfoConsumeNum = 0; // 消费总额
+        this.payInfoGetNum = 0;     // 收款总额
+        this.payInfoGetList = [];     // 收款记录
+        this.payConsumeList = [];     // 消费记录
         this.getDetail();
       },
 
+    },
+    beforeMount () {
+      this.loadingShow = false;
     },
 
     mounted () {
@@ -518,6 +526,7 @@
             .list {
               color: #000;
               font-size: 30px;
+              font-weight: bold;
             }
             .list:last-of-type {
               padding-right: 79px;

@@ -75,7 +75,7 @@
 
         <!-- 开始办理弹框-->
         <div class="teamTig" v-if="teamTig">
-          <div class="shadow"></div>
+          <div class="shadow" @click="teamTig=false"></div>
           <div class="tigContent">
             <div class="title">
               请确认订单支付状态
@@ -133,7 +133,7 @@
 
         <!-- 是否分房-->
         <div class="isShowScreen" v-if="isShowScreen">
-          <div class="shadow"></div>
+          <div class="shadow" @click="isShowScreen=false"></div>
           <div class="isShowScreen_content">
             <div class="isShowScreen_title">请先对房间进行分房，才可办理入住</div>
             <div class="isShowScreen_tabs">
@@ -388,7 +388,6 @@
                       orderId: item.id
                     },
                     onsuccess: body => {
-                      console.log('body.code',body.data);
                       if (body.data.code == 0) {
                         this.loadingShow = false;
                         if (body.data.data == null || !body.data.data) {
@@ -418,7 +417,6 @@
                           this.payMode = body.data.data.payMode;
                           this.ispaid = body.data.data.paid;
                           if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
-//                            this.teamTig = true;
                             sessionStorage.setItem('changeItem', JSON.stringify(item));
                             sessionStorage.setItem('currentChange', this.page);
                             sessionStorage.setItem('gotoCheckIn', true);
@@ -461,7 +459,6 @@
               }
             },
             onfail: (body, headers) => {
-              console.log('body',body.data);
               item.loadingBanli = false;
               if (body.data.code == 89000 || body.data.code == 79000 || body.data.code == 69000) {
                 this.page = 1;

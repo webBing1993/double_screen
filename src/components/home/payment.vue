@@ -97,7 +97,7 @@
 
       <!-- 结算、退款弹框-->
       <div class="payTig" v-if="payTig">
-        <div class="shadow"></div>
+        <div class="shadow" @click="payTig = false;payMoney = ''"></div>
         <div class="payTigContent">
           <div class="payTig_title">
             请确认{{payTigStatus == 1 ? '退款' : '结算'}}金额
@@ -116,7 +116,7 @@
 
       <!-- 預授權詳情-->
       <div class="channelDetail" v-if="channelDetail">
-        <div class="shadow"></div>
+        <div class="shadow" @click="channelDetail=false"></div>
         <div class="detail">
           <div class="detail_content">
             <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
@@ -208,7 +208,7 @@
 
       <!-- 订单详情-->
       <div class="channelDetail" v-if="channelDetail1">
-        <div class="shadow"></div>
+        <div class="shadow" @click="channelDetail1=false"></div>
         <div class="detail">
           <div class="detail_content">
             <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">支付信息<img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;"></div>
@@ -518,8 +518,11 @@
                 }else {
                   this.channelDetail1 = true;
                 }
+                this.sweepingTig = false;
+                this.sweepingTig_ = false;
               }else {
                 this.sweepingTig = true;
+                this.sweepingTig_ = true;
               }
             }
           },
@@ -661,6 +664,7 @@
       getSweepingSettlement (orderId) {
         if (!orderId || orderId == null) {
           this.sweepingTig = true;
+          this.sweepingTig_ = true;
         }else {
           this.detailTig(orderId);
         }

@@ -44,7 +44,7 @@
           </div>
         </div>
       </div>
-
+      <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
   </div>
 </template>
@@ -54,6 +54,8 @@
     name: 'home',
     data () {
       return {
+        loadingShow: false,
+        loadingText: '加载中...',
         homeIndexShow: false,  // 模板显示隐藏
         tabIndex: 1,  // tab切换
         myInfo: {
@@ -72,6 +74,7 @@
           isRztCheck: false, // 公安验证
         },  // 权限
         searchVal: 0,
+        windowUrl: '',
       }
     },
     methods: {
@@ -108,7 +111,7 @@
       // 退出事件
       sure() {
         this.quit = false;
-        this.replaceto('/');
+        window.location.href = this.windowUrl;
       },
 
       // 获取列表
@@ -162,7 +165,11 @@
 
       // 进入退房详情
       goCheckOut(val) {
-          this.goto('/checkOut/'+val)
+        this.loadingShow = true;
+        setTimeout(() => {
+          this.loadingShow = false;
+        }, 600);
+        this.goto('/checkOut/'+val)
       },
 
       OpenExternalScreen(type) {
@@ -196,8 +203,18 @@
         }
       },
       websocketsend(agentData){//数据发送
-        console.log('============websocket数据发送成功==============')
-        this.websock.send(agentData);
+        console.log('============websocket数据发送成功==============');
+        console.log('navigator.onLine', navigator.onLine);
+        if(navigator.onLine){
+          this.websock.send(agentData);
+        }else{
+          this.message({
+            showClose: true,
+            message: '当前无网络',
+            type: 'error',
+            duration: 0,
+          });
+        }
       },
       websocketclose(e){  //关闭通道
         console.log("关闭通道connection closed (" + e.code + ")");
@@ -207,6 +224,7 @@
 
     mounted () {
       let list = JSON.parse(sessionStorage.getItem('subPermissions'));
+      this.windowUrl = window.location.href.split('#')[0];
       list.forEach(item => {
         if (item.tag == 'sp_checkin') {
           this.getAllConfigList.qyOrders = true;

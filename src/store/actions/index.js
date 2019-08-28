@@ -106,6 +106,12 @@ const actions = {
         if(error){
           console.log("error",error);
           param.onError && param.onError(error);
+          Vue.prototype.$message({
+            showClose: true,
+            message: '当前无网络',
+            type: 'error',
+            duration: 0,
+          });
         }
 
       }
@@ -149,7 +155,12 @@ const actions = {
         // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
-          router.replace('/');
+          Vue.prototype.$message({
+            showClose: true,
+            message: '当前无网络',
+            type: 'error',
+            duration: 0,
+          });
         }
 
       }
@@ -194,7 +205,12 @@ const actions = {
         // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
-          router.replace('/');
+          Vue.prototype.$message({
+            showClose: true,
+            message: '当前无网络',
+            type: 'error',
+            duration: 0,
+          });
         }
 
       }
@@ -237,6 +253,9 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
       }
     })
   },
@@ -495,8 +514,8 @@ const actions = {
       url: '/ecard/wechatPay/getNeedRefundFee',
       method: 'POST',
       body:param.data,
-      onSuccess: (body, headers,code) => {
-        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null

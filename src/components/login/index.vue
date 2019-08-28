@@ -22,7 +22,7 @@
                 <i><img src="../../assets/mima.png" alt=""></i>
                 <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
               </div>
-              <p class="login"  @click="login">登录</p>
+              <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >办理入住</el-button>
             </el-col>
             <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="content_fl">
               <div class="key_board">
@@ -58,6 +58,7 @@
         getTimer: null,
         keyBords: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],
         phoneCode: 0,  // 0表示的是手机号输入，1表示的是验证码的输入
+        loginLoading: false,
       }
     },
     methods: {
@@ -226,6 +227,7 @@
           } else if (this.code.length != 6) {
             this.$message('请输入６位数验证码');
           } else {
+            this.loginLoading = true;
             this.loginEntry({
               data: {
                 phone: this.phone,
@@ -240,19 +242,25 @@
                   sessionStorage.hotel_id = body.data.data.hotelId;
                   this.getAllConfig({
                     onsuccess: body => {
+                      this.loginLoading = false;
                       if(body.data.data != null) {
                         sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
                         this.goto('/home');
                       }else {
                         this.$message.error('该账号无权限');
                       }
+                    },
+                    onfail: body => {
+                      this.loginLoading = false;
                     }
                   });
                 }else {
+                  this.loginLoading = false;
                   this.$message.error(body.data.msg);
                 }
               },
               onfail: body => {
+                this.loginLoading = false;
                 this.$message.error(body.data.msg);
               }
             })
@@ -265,7 +273,7 @@
        this.nowTime = this.getDateTime();
        this.getTimer = setInterval(() => {
          this.nowTime = this.getDateTime();
-       },1000)
+       },1000);
     },
     beforeRouteLeave(to,from,next) {
       sessionStorage.removeItem('tabIndex');
@@ -455,11 +463,11 @@
             color: #999;
           }
         }
-        .login {
+        .loginBtn {
+          width: 100%;
           margin-top: 56px;
           text-align: center;
           height: 78px;
-          line-height: 78px;
           font-size: 30px;
           color: #fff;
           border-radius: 50px;
