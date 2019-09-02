@@ -566,10 +566,14 @@
                   }
                 }
                 .listCell {
+                  width: 100%;
                   p {
                     font-size: 20px;
                     color: #000;
                     margin-bottom: 5px;
+                  }
+                  .name {
+                    width: 56%;
                   }
                 }
               }

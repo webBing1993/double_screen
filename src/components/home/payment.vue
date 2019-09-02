@@ -5,12 +5,14 @@
         <span>交易时间</span>
         <span class="time_change">
           <i @click="preDay"><img src="../../assets/shaungyige.png" alt=""></i>
-          <el-date-picker
-            v-model="timeVal"
+          <DatePicker
             type="date"
-            @change="datePicker"
-            placeholder="选择日期">
-          </el-date-picker>
+            format="yyyy/MM/dd"
+            placeholder="选择日期"
+            :value="timeVal"
+            @on-change="datePicker"
+          >
+            </DatePicker>
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
         <span class="items">
@@ -94,7 +96,7 @@
 
       <!-- 结算、退款弹框-->
       <div class="payTig" v-if="payTig">
-        <div class="shadow"></div>
+        <div class="shadow" @click="payTig = false;payMoney = ''"></div>
         <div class="payTigContent">
           <div class="payTig_title">
             请确认{{payTigStatus == 1 ? '退款' : '结算'}}金额
@@ -113,7 +115,7 @@
 
       <!-- 預授權詳情-->
       <div class="channelDetail" v-if="channelDetail">
-        <div class="shadow"></div>
+        <div class="shadow" @click="channelDetail=false"></div>
         <div class="detail">
           <div class="detail_content">
             <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
@@ -205,7 +207,7 @@
 
       <!-- 订单详情-->
       <div class="channelDetail" v-if="channelDetail1">
-        <div class="shadow"></div>
+        <div class="shadow" @click="channelDetail1=false"></div>
         <div class="detail">
           <div class="detail_content">
             <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">支付信息<img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;"></div>
@@ -272,10 +274,11 @@
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
+  import {DatePicker} from 'iview'
 
   export default {
     name: 'payment',
-    components: {ElCol, loadingList},
+    components: {ElCol, loadingList, DatePicker},
     data () {
       return {
         loadingShow: false,  // loading
@@ -646,6 +649,7 @@
     .changeItem {
       padding: 40px;
       text-align: left;
+      position: relative;
       span {
         color: #303133;
         font-size: 24px;
@@ -666,6 +670,75 @@
           img {
             width: 15px;
           }
+        }
+        /deep/ .ivu-icon-ios-close-circle {
+          display: none;
+        }
+        /deep/ .ivu-date-picker {
+          width: 480px;
+          height: 56px;
+        }
+        /deep/ .ivu-input {
+          height: 56px;
+          border: none;
+          color: #303133;
+          font-size: 30px;
+          padding-left: 30px;
+          outline: none;
+          text-align: center;
+          box-shadow: none;
+        }
+        /deep/ .ivu-select-dropdown {
+          left: 112px !important;
+        }
+        /deep/ .ivu-input:hover {
+          border: none;
+        }
+        /deep/ .ivu-input-suffix {
+          display: none;
+        }
+        /deep/ .ivu-input-suffix i {
+          font-size: 32px;
+          line-height: 72px;
+        }
+        /deep/ .ivu-picker-panel-icon-btn i {
+          font-size: 32px;
+        }
+        /deep/ .ivu-date-picker-cells span {
+          width: 56px;
+          height: 56px;
+          line-height: 56px;
+          text-align: center;
+          margin: 5px 2px 2px 2px;
+        }
+        /deep/ .ivu-date-picker-cells {
+          width: 420px;
+          margin: 28px;
+        }
+        /deep/ .ivu-picker-panel-icon-btn {
+          width: 74px;
+          height: 48px;
+        }
+        /deep/ .ivu-date-picker-header {
+          height: 48px;
+          line-height: 48px;
+        }
+        /deep/ .ivu-btn-small {
+          font-size: 32px;
+        }
+        /deep/ .ivu-picker-confirm-time {
+          display: none;
+        }
+        /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
+          width: 239px;
+          max-height: 546px;
+        }
+        /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
+          padding: 0;
+          text-align: center;
+        }
+        /deep/ .ivu-btn-default {
+          display: none;
         }
       }
       .change_item {
@@ -1176,6 +1249,10 @@
     background-color: #FFFFFF;
     padding-left: 40px;
     width: 235px;
+  }
+
+  /deep/ .ivu-date-picker-focused input {
+    box-shadow: none;
   }
 
   /deep/ .el-input__icon {
