@@ -106,12 +106,6 @@ const actions = {
         if(error){
           console.log("error",error);
           param.onError && param.onError(error);
-          Vue.prototype.$message({
-            showClose: true,
-            message: '当前无网络',
-            type: 'error',
-            duration: 0,
-          });
         }
 
       }
@@ -155,12 +149,6 @@ const actions = {
         // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
-          Vue.prototype.$message({
-            showClose: true,
-            message: '当前无网络',
-            type: 'error',
-            duration: 0,
-          });
         }
 
       }
@@ -205,12 +193,6 @@ const actions = {
         // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
-          Vue.prototype.$message({
-            showClose: true,
-            message: '当前无网络',
-            type: 'error',
-            duration: 0,
-          });
         }
 
       }

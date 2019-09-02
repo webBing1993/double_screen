@@ -273,7 +273,7 @@
         <div class="shadow"></div>
         <div class="sweeping_content">
           <div class="title">
-            <img src="../../assets/guanbi.png" alt="" @click="sweepingTig=false">
+            <img src="../../assets/guanbi.png" alt="" @click="closeSweeping">
           </div>
           <div class="content">
             <img src="../../assets/sweeping.gif" alt="">
@@ -511,7 +511,7 @@
           onsuccess: (body) => {
             this.loadingShow = false;
             if(body.data.code == 0){
-              if (body.data.data != '' || body.data.data != null) {
+              if (body.data.data != null) {
                 this.detailVal = body.data.data;
                 if (this.detailVal.channel == 4 || this.detailVal.channel == 5 || this.detailVal.channel == 6) {
                   this.channelDetail = true;
@@ -658,17 +658,36 @@
       // 扫码结算
       sweepingClick() {
         this.sweepingTig = true;
+        this.testOpenBarCode();
       },
 
       // 接受A屏返回的订单orderId
-      getSweepingSettlement (orderId) {
+      getSweepingSettlementOrderId (orderId) {
+        console.log('A屏过来的orderId', orderId);
         if (!orderId || orderId == null) {
           this.sweepingTig = true;
           this.sweepingTig_ = true;
         }else {
           this.detailTig(orderId);
+          this.testCloseBarCode();
         }
       },
+
+      // 关闭扫码弹框
+      closeSweeping () {
+        this.sweepingTig = false;
+        this.testCloseBarCode();
+      },
+
+      // 扫码请求A屏操作
+      testOpenBarCode() {
+        jsObj.OpenBarCode();
+      },
+
+      // 关闭小票扫码 客户端点击关闭操作
+      testCloseBarCode() {
+        jsObj.CloseBarCode();
+      }
 
     },
 
@@ -676,6 +695,7 @@
       this.loadingShow = true;
       this.timeVal = new Date(new Date(new Date().toLocaleDateString()).getTime());
       this.paymentList(1);
+      window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
     }
   }
 </script>
@@ -726,6 +746,7 @@
           padding-left: 30px;
           outline: none;
           text-align: center;
+          box-shadow: none;
         }
         /deep/ .ivu-select-dropdown {
           left: 112px !important;

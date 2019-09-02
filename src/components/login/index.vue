@@ -22,7 +22,7 @@
                 <i><img src="../../assets/mima.png" alt=""></i>
                 <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
               </div>
-              <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >办理入住</el-button>
+              <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >确定</el-button>
             </el-col>
             <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="content_fl">
               <div class="key_board">

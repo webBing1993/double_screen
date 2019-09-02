@@ -204,17 +204,7 @@
       },
       websocketsend(agentData){//数据发送
         console.log('============websocket数据发送成功==============');
-        console.log('navigator.onLine', navigator.onLine);
-        if(navigator.onLine){
-          this.websock.send(agentData);
-        }else{
-          this.message({
-            showClose: true,
-            message: '当前无网络',
-            type: 'error',
-            duration: 0,
-          });
-        }
+        this.websock.send(agentData);
       },
       websocketclose(e){  //关闭通道
         console.log("关闭通道connection closed (" + e.code + ")");
