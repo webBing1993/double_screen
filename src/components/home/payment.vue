@@ -342,6 +342,8 @@
       datePicker(val) {
         this.loadingShow = true;
         console.log('datePciker',val);
+        console.log('date', new Date(val));
+        this.timeVal = new Date(val);
         this.showList = false;
         this.paymentList(1);
       },
