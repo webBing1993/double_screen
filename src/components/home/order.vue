@@ -4,9 +4,9 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)">散客订单</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)">团队订单</span>
-            <span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)">今日预抵</span>
+            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">散客订单</span>
+            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">团队订单</span>
+            <span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)" :style="tabToDay ? tabImg[1] : tabImg[0]">今日预抵</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -190,6 +190,20 @@
           </div>
         </div>
       </div>
+
+      <!-- 判断A屏是否有订单在操作-->
+      <div class="tigTeamShow" v-if="tigOrderShow">
+        <div class="shadow"></div>
+        <div class="tig_content">
+          <div class="tig_title">
+            <p>外屏正在办理中，请查看外屏对订单【退出办理】后重新尝试</p>
+          </div>
+          <div class="tig_btns">
+            <span class="cancel" @click="tigOrderShow=false;changeItem.loadingBanli = false;">取消</span>
+            <span class="sure" @click="openScreen">查看外屏</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -207,6 +221,18 @@
         loadingText: '同步中...', // loading text
         showList: false,
         showList_: false,
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         tabIndex: 1,  // tab切换
         tabToDay: true,  // tab今日预抵
         searchString: '',  // 搜索
@@ -232,6 +258,7 @@
         tigTeamShow: false,     // 团队主单入住后
         startTime: '',  // 开始时间
         endTime: '',  // 结束时间
+        tigOrderShow: false, // 判断A屏是否有订单在操作
       }
     },
     filters: {
@@ -376,16 +403,52 @@
       //办理入住
       checkGoIn(item) {
         item.loadingBanli = true;
-        // 判断是否为今日订单
-        this.sendCheck({
-            id: item.id,
+        this.changeItem = item;
+        // 先判断A屏正在办理ing
+        this.getOrderProcess();
+      },
+
+      getOrderProcess() {
+        jsObj.GetOrderProcess();
+      },
+
+      teamCheckIn(){
+        this.loadingCheckIn = true;
+        this.updatePaidMode({
+          orderId: this.changeItem.id,
+          isFreeDeposit: this.changeItem.isFreeDeposit,
+          modeId: this.payMode,
+          onsuccess: body => {
+            this.loadingShow = false;
+            if (body.data.code == 0) {
+              this.teamTig = false;
+              this.page = 1;
+              this.getPreOrder(1);
+              this.loadingCheckIn = false;
+              this.SendParameter('SendMessage@'+this.changeItem.id+'')
+            }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
+          }
+        });
+
+      },
+
+      // 接收A屏判断是否正在办理入住的结果
+      showOrderInfo (isTrue) {
+        console.log('isTrue__', isTrue);
+        if (isTrue != 'true') {
+          // 判断是否为今日订单
+          this.sendCheck({
+            id: this.changeItem.id,
             subOrderId: '',
             onsuccess: body => {
               if (body.data.code == 0) {
-                if (item.type == 1) {
+                if (this.changeItem.type == 1) {
                   this.getOrderFree({
                     data: {
-                      orderId: item.id
+                      orderId: this.changeItem.id
                     },
                     onsuccess: body => {
                       if (body.data.code == 0) {
@@ -417,44 +480,42 @@
                           this.payMode = body.data.data.payMode;
                           this.ispaid = body.data.data.paid;
                           if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
-                            sessionStorage.setItem('changeItem', JSON.stringify(item));
+                            sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
                             sessionStorage.setItem('currentChange', this.page);
                             sessionStorage.setItem('gotoCheckIn', true);
-                            this.$emit('gocheckIn', item.id);
+                            this.$emit('gocheckIn', this.changeItem.id);
                           }else {
                             this.page = 1;
                             this.getPreOrder(1);
-                            this.OpenExternalScreen('SendMessage@'+item.id+'')
+                            this.SendParameter('SendMessage@'+this.changeItem.id+'')
                           }
-                          this.changeItem = item;
                         }
 
                       }else {
                         this.loadingShow = false;
                       }
-                      item.loadingBanli = false;
+                      this.changeItem.loadingBanli = false;
                     },
                     onfail: (body, headers) => {
-                      item.loadingBanli = false;
+                      this.changeItem.loadingBanli = false;
                       this.loadingShow = false;
                     }
                   });
                 }else {
                   // 团队订单办理入住进行跳转
                   this.loadingShow = false;
-                  item.loadingBanli = false;
-                  sessionStorage.setItem('changeItem', JSON.stringify(item));
+                  this.changeItem.loadingBanli = false;
+                  sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
                   sessionStorage.setItem('currentChange', this.page);
                   sessionStorage.setItem('gotoCheckIn', true);
-                  this.$emit('gocheckIn', item.id);
+                  this.$emit('gocheckIn', this.changeItem.id);
                 }
               }else if (body.data.code == 888000) {
                 this.loadingShow = false;
-                item.loadingBanli = false;
-                this.changeItem = item;
+                this.changeItem.loadingBanli = false;
                 this.tigTeamShow = true;
               }else {
-                item.loadingBanli = false;
+                this.changeItem.loadingBanli = false;
                 this.loadingShow = false;
               }
             },
@@ -467,33 +528,26 @@
                 this.loadingShow = false;
               }
             }
-        });
-      },
-      teamCheckIn(){
-        this.loadingCheckIn = true;
-        this.updatePaidMode({
-          orderId: this.changeItem.id,
-          isFreeDeposit: this.changeItem.isFreeDeposit,
-          modeId: this.payMode,
-          onsuccess: body => {
-            this.loadingShow = false;
-            if (body.data.code == 0) {
-              this.teamTig = false;
-              this.page = 1;
-              this.getPreOrder(1);
-              this.loadingCheckIn = false;
-              this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'')
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        });
-
+          });
+        }else {
+          this.tigOrderShow = true;
+        }
       },
 
-      OpenExternalScreen(type) {
-        document.title = new Date().getSeconds() + "@" + type;
+      openScreen () {
+        this.openExternalScreen();
+        this.tigOrderShow = false;
+        this.getPreOrder(this.page);
+      },
+
+      // 查看外屏
+      openExternalScreen() {
+        jsObj.OpenExternalScreen();
+      },
+
+      SendParameter(type) {
+        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
+        jsObj.SendMessage();
       },
 
       // 请先将团队主单入住后才能操作 我知道了
@@ -710,6 +764,7 @@
       }
       this.getPreOrder(this.page);
       this.$route.meta.isBack = false;
+      window.showOrderInfo = this.showOrderInfo;
     },
     beforeRouteEnter(to,from,next){
       if(from.name == 'checkIn'){
@@ -744,17 +799,17 @@
           padding: 40px 0;
           .tab {
             padding: 18px 30px;
-            background: #FFFFFF;
-            box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
-            border-radius: 40px;
+            /*background: #FFFFFF;*/
+            /*box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);*/
+            /*border-radius: 40px;*/
             color: #303133;
             font-size: 20px;
             margin-right: 30px;
             font-weight: bold;
           }
           .active {
-            background-color: #C8E1C8;
-            border: 1px solid #1AAD19;
+            /*background-color: #C8E1C8;*/
+            /*border: 1px solid #1AAD19;*/
             color: #1AAD19;
           }
         }
@@ -1103,6 +1158,11 @@
           position: relative;
           padding: 60px 50px;
           font-weight: bold;
+          p {
+            width : auto;  // 必设
+            display : inline-block; // 不能设置为block
+            text-align : left; // 居左显示
+          }
           img {
             position: absolute;
             right: 10px;
@@ -1120,6 +1180,33 @@
           padding: 38px 0;
           font-size: 32px;
           text-shadow: 0 2px 4px rgba(0,0,0,0.04);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          span:only-child {
+            text-align: center;
+            width: 100%;
+            display: block;
+          }
+          .cancel {
+            color: #000;
+            width: 50%;
+            position: relative;
+          }
+          .cancel:after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 56px;
+            background-color: #D8D8D8;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+          }
+          .sure {
+            width: 50%;
+          }
         }
       }
     }

@@ -4,8 +4,8 @@
       <div class="police_fl">
         <div class="doSthContent">
           <div class="changTabs">
-            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理{{total != 0 ? "("+total+")" : ''}}</span>
-            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" v-if="showHandledList">已处理{{total1 != 0 ? "("+total1+")" : ''}}</span>
+            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)" :style="changeTabString == 1 ? tabImg[1] : tabImg[0]">待处理{{total != 0 ? "("+total+")" : ''}}</span>
+            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" v-if="showHandledList" :style="changeTabString == 2 ? tabImg[1] : tabImg[0]">已处理{{total1 != 0 ? "("+total1+")" : ''}}</span>
           </div>
           <div class="identityList" v-if="showList && changeTabString == 1">
             <div class="list" v-for="item in unhandleList"  @click="unhandleClick(item)">
@@ -133,6 +133,18 @@
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
         showList: false,
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         changeTabString: 1,  // tab选中
         page: 1,  // 当前页数
         page1: 1,  // 当前页数

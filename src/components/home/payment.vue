@@ -16,10 +16,10 @@
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
         <span class="items">
-          <span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)">微信支付</span>
-          <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)">支付宝</span>
+          <span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)" :style="filterObj.payFlag == 1 ? tabImg[1] : tabImg[0]">微信支付</span>
+          <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)" :style="filterObj.payFlag == 2 ? tabImg[1] : tabImg[0]">支付宝</span>
         </span>
-        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange">预授权</span>
+        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange" :style="isPreauthorize ? tabImg[1] : tabImg[0]">预授权</span>
         <span class="change_item sweeping" @click="sweepingClick">扫码结算</span>
       </div>
       <div class="paymentAll">
@@ -301,6 +301,18 @@
         loadingText: '加载中...', // loading text
         showList: false,
         timeVal: '', // 日期选择
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         isPreauthorize: false, // 预授权冻结选中状态
         paymentLists: [],  // 数据列表
         page: 1,  // 当前页数

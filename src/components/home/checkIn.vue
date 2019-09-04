@@ -242,7 +242,7 @@
             },
             onsuccess: body => {
               if (body.data.code == 0) {
-                this.SendTeamOrderMessage(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
+                this.SendTeamOrderMsg(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
               }
               this.loadingSure = false;
               this.gobanck();
@@ -259,7 +259,7 @@
               this.loadingShow = false;
               if (body.data.code == 0) {
                 this.loadingSure = false;
-                this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'');
+                this.SendParameter('SendMessage@'+this.changeItem.id+'');
                 this.gobanck();
               }
             },
@@ -270,12 +270,14 @@
         }
       },
 
-      OpenExternalScreen(type) {
-        document.title = new Date().getSeconds() + "@" + type;
+      SendParameter(type) {
+        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
+        jsObj.SendMessage();
       },
 
-      SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
-        document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+      SendTeamOrderMsg(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
+        jsObj.sendParameter = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+        jsObj.SendTeamOrderMessage();
       },
 
       // 初始化获取设置列表

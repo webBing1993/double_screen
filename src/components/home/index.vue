@@ -3,7 +3,7 @@
     <div class="homeIndex" v-show="homeIndexShow">
       <div class="header">
         <div class="header_fl">
-          <div class="changeScreen" @click="OpenExternalScreen('OpenExternalScreen')">
+          <div class="changeScreen" @click="openExternalScreen()">
             <img src="../../assets/qiehuan.png" alt="">
             <span>查看外屏</span>
           </div>
@@ -172,8 +172,8 @@
         this.goto('/checkOut/'+val)
       },
 
-      OpenExternalScreen(type) {
-        document.title = new Date().getSeconds() + "@" + type;
+      openExternalScreen() {
+        jsObj.OpenExternalScreen();
       },
 
       //初始化weosocket

@@ -4,8 +4,8 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)">按房号排</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">按离店时间</span>
+            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">按房号排</span>
+            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">按离店时间</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -135,6 +135,18 @@
         loadingText: '同步中...', // loading text
         showList: false,
         showList_: false,
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         tabIndex: 1,  // tab切换
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索

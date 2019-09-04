@@ -17,8 +17,15 @@
 
   <script>
 
+    // 小票二维码扫码
     function getSweepingSettlement(orderId) {
       getSweepingSettlementOrderId(orderId);
+    }
+
+    // 检查A屏是否有正在办理的订单
+    function ShowOrderInfo(isTrue) {
+      console.log('isTrue', isTrue);
+      showOrderInfo(isTrue);
     }
 
   </script>
