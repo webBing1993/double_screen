@@ -721,7 +721,7 @@
     padding-top: 100px;
     width: 100vw;
     .changeItem {
-      padding: 40px;
+      padding: 22px 40px;
       text-align: left;
       position: relative;
       span {

@@ -520,7 +520,7 @@
               }
             },
             onfail: (body, headers) => {
-              item.loadingBanli = false;
+              this.changeItem.loadingBanli = false;
               if (body.data.code == 89000 || body.data.code == 79000 || body.data.code == 69000) {
                 this.page = 1;
                 this.getPreOrder(1);
