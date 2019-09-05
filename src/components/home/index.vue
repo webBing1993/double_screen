@@ -208,6 +208,7 @@
       },
       websocketclose(e){  //关闭通道
         console.log("关闭通道connection closed (" + e.code + ")");
+        this.initWebSocket();
       },
 
     },

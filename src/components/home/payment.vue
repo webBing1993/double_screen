@@ -726,7 +726,8 @@
       position: relative;
       span {
         color: #303133;
-        font-size: 24px;
+        font-size: 20px;
+        font-weight: bold;
       }
       .time_change {
         background-color: #FFFFFF;
@@ -756,11 +757,12 @@
           height: 56px;
           border: none;
           color: #303133;
-          font-size: 30px;
+          font-size: 20px;
           padding-left: 30px;
           outline: none;
           text-align: center;
           box-shadow: none;
+          font-weight: bold;
         }
         /deep/ .ivu-select-dropdown {
           left: 112px !important;
