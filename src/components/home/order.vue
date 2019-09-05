@@ -479,16 +479,10 @@
                           }
                           this.payMode = body.data.data.payMode;
                           this.ispaid = body.data.data.paid;
-                          if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
-                            sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
-                            sessionStorage.setItem('currentChange', this.page);
-                            sessionStorage.setItem('gotoCheckIn', true);
-                            this.$emit('gocheckIn', this.changeItem.id);
-                          }else {
-                            this.page = 1;
-                            this.getPreOrder(1);
-                            this.SendParameter('SendMessage@'+this.changeItem.id+'')
-                          }
+                          sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
+                          sessionStorage.setItem('currentChange', this.page);
+                          sessionStorage.setItem('gotoCheckIn', true);
+                          this.$emit('gocheckIn', this.changeItem.id);
                         }
 
                       }else {
@@ -1009,6 +1003,7 @@
             input {
               border: 1px solid #9A9A9A;
               border-radius: 44px;
+              padding-right: 60px;
               padding-left: 30px;
               font-size: 20px;
               color: #333;

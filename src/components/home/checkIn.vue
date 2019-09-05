@@ -81,7 +81,7 @@
               <div class="lists">
                 <div class="list">
                   <div class="title"><span>总房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem">
+                  <div class="changeItem"  v-if="!isPaid">
                     <div class="item_tab" @click="payModeChange(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -96,6 +96,23 @@
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span>挂账</span>
+                    </div>
+                  </div>
+                  <div class="changeItem"  v-else>
+                    <div class="item_tab"  v-if="payMode == 1">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>付过款</span>
+                    </div>
+                    <div class="item_tab"  v-if="payMode == 2">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>付过款</span>
+                    </div>
+                    <div class="item_tab"  v-if="payMode == 3">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>付过款</span>
                     </div>
                   </div>
                 </div>
@@ -178,6 +195,7 @@
         cardShow: false,  // 发卡dab权限
         rcShow: false,    // rc单dab权限
         rooms: [],  // 房间号列表
+        isPaid: false  // 判断是否付过钱了
       }
     },
     methods: {
@@ -326,6 +344,9 @@
                 }
               }else {
                 this.roomFeeShow = body.data.data.roomFeeShow;
+              }
+              if (body.data.data.needPayFeeShow == 0 && body.data.data.paid) {
+                  this.isPaid = true;
               }
               this.payMode = body.data.data.payMode;
               this.checkInShow = true;

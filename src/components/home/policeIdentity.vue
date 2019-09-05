@@ -604,6 +604,7 @@
               border: 1px solid #9A9A9A;
               border-radius: 44px;
               padding-left: 30px;
+              padding-right: 60px;
               font-size: 20px;
               color: #333;
               height: 64px;
