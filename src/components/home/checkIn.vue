@@ -102,17 +102,17 @@
                     <div class="item_tab"  v-if="payMode == 1">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span>付过款</span>
+                      <span>已付款</span>
                     </div>
                     <div class="item_tab"  v-if="payMode == 2">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span>付过款</span>
+                      <span>已付款</span>
                     </div>
                     <div class="item_tab"  v-if="payMode == 3">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span>付过款</span>
+                      <span>已付款</span>
                     </div>
                   </div>
                 </div>
