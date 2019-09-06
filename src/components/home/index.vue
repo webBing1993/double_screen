@@ -44,6 +44,18 @@
           </div>
         </div>
       </div>
+
+      <!-- 退房待办弹框-->
+      <div class="quitHouse" v-if="quithouse">
+        <div class="content">
+          【{{onlyItem.roomNo}}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="btns">
+          <span class="knowBtn" @click="checkOut">我知道了</span>
+          <span class="lookDetail" @click="goto('/doSth')">查看详情</span>
+        </div>
+      </div>
+
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
   </div>
@@ -75,6 +87,8 @@
         },  // 权限
         searchVal: 0,
         windowUrl: '',
+        quithouse: false,   // 退房提示
+        onlyItem: {},    // 临时退房数据
       }
     },
     methods: {
@@ -119,14 +133,53 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0) {
+              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply.length == 0) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
+                  if (body.data.data.checkoutapply.length != 0) {
+                      let checkOutList = body.data.data.checkoutapply;
+                      let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+                    if (arr_.length == 0) {
+                      this.onlyItem = checkOutList[0];
+                      this.quithouse = true;
+                    }else {
+                      let result = [];
+                      for(var i = 0; i < checkOutList.length; i++){
+                        let obj = checkOutList[i];
+                        let num = obj.id;
+                        let isExist = false;
+                        for(var j = 0; j < arr_.length; j++){
+                          let aj = arr_[j];
+                          let n = aj.id;
+                          if(n == num){
+                            isExist = true;
+                            break;
+                          }
+                        }
+                        if(!isExist){
+                          result.push(obj);
+                        }
+                      }
+                      if (result.length != 0) {
+                        this.onlyItem = result[0];
+                        this.quithouse = true;
+                      }
+                    }
+                  }
               }
             }
           }
         })
+      },
+
+      // 我知道了
+      checkOut() {
+        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        this.quithouse = false;
+        arr.push(this.onlyItem);
+        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
+        this.doSthList();
       },
 
       // 获取公安核验未处理数据
@@ -428,6 +481,49 @@
             top: 50%;
             transform: translateY(-50%);
           }
+        }
+      }
+    }
+    .quitHouse {
+      opacity: 0.8;
+      background: #000000;
+      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.20);
+      border-radius: 14px;
+      width: 676px;
+      position: fixed;
+      z-index: 99;
+      top: 100px;
+      right: 352px;
+      padding: 40px;
+      .content {
+        font-size: 24px;
+        color: #fff;
+        text-align: left;
+        span {
+          color: #F5A623;
+        }
+      }
+      .btns {
+        margin-top: 30px;
+        text-align: right;
+        span {
+          box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
+          border-radius: 32px;
+          width: 160px;
+          height: 64px;
+          font-size: 22px;
+          display: inline-block;
+          text-align: center;
+          line-height: 64px;
+        }
+        .knowBtn {
+          background: #FFFFFF;
+          color: #303133;
+          margin-right: 30px;
+        }
+        .lookDetail {
+          background-color: #1AAD19;
+          color: #fff;
         }
       }
     }

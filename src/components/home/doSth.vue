@@ -25,7 +25,16 @@
                 <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
               </div>
             </div>
-            <div class="list_content" v-if="item.doSthTitle=='发卡失败'">
+            <div class="list_content" v-if="item.doSthTitle=='退房申请'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="checkOut">客人申请退房，房卡已回收，请及时处理</div>
+              </div>
+              <div class="list_fr">
+                <!--<span @click="pmsCheckIn(item.id)">处理完成</span>-->
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='发卡失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
                 <div class="roomIn" v-if="item.type == 'QUEKA'"><span>失败原因：</span>缺卡</div>
@@ -181,10 +190,16 @@
               let pmscheckin = [];  // pms入住失败代办
               let pmspay = [];   // pms入账失败
               let nativepay = [];  // 前台支付
+              let checkoutapply = [];  // 退房申请
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
+              checkoutapply = body.data.data.checkoutapply;
+              checkoutapply.forEach(item => {
+                item.doSthTitle = '退房申请';
+                item.createTime = item.applyTime;
+              });
               faka.forEach(item => {
                 item.doSthTitle = '发卡失败';
               });
@@ -197,7 +212,7 @@
               nativepay.forEach(item => {
                 item.doSthTitle = '前台支付';
               });
-              this.doSthLists = faka.concat(pmscheckin, pmspay, nativepay);
+              this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay);
               this.doSthLists.sort(this.compare('createTime'));
               console.log('this.doSthLists',this.doSthLists);
             }
