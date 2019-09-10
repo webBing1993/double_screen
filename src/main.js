@@ -15,6 +15,11 @@ import 'iview/dist/styles/iview.css';
 
 // Vue.use(iView);
 
+import Mint from 'mint-ui'
+import 'mint-ui/lib/style.css'
+
+Vue.use(Mint);
+
 Vue.config.productionTip = false;
 
 import './mixins'
@@ -41,45 +46,47 @@ Axios.interceptors.response.use(response => {
       // 返回401，清除token信息并跳转到登录页面
       case 401:
         localStorage.removeItem('token');
-        Vue.prototype.$message({
-          message: '当前登录失效',
-          type: 'error',
+        // Vue.prototype.$message({
+        //   message: '当前登录失效',
+        //   type: 'error',
+        // });
+        Vue.prototype.$toast({
+          message: "当前登录失效",
+          iconClass: 'icon ',
         });
         jsObj.LogOut();
         break;
       case 403:
-        Vue.prototype.$message({
-          message: '当前登录失效',
-          type: 'error',
+        Vue.prototype.$toast({
+          message: "当前登录失效",
+          iconClass: 'icon ',
         });
         jsObj.LogOut();
         break;
       case 404:
-        Vue.prototype.$message({
-          message: '当前登录失效',
-          type: 'error',
+        Vue.prototype.$toast({
+          message: "当前登录失效",
+          iconClass: 'icon ',
         });
         // window.location.href = url;
         jsObj.LogOut();
         break;
       case 504:
-        Vue.prototype.$message({
-          showClose: true,
-          message: '当前无网络',
-          type: 'error',
-          duration: 0,
+        Vue.prototype.$toast({
+          message: "请求超时，请稍后再试",
+          iconClass: 'icon ',
         });
         break;
       case 502:
-        Vue.prototype.$message({
-          message: '服务端报，请稍后再试',
-          type: 'error',
+        Vue.prototype.$toast({
+          message: "服务端报，请稍后再试",
+          iconClass: 'icon ',
         });
         break;
       default:
-        Vue.prototype.$message({
-          message: '当前登录失效',
-          type: 'error',
+        Vue.prototype.$toast({
+          message: "当前登录失效",
+          iconClass: 'icon ',
         });
         // window.location.href = url;
         jsObj.LogOut();

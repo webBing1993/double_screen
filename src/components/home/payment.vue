@@ -578,19 +578,35 @@
       accounts() {
         this.channelDetail = false;
         this.payTig = true;
+        this.infoLoading = false;
         this.payTigStatus = 2;
       },
 
       // 退款事件
       refundMoney () {
+        let regPos = /^\d+(\.\d+)?$/; //非负浮点数
           console.log('this.detailVal',this.detailVal);
         this.infoLoading = true;
         if (this.payMoney == 0) {
-          this.$message('请输入正确的退款金额!');
+//          this.$message('请输入正确的退款金额!');
+          this.$toast({
+            message: '请输入正确的退款金额!',
+            iconClass: 'icon ',
+          });
+          this.infoLoading = false;
+        }else if (!regPos.test(this.payMoney)) {
+          this.$toast({
+            message: '请输入正确的退款金额!',
+            iconClass: 'icon ',
+          });
           this.infoLoading = false;
         }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.infoLoading = false;
-          this.$message('退款金额大于总额');
+//          this.$message('退款金额大于总额');
+          this.$toast({
+            message: '退款金额大于总额',
+            iconClass: 'icon ',
+          });
         }else {
           this.isScreen = true;
           this.reimburse({
@@ -618,12 +634,27 @@
       // 结算接口
       accountMoney() {
         this.infoLoading = true;
+        let regPos = /^\d+(\.\d+)?$/; //非负浮点数
         if (this.payMoney == 0) {
-          this.$message('请输入正确的消费金额!');
+//          this.$message('请输入正确的消费金额!');
+          this.$toast({
+            message: '请输入正确的消费金额!',
+            iconClass: 'icon ',
+          });
+          this.infoLoading = false;
+        }else if (!regPos.test(this.payMoney)) {
+          this.$toast({
+            message: '请输入正确的退款金额!',
+            iconClass: 'icon ',
+          });
           this.infoLoading = false;
         }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
           this.infoLoading = false;
-          this.$message('退款金额大于总额');
+//          this.$message('退款金额大于总额');
+          this.$toast({
+            message: '退款金额大于总额',
+            iconClass: 'icon ',
+          });
         }else {
           this.isScreen = true;
           this.depositConsume({

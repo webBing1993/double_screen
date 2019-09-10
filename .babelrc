@@ -11,5 +11,11 @@
   "plugins": ["transform-vue-jsx", "transform-runtime",["import", {
     "libraryName": "iview",
     "libraryDirectory": "src/components"
-  }]]
+  }],["import", [
+    {
+      "libraryName": "mint-ui",
+      "style": true,
+      "libraryDirectory": "src/components"
+    }
+  ]]]
 }

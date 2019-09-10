@@ -265,14 +265,22 @@
           identity_id: this.detail.identityId,
           onsuccess: body => {
             if (body.errcode != '' && body.errcode == 0) {
-              this.$message({
+//              this.$message({
+//                message: '拒绝成功',
+//                type: 'success'
+//              });
+              this.$toast({
                 message: '拒绝成功',
-                type: 'success'
+                iconClass: 'icon ',
               });
               this.$emit('getMessage', this.$route.params.id);
               this.gobanck();
             }else {
-              this.$message.error(body.errmsg);
+//              this.$message.error(body.errmsg);
+              this.$toast({
+                message: body.errmsg,
+                iconClass: 'icon ',
+              });
             }
             this.loadingRefund = false;
           },
@@ -312,9 +320,13 @@
               },
               onsuccess: (body) => {
                 if (body.errcode == 0) {
-                  this.$message({
-                    type: 'success',
-                    message: '正在上传旅业'
+//                  this.$message({
+//                    type: 'success',
+//                    message: '正在上传旅业'
+//                  });
+                  this.$toast({
+                    message: '正在上传旅业',
+                    iconClass: 'icon ',
                   });
                   this.$emit('getMessage', this.$route.params.id);
                   this.gobanck();
@@ -326,9 +338,13 @@
               }
             });
           }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消上传'
+//            this.$message({
+//              type: 'info',
+//              message: '已取消上传'
+//            });
+            this.$toast({
+              message: '已取消上传',
+              iconClass: 'icon ',
             });
             this.loadingCheckIn = false;
           });
@@ -354,9 +370,13 @@
             },
             onsuccess: (body) => {
               if (body.errcode == 0) {
-                this.$message({
-                  type: 'success',
-                  message: '正在上传旅业'
+//                this.$message({
+//                  type: 'success',
+//                  message: '正在上传旅业'
+//                });
+                this.$toast({
+                  message: '正在上传旅业',
+                  iconClass: 'icon ',
                 });
                 this.$emit('getMessage', this.$route.params.id);
                 this.gobanck();

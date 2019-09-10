@@ -626,6 +626,7 @@
             }
           }
           .content {
+            padding-bottom: 30px;
             .lis {
               padding: 0 40px;
               text-align: left;

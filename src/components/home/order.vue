@@ -454,9 +454,13 @@
                       if (body.data.code == 0) {
                         this.loadingShow = false;
                         if (body.data.data == null || !body.data.data) {
-                          this.$message({
-                            message: '订单已取消',
-                            type: 'warning'
+//                          this.$message({
+//                            message: '订单已取消',
+//                            type: 'warning'
+//                          });
+                          this.$toast({
+                            message: "订单已取消",
+                            iconClass: 'icon ',
                           });
                           this.page = 1;
                           this.getPreOrder(1);
@@ -564,18 +568,26 @@
             }else {
               this.loadingShow = false;
             }
-            this.$message({
+//            this.$message({
+//              message: body.data.data,
+//              type: 'success'
+//            });
+            this.$toast({
               message: body.data.data,
-              type: 'success'
+              iconClass: 'icon ',
             });
           },onfail: (body, headers) => {
             this.loadingShow = false;
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$message({
+//            this.$message({
+//              message: "同步超时，请稍后再试",
+//              type: 'error'
+//            });
+            this.$toast({
               message: "同步超时，请稍后再试",
-              type: 'error'
+              iconClass: 'icon ',
             });
             this.getPreOrder(this.page);
           }
@@ -597,9 +609,13 @@
             }else {
               this.loadingShow = false;
             }
-            this.$message({
+//            this.$message({
+//              message: body.data.data,
+//              type: 'success'
+//            });
+            this.$toast({
               message: body.data.data,
-              type: 'success'
+              iconClass: 'icon ',
             });
           },
           onfail: (body, headers) => {
@@ -607,9 +623,13 @@
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$message({
+//            this.$message({
+//              message: "同步超时，请稍后再试",
+//              type: 'error'
+//            });
+            this.$toast({
               message: "同步超时，请稍后再试",
-              type: 'error'
+              iconClass: 'icon ',
             });
             this.page = 1;
             this.getPreOrder(1);

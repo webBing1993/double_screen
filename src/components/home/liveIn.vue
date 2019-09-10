@@ -307,9 +307,13 @@
             }else {
               this.loadingShow = false;
             }
-            this.$message({
+//            this.$message({
+//              message: body.data.data,
+//              type: 'success'
+//            });
+            this.$toast({
               message: body.data.data,
-              type: 'success'
+              iconClass: 'icon ',
             });
           },
           onfail: (body, headers) => {
@@ -317,9 +321,13 @@
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$message({
-              message: "同步超时，请稍后再试",
-              type: 'error'
+//            this.$message({
+//              message: "同步超时，请稍后再试",
+//              type: 'error'
+//            });
+            this.$toast({
+              message: '同步超时，请稍后再试',
+              iconClass: 'icon ',
             });
             this.page = 1;
             this.getPreOrder(1);
@@ -423,9 +431,13 @@
                     this.goAdd(0);
                   }
                 }else {
-                  this.$message({
+//                  this.$message({
+//                    message: '该房间已住满',
+//                    type: 'warning'
+//                  });
+                  this.$toast({
                     message: '该房间已住满',
-                    type: 'warning'
+                    iconClass: 'icon ',
                   });
                   this.page = 1;
                   this.getPreOrder(1);
@@ -500,12 +512,26 @@
           },
           onsuccess:(body,headers)=>{
             if(body.data.code == 0){
-              this.$message({
+//              this.$message({
+//                message: '退房成功',
+//                type: 'success'
+//              });
+              this.$toast({
                 message: '退房成功',
-                type: 'success'
+                iconClass: 'icon ',
               });
               this.page = 1;
               this.getPreOrder(1);
+            }else if (body.data.code == 20006) {
+//              this.$message({
+//                message: body.data.msg,
+//                type: 'warning'
+//              });
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+              item.quitLoading = false;
             }else {
               sessionStorage.setItem('checkOutItem', JSON.stringify(item));
               this.$emit('goToCheckOut', item.orderId);

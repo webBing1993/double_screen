@@ -4,19 +4,6 @@ import router from '../../router/index.js'
 import httpTool from '../../tool/httpTool.js'
 import Vue from 'vue'
 
-function openFullScreen() {
-  const loading = Vue.prototype.$loading({
-    lock: true,
-    text: '加载中...',
-    background: 'rgba(0, 0, 0, 0.01)'
-  });
-  return loading;
-}
-
-function closeFullScreen(loading){
-  loading.close();
-}
-
 const actions = {
 
   goto: (ctx, param) => {
@@ -91,11 +78,20 @@ const actions = {
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$toast(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
@@ -132,11 +128,19 @@ const actions = {
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
@@ -173,11 +177,19 @@ const actions = {
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(

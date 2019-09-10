@@ -169,7 +169,7 @@
         <div class="quit_content">
           <div class="quit_title">是否需要退房？</div>
           <div class="quit_tabs">
-            <span class="cancel" @click="quit=false">取消</span>
+            <span class="cancel" @click="cancel">取消</span>
             <span class="sure" @click="sure">确认</span>
           </div>
         </div>
@@ -264,10 +264,12 @@
               if (body.data.code == 0 && body.data.data) {
                 this.chargeRecordObj = body.data.data
               }
+              this.payMoney = '';
               this.payTig = true;
             }
           })
         }else {
+          this.payMoney = '';
           this.accountItem = item;
           this.payTig = true;
         }
@@ -284,18 +286,39 @@
       // 结账弹框确定事件
       paySure() {
         this.infoLoading = true;
+        let regPos = /^\d+(\.\d+)?$/; //非负浮点数
         if (this.orderDetail.refundVO) {
           if (this.payMoney == '') {
-            this.$message({
-              message: '请输入结账金额',
-              type: 'warning'
+//            this.$message({
+//              message: '请输入结账金额',
+//              type: 'warning'
+//            });
+            this.$toast({
+              message: '请输入消费金额',
+              iconClass: 'icon ',
             });
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
+          }else if (this.payMoney == 0) {
+            this.$toast({
+              message: '请输入正确的消费金额',
+              iconClass: 'icon ',
+            });
+            this.infoLoading = false;
+          }else if (!regPos.test(this.payMoney)) {
+            this.$toast({
+              message: '请输入正确的消费金额',
+              iconClass: 'icon ',
+            });
+            this.infoLoading = false;
           }else if (parseFloat(this.payMoney*100) > parseFloat(this.orderDetail.refundVO.refundFeeStr*100)) {
-            this.$message({
+//            this.$message({
+//              message: '注意：不能大于押金金额',
+//              type: 'warning'
+//            });
+            this.$toast({
               message: '注意：不能大于押金金额',
-              type: 'warning'
+              iconClass: 'icon ',
             });
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
@@ -310,18 +333,22 @@
               },
               onsuccess:(body)=>{
                 if(body.data.code == 0){
-                  this.$message({
-                    message: '退款成功',
-                    type: 'success'
-                  });
+//                  this.$message({
+//                    message: '退款成功',
+//                    type: 'success'
+//                  });
                   this.payTig = false;
                   this.quit = true;
                 }else if(body.data.code == 20002){
                   this.showPmsAbnormal = true;
                 }else if (body.data.code == 20006) {
-                  this.$message({
-                    message: body.data.data,
-                    type: 'warning'
+//                  this.$message({
+//                    message: body.data.data,
+//                    type: 'warning'
+//                  });
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
                   });
                   this.gobanck();
                 }
@@ -331,7 +358,7 @@
                 this.showPmsAbnormalLoading = false;
               },
               onfail: body => {
-                this.payTig = false;
+//                this.payTig = false;
                 this.infoLoading = false;
                 this.showPmsAbnormalLoading = false;
               }
@@ -339,15 +366,35 @@
           }
         }else {
           if (this.payMoney == '') {
-            this.$message({
-              message: '请输入消费金额',
-              type: 'warning'
+//            this.$message({
+//              message: '请输入消费金额',
+//              type: 'warning'
+//            });
+            this.$toast({
+              message: '请输入结账金额',
+              iconClass: 'icon ',
+            });
+            this.infoLoading = false;
+          }else if (this.payMoney == 0) {
+            this.$toast({
+              message: '请输入正确的结账金额',
+              iconClass: 'icon ',
+            });
+            this.infoLoading = false;
+          }else if (!regPos.test(this.payMoney)) {
+            this.$toast({
+              message: '请输入正确的结账金额',
+              iconClass: 'icon ',
             });
             this.infoLoading = false;
           }else if (parseFloat(this.payMoney*100) > this.accountItem.totalFee) {
-            this.$message({
+//            this.$message({
+//              message: '消费金额不可大于预授权金额',
+//              type: 'warning'
+//            });
+            this.$toast({
               message: '消费金额不可大于预授权金额',
-              type: 'warning'
+              iconClass: 'icon ',
             });
             this.infoLoading = false;
           }else {
@@ -379,6 +426,11 @@
         this.channelDetail = true;
       },
 
+      cancel() {
+        this.quit = false;
+        this.gobanck();
+      },
+
       // 退房操作
       sure() {
         this.accountCheckout({
@@ -388,16 +440,24 @@
           },
           onsuccess: body => {
             this.payMoney  = '';
-            if (body.code == 0) {
-              this.$message({
+            if (body.data.code == 0) {
+//              this.$message({
+//                message: '退房成功',
+//                type: 'success'
+//              });
+              this.$toast({
                 message: '退房成功',
-                type: 'success'
+                iconClass: 'icon ',
               });
               this.gobanck();
             }else if (body.data.code == 20006) {
-              this.$message({
-                message: body.data.data,
-                type: 'warning'
+//              this.$message({
+//                message: body.data.msg,
+//                type: 'warning'
+//              });
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
               });
               this.gobanck();
             }

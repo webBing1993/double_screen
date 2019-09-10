@@ -108,7 +108,7 @@
         }else if (index == 3) {
           sessionStorage.removeItem('changeTabString');
           this.replaceto('/payment');
-        }else {
+        }else if (index == 4) {
           this.replaceto('/policeIdentity');
         }
         sessionStorage.setItem('tabIndex', index);
