@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut"></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut" @checkOutLoading="checkOutLoading"></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -52,7 +52,7 @@
         </div>
         <div class="btns">
           <span class="knowBtn" @click="checkOut">我知道了</span>
-          <span class="lookDetail" @click="goto('/doSth')">查看详情</span>
+          <span class="lookDetail" @click="lookDetail">查看详情</span>
         </div>
       </div>
 
@@ -125,7 +125,12 @@
       // 退出事件
       sure() {
         this.quit = false;
-        window.location.href = this.windowUrl;
+//        window.location.href = this.windowUrl;
+        this.logOut();
+      },
+
+      logOut() {
+        jsObj.LogOut();
       },
 
       // 获取列表
@@ -182,6 +187,15 @@
         this.doSthList();
       },
 
+      // 查看详情
+      lookDetail() {
+        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        this.quithouse = false;
+        arr.push(this.onlyItem);
+        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
+        this.goto('/doSth');
+      },
+
       // 获取公安核验未处理数据
       unhandleList() {
         this.newIdentityList ({
@@ -219,10 +233,14 @@
       // 进入退房详情
       goCheckOut(val) {
         this.loadingShow = true;
-        setTimeout(() => {
-          this.loadingShow = false;
-        }, 600);
+//        setTimeout(() => {
+//          this.loadingShow = false;
+//        }, 600);
         this.goto('/checkOut/'+val)
+      },
+
+      checkOutLoading(val) {
+        this.loadingShow = false;
       },
 
       openExternalScreen() {
@@ -485,9 +503,8 @@
       }
     }
     .quitHouse {
-      opacity: 0.8;
-      background: #000000;
-      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.20);
+      background: #FFFFFF;
+      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.40);
       border-radius: 14px;
       width: 676px;
       position: fixed;
@@ -497,7 +514,7 @@
       padding: 40px;
       .content {
         font-size: 24px;
-        color: #fff;
+        color: #303133;
         text-align: left;
         span {
           color: #F5A623;

@@ -9,7 +9,7 @@
             <span>返回</span>
           </div>
           <div class="roomNo">
-            <span v-for="(item, index) in orderDetail.roomNos">房间号：{{index == (orderDetail.roomNos.length - 1) ? item : item + '/'}}</span>
+            <span>房间号：<span v-for="(item, index) in orderDetail.roomNos">{{index == (orderDetail.roomNos.length - 1) ? item : item + '/'}}</span></span>
           </div>
           <div class="replayList" @click="replayList">
             <img src="../../assets/tongbu.png" alt="">
@@ -150,11 +150,11 @@
         <div class="shadow"></div>
         <div class="payTigContent">
           <div class="payTig_title">
-            {{orderDetail.refundVO ? '请确认结账金额' : '请确认消费金额'}}
-            <img src="../../assets/guanbi.png" alt="" @click="payTig = false;payMoney = ''">
+            {{orderDetail.refundVO ? '请确认消费金额' : '请确认结账金额'}}
+            <img src="../../assets/guanbi.png" alt="" @click="payTig = false;payMoney = '';infoLoading = false;">
           </div>
           <div class="payTig_content">
-            <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="orderDetail.refundVO ? '请输入结账金额' : '请输入消费金额'"></div>
+            <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="orderDetail.refundVO ? '请确认消费金额' : '请确认结账金额'"></div>
             <div class="payTig_keyBoard">
               <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
               <span @click="keyCancel_()"><img src="../../assets/shanchuanniu.png" alt=""></span>
@@ -249,6 +249,7 @@
       // 返回上一页
       gobanck() {
 //        this.$router.go(-1);
+        this.$emit('checkOutLoading', 0);
         this.$router.replace({name:'liveIn'})
       },
 
@@ -310,18 +311,28 @@
               onsuccess:(body)=>{
                 if(body.data.code == 0){
                   this.$message({
-                    message: '退房成功',
+                    message: '退款成功',
                     type: 'success'
                   });
+                  this.payTig = false;
+                  this.quit = true;
                 }else if(body.data.code == 20002){
                   this.showPmsAbnormal = true;
+                }else if (body.data.code == 20006) {
+                  this.$message({
+                    message: body.data.data,
+                    type: 'warning'
+                  });
+                  this.gobanck();
                 }
                 this.checked = '';
                 this.payTig = false;
+                this.infoLoading = false;
                 this.showPmsAbnormalLoading = false;
               },
               onfail: body => {
                 this.payTig = false;
+                this.infoLoading = false;
                 this.showPmsAbnormalLoading = false;
               }
             })
@@ -351,6 +362,7 @@
                   this.payTig = false;
                   this.quit = true;
                 }
+                this.gobanck();
                 this.infoLoading = false;
               },
               onfail: body => {
@@ -381,7 +393,13 @@
                 message: '退房成功',
                 type: 'success'
               });
-//              this.getPreOrderDetailInfo();
+              this.gobanck();
+            }else if (body.data.code == 20006) {
+              this.$message({
+                message: body.data.data,
+                type: 'warning'
+              });
+              this.gobanck();
             }
             this.quit = false;
           }
@@ -401,6 +419,8 @@
 
       // 获取详情
       getDetail() {
+        this.payConsumeList = [];
+        this.payInfoGetList = [];
         this.getCheckOutInfo({
           orderId:  this.changeItem.orderId,
           onsuccess: body => {
@@ -426,8 +446,10 @@
               this.loadingShow = false;
               this.checkOutShow = true;
             }
+            this.$emit('checkOutLoading', 1);
           },
           onfail: body => {
+            this.$emit('checkOutLoading', 1);
             this.loadingShow = false;
             this.checkOutShow = true;
           }
@@ -498,6 +520,7 @@
           font-size: 30px;
           color: #000;
           margin-left: 117px;
+          margin-right: 300px;
         }
         .replayList {
           position: absolute;

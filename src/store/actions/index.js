@@ -68,7 +68,6 @@ const actions = {
   },
 
   resource: (ctx, param) => {
-    // openFullScreen();
     axios({
       url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
       method: param.method || 'GET',
@@ -85,8 +84,7 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      // closeFullScreen (openFullScreen());
-      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000 || response.data.code === 20005) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000 || response.data.code === 20005 || response.data.code == 20002 || response.data.code == 20006) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
@@ -102,7 +100,6 @@ const actions = {
       }
     }).catch(
       error => {
-        // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
           param.onError && param.onError(error);
@@ -112,7 +109,6 @@ const actions = {
     )
   },
   resource_: (ctx, param) => {
-    // openFullScreen();
     axios({
       url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
       method: param.method || 'GET',
@@ -129,7 +125,6 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      // closeFullScreen (openFullScreen());
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
@@ -146,7 +141,6 @@ const actions = {
       }
     }).catch(
       error => {
-        // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
         }
@@ -156,7 +150,6 @@ const actions = {
   },
 
   resourceGemini: (ctx, param) => {
-    // openFullScreen();
     axios({
       url: httpTool.httpUrlEnv() + 'gemini' + param.url,
       method: param.method || 'GET',
@@ -173,7 +166,6 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      // closeFullScreen (openFullScreen());
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
@@ -190,7 +182,6 @@ const actions = {
       }
     }).catch(
       error => {
-        // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
         }

@@ -36,41 +36,31 @@ Axios.interceptors.response.use(response => {
   return response;
 },error => {
   if (error.response) {
+    let url = window.location.href.split('#')[0];
     switch (error.response.status) {
       // 返回401，清除token信息并跳转到登录页面
       case 401:
         localStorage.removeItem('token');
-        Vue.prototype.$confirm('当前登录失效，请重新登录', '提示', {
-          confirmButtonText: '确定',
-          type: 'warning',
-          showCancelButton: false,
-          center: true
-        }).then(() => {
-          let url = window.location.href.split('#')[0];
-          window.location.href = url;
+        Vue.prototype.$message({
+          message: '当前登录失效',
+          type: 'error',
         });
+        jsObj.LogOut();
         break;
       case 403:
-        Vue.prototype.$confirm('当前登录失效，请重新登录', '提示', {
-          confirmButtonText: '确定',
-          type: 'warning',
-          showCancelButton: false,
-          center: true
-        }).then(() => {
-          let url = window.location.href.split('#')[0];
-          window.location.href = url;
+        Vue.prototype.$message({
+          message: '当前登录失效',
+          type: 'error',
         });
+        jsObj.LogOut();
         break;
       case 404:
-        Vue.prototype.$confirm('当前登录失效，请重新登录', '提示', {
-          confirmButtonText: '确定',
-          type: 'warning',
-          showCancelButton: false,
-          center: true
-        }).then(() => {
-          let url = window.location.href.split('#')[0];
-          window.location.href = url;
+        Vue.prototype.$message({
+          message: '当前登录失效',
+          type: 'error',
         });
+        // window.location.href = url;
+        jsObj.LogOut();
         break;
       case 504:
         Vue.prototype.$message({
@@ -87,6 +77,12 @@ Axios.interceptors.response.use(response => {
         });
         break;
       default:
+        Vue.prototype.$message({
+          message: '当前登录失效',
+          type: 'error',
+        });
+        // window.location.href = url;
+        jsObj.LogOut();
         Vue.prototype.$message.error(error.response.data);
     }
     // 返回接口返回的错误信息

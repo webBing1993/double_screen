@@ -118,7 +118,7 @@
                 </div>
                 <div class="list">
                   <div class="title"><span>押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem">
+                  <div class="changeItem" v-if="!isPaid">
                     <div class="item_tab" @click="changeFreeDeposit(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -128,6 +128,12 @@
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span>收押金</span>
+                    </div>
+                  </div>
+                  <div class="changeItem" v-else>
+                    <div class="item_tab">
+                      <img src="../../assets/xuanzhongle.png" alt="">
+                      <span>已付款</span>
                     </div>
                   </div>
                 </div>
