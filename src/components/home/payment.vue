@@ -542,6 +542,9 @@
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
           }
         });
       },
@@ -626,6 +629,10 @@
             onfail: (body, headers) => {
               this.infoLoading = false;
               this.isScreen = false;
+            },
+            onerror: error => {
+              this.infoLoading = false;
+              this.isScreen = false;
             }
           });
         }
@@ -673,6 +680,10 @@
               }
             },
             onfail: (body, headers) => {
+              this.infoLoading = false;
+              this.isScreen = false;
+            },
+            onerror: error => {
               this.infoLoading = false;
               this.isScreen = false;
             }

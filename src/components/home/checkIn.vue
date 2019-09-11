@@ -272,6 +272,9 @@
               this.gobanck();
             },onfail: body => {
               this.loadingSure = false;
+            },
+            onerror: body => {
+              item.loadingSure = false;
             }
           });
         }else {
@@ -289,6 +292,9 @@
             },
             onfail: (body, headers) => {
               this.loadingSure = false;
+            },
+            onerror: body => {
+              item.loadingSure = false;
             }
           });
         }
@@ -319,6 +325,10 @@
               this.checkInShow = true;
               this.loadingShow = false;
             },onfail: body => {
+              this.checkInShow = true;
+              this.loadingShow = false;
+            },
+            onerror: error => {
               this.checkInShow = true;
               this.loadingShow = false;
             }
@@ -364,6 +374,9 @@
           onfail: (body, headers) => {
             this.checkInShow = true;
             this.loadingShow = false;
+          },
+          onerror: body => {
+            item.loadingShow = false;
           }
         });
       },

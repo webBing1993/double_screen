@@ -237,6 +237,9 @@
             }
             this.buttonGroup();
             this.loadingShow = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
           }
         })
       },
@@ -285,6 +288,9 @@
             this.loadingRefund = false;
           },
           onfail: body => {
+            this.loadingRefund = false;
+          },
+          onerror: error => {
             this.loadingRefund = false;
           }
         })
@@ -335,6 +341,9 @@
               },
               onfail: body => {
                 this.loadingCheckIn = false;
+              },
+              onerror: error => {
+                this.loadingCheckIn = false;
               }
             });
           }).catch(() => {
@@ -384,6 +393,9 @@
               this.loadingCheckIn = false;
             },
             onfail: body => {
+              this.loadingCheckIn = false;
+            },
+            onerror: error => {
               this.loadingCheckIn = false;
             }
           });

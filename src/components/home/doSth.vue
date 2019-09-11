@@ -220,6 +220,9 @@
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
           }
         })
       },

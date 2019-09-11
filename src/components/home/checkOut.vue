@@ -361,6 +361,10 @@
 //                this.payTig = false;
                 this.infoLoading = false;
                 this.showPmsAbnormalLoading = false;
+              },
+              onerror: body => {
+                this.infoLoading = false;
+                this.showPmsAbnormalLoading = false;
               }
             })
           }
@@ -408,11 +412,15 @@
                 if (body.data.code == 0) {
                   this.payTig = false;
                   this.quit = true;
+                }else {
+                  this.gobanck();
                 }
-                this.gobanck();
                 this.infoLoading = false;
               },
               onfail: body => {
+                this.infoLoading = false;
+              },
+              onerror: body => {
                 this.infoLoading = false;
               }
             });
@@ -509,6 +517,11 @@
             this.$emit('checkOutLoading', 1);
           },
           onfail: body => {
+            this.$emit('checkOutLoading', 1);
+            this.loadingShow = false;
+            this.checkOutShow = true;
+          },
+          onerror: error => {
             this.$emit('checkOutLoading', 1);
             this.loadingShow = false;
             this.checkOutShow = true;

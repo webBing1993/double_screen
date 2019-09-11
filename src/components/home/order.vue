@@ -497,6 +497,10 @@
                     onfail: (body, headers) => {
                       this.changeItem.loadingBanli = false;
                       this.loadingShow = false;
+                    },
+                    onerror: error => {
+                      this.changeItem.loadingBanli = false;
+                      this.loadingShow = false;
                     }
                   });
                 }else {
@@ -525,6 +529,10 @@
               }else {
                 this.loadingShow = false;
               }
+            },
+            onerror: error => {
+              this.changeItem.loadingBanli = false;
+              this.loadingShow = false;
             }
           });
         }else {
@@ -581,14 +589,6 @@
           },
           onerror: error => {
             this.loadingShow = false;
-//            this.$message({
-//              message: "同步超时，请稍后再试",
-//              type: 'error'
-//            });
-            this.$toast({
-              message: "同步超时，请稍后再试",
-              iconClass: 'icon ',
-            });
             this.getPreOrder(this.page);
           }
         })
@@ -623,14 +623,6 @@
           },
           onerror: error => {
             this.loadingShow = false;
-//            this.$message({
-//              message: "同步超时，请稍后再试",
-//              type: 'error'
-//            });
-            this.$toast({
-              message: "同步超时，请稍后再试",
-              iconClass: 'icon ',
-            });
             this.page = 1;
             this.getPreOrder(1);
           }
@@ -695,6 +687,11 @@
             this.showList_ = true;
           },
           onfail: (body, headers) => {
+            this.loadingShow = false;
+            this.showList = false;
+            this.showList_ = false;
+          },
+          onerror: error => {
             this.loadingShow = false;
             this.showList = false;
             this.showList_ = false;

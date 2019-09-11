@@ -147,6 +147,7 @@ const actions = {
       error => {
         if(error){
           console.log("error",error);
+          param.onError && param.onError(error);
         }
 
       }
@@ -196,6 +197,7 @@ const actions = {
       error => {
         if(error){
           console.log("error",error);
+          param.onError && param.onError(error);
         }
 
       }
@@ -212,7 +214,11 @@ const actions = {
         param.onsuccess ? param.onsuccess(body) : null
       },
       onFail: body => {
-      }
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -227,7 +233,10 @@ const actions = {
       },
       onFail: body => {
         param.onfail ? param.onfail(body) : null
-      }
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -241,7 +250,10 @@ const actions = {
       },
       onFail: body => {
         param.onfail ? param.onfail(body) : null
-      }
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -252,7 +264,13 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -267,6 +285,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -283,6 +304,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -298,6 +322,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -312,6 +339,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -322,7 +352,13 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -333,7 +369,13 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -347,6 +389,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -362,6 +407,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -375,6 +423,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -390,6 +441,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -404,6 +458,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -415,7 +472,13 @@ const actions = {
       method: 'POST',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -430,6 +493,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -443,6 +509,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -460,6 +529,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -474,6 +546,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -490,6 +565,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -505,6 +583,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -519,6 +600,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -550,6 +634,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -565,6 +652,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -578,6 +668,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -593,6 +686,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -606,6 +702,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -622,6 +721,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -635,6 +737,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -651,6 +756,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -665,6 +773,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -677,6 +788,9 @@ const actions = {
       },
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -693,6 +807,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -708,6 +825,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -721,6 +841,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -736,6 +859,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },

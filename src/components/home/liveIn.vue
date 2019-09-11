@@ -385,6 +385,11 @@
             this.loadingShow = false;
             this.showList = false;
             this.showList_ = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
+            this.showList = false;
+            this.showList_ = false;
           }
         })
       },
@@ -446,6 +451,9 @@
               this.changeItem.tongbuLoading = false;
             },
             onfail: body => {
+              this.changeItem.tongbuLoading = false;
+            },
+            onerror: body => {
               this.changeItem.tongbuLoading = false;
             }
           });
@@ -538,6 +546,9 @@
             }
           },
           onfail: body => {
+            item.quitLoading = false;
+          },
+          onerror: body => {
             item.quitLoading = false;
           }
         })
