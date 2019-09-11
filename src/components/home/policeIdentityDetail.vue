@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="policeIdentityDetail">
-      <div class="detail_fl" v-if="!loadingShow">
+      <div class="detail_fl" v-if="!loadingShow" :style="buttonGroupShow ? detailFlWidth[0] : detailFlWidth[1]">
         <div class="bgCheckTop"></div>
         <div class="goback">
           <div @click="gobanck">
@@ -78,7 +78,7 @@
           </div>
         </div>
       </div>
-      <div class="detail_fr" v-if="!loadingShow">
+      <div class="detail_fr" v-if="!loadingShow && buttonGroupShow">
         <div>
           <div class="fast_title">
             <img src="../../assets/xiantiao.png" alt="">
@@ -135,7 +135,8 @@
         outTime: '',   // 最晚离店时间
         inTimeFilter: Date.parse(new Date()),
         days: 1,
-        buttonGroupShow: false,
+        buttonGroupShow: false, // 区分待处理还是已处理的详情
+        detailFlWidth: ["width: calc(100vw - 560px);", "width: calc(100vw - 80px);"],
         hotelConfig: {},  // 权限
       }
     },
