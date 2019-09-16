@@ -576,14 +576,14 @@
             }else {
               this.loadingShow = false;
             }
-//            this.$message({
-//              message: body.data.data,
-//              type: 'success'
-//            });
-            this.$toast({
+            this.$message({
               message: body.data.data,
-              iconClass: 'icon ',
+              type: 'success'
             });
+//            this.$toast({
+//              message: body.data.data,
+//              iconClass: 'icon ',
+//            });
           },onfail: (body, headers) => {
             this.loadingShow = false;
           },
@@ -609,14 +609,14 @@
             }else {
               this.loadingShow = false;
             }
-//            this.$message({
-//              message: body.data.data,
-//              type: 'success'
-//            });
-            this.$toast({
+            this.$message({
               message: body.data.data,
-              iconClass: 'icon ',
+              type: 'success'
             });
+//            this.$toast({
+//              message: body.data.data,
+//              iconClass: 'icon ',
+//            });
           },
           onfail: (body, headers) => {
             this.loadingShow = false;

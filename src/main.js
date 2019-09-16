@@ -46,10 +46,6 @@ Axios.interceptors.response.use(response => {
       // 返回401，清除token信息并跳转到登录页面
       case 401:
         localStorage.removeItem('token');
-        // Vue.prototype.$message({
-        //   message: '当前登录失效',
-        //   type: 'error',
-        // });
         Vue.prototype.$toast({
           message: "当前登录失效",
           iconClass: 'icon ',
@@ -73,13 +69,13 @@ Axios.interceptors.response.use(response => {
         break;
       case 504:
         Vue.prototype.$toast({
-          message: "请求超时，请稍后再试",
+          message: "请求超时或网络断开连接",
           iconClass: 'icon ',
         });
         break;
       case 502:
         Vue.prototype.$toast({
-          message: "服务端报，请稍后再试",
+          message: "服务端报错，请稍后再试",
           iconClass: 'icon ',
         });
         break;
@@ -94,8 +90,16 @@ Axios.interceptors.response.use(response => {
     }
     // 返回接口返回的错误信息
     return Promise.reject(error.response.data);
+  }else {
+    Vue.prototype.$toast({
+      message: "网络断开连接",
+      iconClass: 'icon ',
+    });
+    // router.replace('/wuwangluo');
+    router.push('/wuwangluo');
   }
 });
+
 
 
 import store from './store'

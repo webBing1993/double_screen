@@ -269,14 +269,14 @@
           identity_id: this.detail.identityId,
           onsuccess: body => {
             if (body.errcode != '' && body.errcode == 0) {
-//              this.$message({
-//                message: '拒绝成功',
-//                type: 'success'
-//              });
-              this.$toast({
+              this.$message({
                 message: '拒绝成功',
-                iconClass: 'icon ',
+                type: 'success'
               });
+//              this.$toast({
+//                message: '拒绝成功',
+//                iconClass: 'icon ',
+//              });
               this.$emit('getMessage', this.$route.params.id);
               this.gobanck();
             }else {

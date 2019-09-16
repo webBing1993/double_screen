@@ -502,6 +502,9 @@
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
           }
         })
       },
@@ -543,7 +546,7 @@
           onfail: (body, headers) => {
             this.loadingShow = false;
           },
-          onerror: error => {
+          onerror: body => {
             this.loadingShow = false;
           }
         });
@@ -565,6 +568,9 @@
             }
           },
           onfail: (body, headers) => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
             this.loadingShow = false;
           }
         });

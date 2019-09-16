@@ -170,7 +170,7 @@
           <div class="quit_title">是否需要退房？</div>
           <div class="quit_tabs">
             <span class="cancel" @click="cancel">取消</span>
-            <span class="sure" @click="sure">确认</span>
+            <el-button type="primary" :loading="quitLoading" class="sure" @click="sure()">确认</el-button>
           </div>
         </div>
       </div>
@@ -232,6 +232,7 @@
         payInfoType: 1,    // 判断是否是收款弹框还是消费弹框  1收款 2消费
         payTig: false,   // 退款弹框
         payMoney: '',   // 退款，结算金额
+        quitLoading: false,  // 退房loading
         keyBoard: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'],   // 键盘
         quit: false,  // 是否退房
         showPmsAbnormal: false,  // pms入账异常
@@ -441,6 +442,7 @@
 
       // 退房操作
       sure() {
+        this.quitLoading = true;
         this.accountCheckout({
           data: {
             checkInRoomId: this.changeItem.checkInRoomId,
@@ -449,27 +451,32 @@
           onsuccess: body => {
             this.payMoney  = '';
             if (body.data.code == 0) {
-//              this.$message({
-//                message: '退房成功',
-//                type: 'success'
-//              });
-              this.$toast({
+              this.$message({
                 message: '退房成功',
+                type: 'success'
+              });
+              this.gobanck();
+            }else if (body.data.code == 10006) {
+              this.$toast({
+                message: body.data.msg,
                 iconClass: 'icon ',
               });
               this.gobanck();
             }else if (body.data.code == 20006) {
-//              this.$message({
-//                message: body.data.msg,
-//                type: 'warning'
-//              });
               this.$toast({
                 message: body.data.msg,
                 iconClass: 'icon ',
               });
               this.gobanck();
             }
+            this.quitLoading = false;
             this.quit = false;
+          },
+          onfail: body => {
+            this.quitLoading = false;
+          },
+          onerror: body => {
+            this.quitLoading = false;
           }
         })
       },
@@ -945,12 +952,15 @@
             padding: 30px 0;
             font-size: 24px;
             text-align: center;
-          }
-          span:first-of-type {
             color: #909399;
           }
-          span:last-of-type {
+          .sure {
+            background-color: inherit;
+            border-width: 0;
+            border-radius: 20px;
             color: #1AAD19;
+            font-size: 24px;
+            width: 50%;
           }
           span:first-of-type:after {
             content: '';

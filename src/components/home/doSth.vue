@@ -195,7 +195,7 @@
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
-              checkoutapply = body.data.data.checkoutapply;
+              checkoutapply = body.data.data.checkoutapply != null ? body.data.data.checkoutapply : [];
               checkoutapply.forEach(item => {
                 item.doSthTitle = '退房申请';
                 item.createTime = item.applyTime;

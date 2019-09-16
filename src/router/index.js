@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -53,6 +53,12 @@ export default new Router({
           path: '/checkOut/:id',
           name: 'checkOut',
           component: resolve => require(['../components/home/checkOut.vue'],resolve),
+        },
+        {
+          path: '/wuwangluo',
+          name: 'wuwangluo',
+          // component: resolve => require(['../components/home/wuwangluo.vue'],resolve),
+          component: require('../components/home/wuwangluo.vue').default,
         }
       ],
     },
@@ -62,4 +68,15 @@ export default new Router({
       component: resolve => require(['../components/home/doSth.vue'],resolve),
     }
   ]
-})
+});
+
+router.onError((error) => {
+  Vue.prototype.$toast({
+    message: "网络断开连接",
+    iconClass: 'icon ',
+  });
+  router.push('/wuwangluo');
+  return;
+});
+
+export default router

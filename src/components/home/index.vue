@@ -174,6 +174,13 @@
                   }
               }
             }
+            this.loadingShow = false;
+          },
+          onfail: body => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
           }
         })
       },
@@ -209,9 +216,16 @@
           limit: 4,
           offset: 1,
           onsuccess: (body, headers) => {
+            this.loadingShow = false;
             if (body.errcode == 0) {
               this.unhandleNum = headers['x-total-count'];
             }
+          },
+          onfail: body => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
           }
         });
       },

@@ -307,9 +307,9 @@
             }else {
               this.loadingShow = false;
             }
-            this.$toast({
+            this.$message({
               message: body.data.data,
-              iconClass: 'icon ',
+              type: 'success'
             });
           },
           onfail: (body, headers) => {
@@ -512,12 +512,18 @@
           },
           onsuccess:(body,headers)=>{
             if(body.data.code == 0){
-              this.$toast({
+              this.$message({
                 message: '退房成功',
-                iconClass: 'icon ',
+                type: 'success'
               });
               this.page = 1;
               this.getPreOrder(1);
+            }else if (body.data.code == 10006) {
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+              item.quitLoading = false;
             }else if (body.data.code == 20006) {
               this.$toast({
                 message: body.data.msg,
