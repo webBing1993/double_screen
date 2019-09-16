@@ -91,12 +91,11 @@ Axios.interceptors.response.use(response => {
     // 返回接口返回的错误信息
     return Promise.reject(error.response.data);
   }else {
-    Vue.prototype.$toast({
-      message: "网络断开连接",
-      iconClass: 'icon ',
-    });
+    // Vue.prototype.$toast({
+    //   message: "网络断开连接",
+    //   iconClass: 'icon ',
+    // });
     // router.replace('/wuwangluo');
-    router.push('/wuwangluo');
   }
 });
 

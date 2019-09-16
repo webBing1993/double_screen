@@ -70,13 +70,26 @@ const router = new Router({
   ]
 });
 
-router.onError((error) => {
-  Vue.prototype.$toast({
-    message: "网络断开连接",
-    iconClass: 'icon ',
-  });
-  router.push('/wuwangluo');
-  return;
+router.beforeEach((to, from, next) => {
+  console.log(from);
+  if (from.name != null || from.name != 'login') {
+    router.onError((error) => {
+      router.push('/wuwangluo');
+      return;
+    });
+    next();
+  }else {
+    // router.onError((error) => {
+    //   Vue.prototype.$toast({
+    //     message: '网络断开连接',
+    //     iconClass: 'icon ',
+    //   });
+    //   return;
+    // });
+    next();
+  }
 });
+
+
 
 export default router

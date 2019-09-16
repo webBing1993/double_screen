@@ -178,20 +178,24 @@
             },
             onsuccess: body => {
               this.entryAll = true;
+              console.log('body.data', body.data);
               if (body.data.code == 0) {
                 if (body.data.data == '' || body.data.data == null) {
                   this.phoneCode = 1;
                   this.timer();
                 }
-                if (body.data.data.code != 0) {
-                  this.$message.error(body.data.data.msg);
-                }
               }else {
-                this.$message.error(body.data.data.msg);
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
               }
             },
             onfail: body => {
-              this.$message.error(body.data.msg);
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
             }
           })
         }
@@ -262,6 +266,9 @@
               onfail: body => {
                 this.loginLoading = false;
                 this.$message.error(body.data.msg);
+              },
+              onerror: body => {
+                this.loginLoading = false;
               }
             })
           }

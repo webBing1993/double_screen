@@ -47,6 +47,15 @@ const actions = {
         // ctx.dispatch ('showLoading', false);
         if(error){
           console.log("error",error);
+          console.log('error.response',error.response);
+          if (error.response) {
+
+          }else {
+            Vue.prototype.$toast({
+              message: "网络连接已断开",
+              iconClass: 'icon ',
+            });
+          }
           param.onError && param.onError(error);
         }
 
@@ -98,6 +107,11 @@ const actions = {
       error => {
         if(error){
           console.log("error",error);
+          if (error.response) {
+
+          }else {
+            router.push('/wuwangluo');
+          }
           param.onError && param.onError(error);
         }
 
@@ -147,6 +161,11 @@ const actions = {
       error => {
         if(error){
           console.log("error",error);
+          if (error.response) {
+
+          }else {
+            router.push('/wuwangluo');
+          }
           param.onError && param.onError(error);
         }
 
@@ -197,6 +216,11 @@ const actions = {
       error => {
         if(error){
           console.log("error",error);
+          if (error.response) {
+
+          }else {
+            router.push('/wuwangluo');
+          }
           param.onError && param.onError(error);
         }
 
