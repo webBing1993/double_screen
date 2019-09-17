@@ -407,6 +407,7 @@
         item.tongbuLoading = true;
         // 先判断A屏正在办理ing
         this.getOrderProcess();
+//        this.showOrderInfo(true);
       },
 
       getOrderProcess() {
@@ -421,17 +422,13 @@
             subOrderId: this.changeItem.subOrderId,
             onsuccess: body => {
               if (body.data.code == 0) {
-                if (body.data.data < this.changeItem.maxGuest && body.data.data < 4) {
+                if (body.data.data.orderGuestVos.length < body.data.data.maxCheckinCount && body.data.data.orderGuestVos.length < 4) {
                   if (this.cardShow) {
                     this.fakaTig = true;
                   }else {
                     this.goAdd(0);
                   }
                 }else {
-//                  this.$message({
-//                    message: '该房间已住满',
-//                    type: 'warning'
-//                  });
                   this.$toast({
                     message: '该房间已住满',
                     iconClass: 'icon ',

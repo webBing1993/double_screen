@@ -474,7 +474,7 @@ const actions = {
   // 添加入住人判断是否满住
   guestCount(ctx, param) {
     ctx.dispatch('resource', {
-      url: '/ecard/orders/subOrder/'+param.subOrderId+'/guestCount',
+      url: '/ecard/orders/subOrder/'+param.subOrderId+'/subOrderInfo',
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
