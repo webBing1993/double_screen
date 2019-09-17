@@ -292,6 +292,7 @@
       sessionStorage.removeItem('checkOutItem');
       sessionStorage.removeItem('changeTabString');
       sessionStorage.removeItem('gotoCheckIn');
+      sessionStorage.removeItem('checkOutList');
       clearInterval(this.getTimer);
       next();
     }

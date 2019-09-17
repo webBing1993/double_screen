@@ -285,6 +285,7 @@
           this.speckText('您有待办事项未处理，点击查看');
           this.unhandleList();
           this.searchVal++;
+          this.doSthList();
         }
       },
       websocketsend(agentData){//数据发送
