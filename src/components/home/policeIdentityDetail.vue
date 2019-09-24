@@ -368,10 +368,6 @@
       // 相似度太低取消框
       cancelsimilarity() {
         this.similarityCancel = true;
-        this.$toast({
-          message: '已取消上传',
-          iconClass: 'icon ',
-        });
         setTimeout(() => {
           this.loadingCheckIn = false;
           this.similarityCancel = false;
