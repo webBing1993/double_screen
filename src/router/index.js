@@ -74,7 +74,11 @@ router.beforeEach((to, from, next) => {
   console.log(from);
   if (from.name != null || from.name != 'login') {
     router.onError((error) => {
-      router.push('/wuwangluo');
+      const pattern = /Loading chunk (\d)+ failed/g;
+      const isChunkLoadFailed = error.message.match(pattern);
+      if (isChunkLoadFailed) {
+        router.push('/wuwangluo');
+      }
       return;
     });
     next();

@@ -603,6 +603,7 @@
         this.refreshList({
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
+              this.searchString = this.searchString2 = this.searchString1 = '';
               this.page = 1;
               this.getPreOrder(1);
               this.initRefreshTime();
@@ -636,6 +637,7 @@
         this.showList_ = false;
         this.loadingText = '加载中...';
         this.loadingShow = true;
+        this.searchString = this.searchString2 = this.searchString1 = '';
         this.getPreOrder(1);
       },
 

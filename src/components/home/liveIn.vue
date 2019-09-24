@@ -301,6 +301,7 @@
         this.refreshList({
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
+              this.searchString = this.searchString2 = this.searchString1 = '';
               this.page = 1;
               this.getPreOrder(1);
               this.initRefreshTime();
@@ -334,6 +335,7 @@
         this.showList_ = false;
         this.loadingText = '加载中...';
         this.loadingShow = true;
+        this.searchString = this.searchString2 = this.searchString1 = '';
         this.getPreOrder(1);
       },
 
@@ -422,15 +424,24 @@
             subOrderId: this.changeItem.subOrderId,
             onsuccess: body => {
               if (body.data.code == 0) {
-                if (body.data.data.orderGuestVos.length < body.data.data.maxCheckinCount && body.data.data.orderGuestVos.length < 4) {
-                  if (this.cardShow) {
-                    this.fakaTig = true;
+                if (body.data.data.status == 4 && body.data.data.orderGuestVos) {
+                  if (body.data.data.orderGuestVos.length < body.data.data.maxCheckinCount && body.data.data.orderGuestVos.length < 4) {
+                    if (this.cardShow) {
+                      this.fakaTig = true;
+                    }else {
+                      this.goAdd(0);
+                    }
                   }else {
-                    this.goAdd(0);
+                    this.$toast({
+                      message: '该房间已住满',
+                      iconClass: 'icon ',
+                    });
+                    this.page = 1;
+                    this.getPreOrder(1);
                   }
                 }else {
                   this.$toast({
-                    message: '该房间已住满',
+                    message: '该房间已离店',
                     iconClass: 'icon ',
                   });
                   this.page = 1;
