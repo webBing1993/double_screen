@@ -183,6 +183,11 @@
                 if (body.data.data == '' || body.data.data == null) {
                   this.phoneCode = 1;
                   this.timer();
+                }else {
+                  this.$toast({
+                    message: body.data.data.msg,
+                    iconClass: 'icon ',
+                  });
                 }
               }else {
                 this.$toast({
