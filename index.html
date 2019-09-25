@@ -11,7 +11,13 @@
     <!-- built files will be auto injected -->
   </body>
   <script>
-    let windowUrl = window.location.href.split('.cn')[1].split('double_screen')[0];
+    let windowUrl = null;
+    console.log( window.location.href);
+    if (window.location.href.indexOf('cn') != -1) {
+      windowUrl = window.location.href.split('.cn')[1].split('double_screen')[0];
+    }else {
+      windowUrl = '/q/master/';
+    }
     sessionStorage.setItem('windowUrl', windowUrl);
   </script>
   <style>
