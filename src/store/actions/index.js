@@ -21,7 +21,7 @@ const actions = {
 
   request: (ctx, param) => {
     axios({
-      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: {
@@ -65,7 +65,7 @@ const actions = {
 
   resource: (ctx, param) => {
     axios({
-      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -120,7 +120,7 @@ const actions = {
   },
   resource_: (ctx, param) => {
     axios({
-      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -175,7 +175,7 @@ const actions = {
 
   resourceGemini: (ctx, param) => {
     axios({
-      url: httpTool.httpUrlEnv() + 'gemini' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'gemini' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {

@@ -10,6 +10,10 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script>
+    let windowUrl = window.location.href.split('.cn')[1].split('double_screen')[0];
+    sessionStorage.setItem('windowUrl', windowUrl);
+  </script>
   <style>
     body::-webkit-scrollbar {display: none;}
     * { touch-acion : none }
