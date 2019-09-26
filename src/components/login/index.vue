@@ -4,7 +4,7 @@
         <div class="header">
           <div class="bg"><img src="../../assets/logoBg.png" alt=""></div>
          <div class="title_timer">
-           <div class="title">欢迎使用智慧接待前台</div>
+           <div class="title"><img src="../../assets/zhuihuijiedai.png" alt=""></div>
            <div class="timer">{{nowTime}}</div>
          </div>
         </div>
@@ -325,7 +325,7 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: calc(100% - 80px);
+        width: 100%;
         height: 109px;
         display: flex;
         justify-content: space-between;
@@ -335,11 +335,15 @@
           font-size: 48px;
           color: #000;
           font-weight: bold;
+          display: inline-flex;
+          img {
+            height: 54px;
+          }
         }
         .timer {
           font-weight: bold;
           color: #000;
-          font-size: 34px;
+          font-size: 36px;
         }
       }
     }
