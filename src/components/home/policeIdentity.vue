@@ -223,7 +223,7 @@
         }else if (this.changeTabString == 2) {
           this.total1 = 0;
           this.total = 0;
-          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 1);
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
           this.total = 0;
           this.total1 = 0;
@@ -266,12 +266,12 @@
           this.total2 = 0;
           this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
         }else if (index == 2) {
-          this.total0 = 0;
+          this.total = 0;
           this.total1 = 0;
           this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
           this.total = 0;
-          this.tota2 = 0;
+          this.total2 = 0;
           this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
         this.$emit('getMessage', index);
