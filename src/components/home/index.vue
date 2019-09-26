@@ -209,12 +209,12 @@
           data: {
             createTimeStart: '',
             createTimeEnd: '',
-            reportInStatuses: ["NONE","PENDING","FAILED"],//需要的入住上报旅业状态
+            reportInStatuses: ["NONE","FAILED"],//需要的入住上报旅业状态
             desc: true,
             name: ''  // 搜索
           },
-          limit: 4,
-          offset: 1,
+          limit: 5,
+          offset: 0,
           onsuccess: (body, headers) => {
             this.loadingShow = false;
             if (body.errcode == 0) {

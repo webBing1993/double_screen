@@ -37,9 +37,17 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.errcode !== 0) {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
@@ -89,7 +97,7 @@ const actions = {
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
         Vue.prototype.$toast({
-          message: response.data.msg,
+          message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
         param.onFail && param.onFail(response)
@@ -98,7 +106,7 @@ const actions = {
         // Vue.prototype.$message.error(response.data.msg);
         // Vue.prototype.$toast(response.data.msg);
         Vue.prototype.$toast({
-          message: response.data.msg,
+          message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
         param.onFail && param.onFail(response)
@@ -144,7 +152,7 @@ const actions = {
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
         Vue.prototype.$toast({
-          message: response.data.msg,
+          message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
         param.onFail && param.onFail(response)
@@ -152,7 +160,7 @@ const actions = {
       else {
         // Vue.prototype.$message.error(response.data.msg);
         Vue.prototype.$toast({
-          message: response.data.msg,
+          message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
         param.onFail && param.onFail(response)
@@ -199,7 +207,7 @@ const actions = {
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
         Vue.prototype.$toast({
-          message: response.data.msg,
+          message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
         param.onFail && param.onFail(response)
