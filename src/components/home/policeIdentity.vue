@@ -395,6 +395,11 @@
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
           this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
         }else if (this.changeTabString == 2) {
