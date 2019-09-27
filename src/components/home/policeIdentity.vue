@@ -290,6 +290,11 @@
 
       keyCancel (event, type) {
         event.preventDefault();
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (type == 1) {
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
@@ -322,6 +327,11 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
           this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
         }else if (this.changeTabString == 2) {
@@ -335,6 +345,11 @@
       keyEntry(event, item,type) {
         event.preventDefault();
         clearTimeout(this.timer);
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
@@ -364,6 +379,11 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
           this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
         }else if (this.changeTabString == 2) {
@@ -466,6 +486,7 @@
       this.getConfig();
       this.page = 1;
       this.page1 = 1;
+      this.page2 = 1;
       this.changeTabString = sessionStorage.getItem('changeTabString') ? sessionStorage.getItem('changeTabString') : 1;
       this.todayStart = this.timeFetch().todayStart;
       this.todayEnd = this.timeFetch().todayEnd;
