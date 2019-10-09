@@ -601,6 +601,7 @@
         this.loadingText = '同步中...';
         this.loadingShow = true;
         this.refreshList({
+          pmsType: 1,
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
               this.searchString = this.searchString2 = this.searchString1 = '';
