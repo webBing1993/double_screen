@@ -926,6 +926,9 @@
               .list_cell:last-of-type {
                 width: 48%;
                 position: relative;
+                .listCell {
+                  width: 42%;
+                }
               }
             }
             .remark {

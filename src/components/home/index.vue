@@ -142,6 +142,7 @@
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
+                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
                       let checkOutList = body.data.data.checkoutapply;
                       let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
@@ -282,7 +283,6 @@
         let date = e.data;
         if (date == '"refresh"') {
           this.speakShow = true;
-          this.speckText('您有待办事项未处理，点击查看');
           this.unhandleList();
           this.searchVal++;
           this.doSthList();
