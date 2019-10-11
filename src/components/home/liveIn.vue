@@ -541,6 +541,7 @@
               item.quitLoading = false;
             }else {
               sessionStorage.setItem('checkOutItem', JSON.stringify(item));
+              sessionStorage.setItem('liveInPage', this.page);
               this.$emit('goToCheckOut', item.orderId);
             }
           },
@@ -562,8 +563,17 @@
       this.loadingShow = true;
       this.showList = false;
       this.showList_ = false;
-      this.getPreOrder(1);
+      this.page = sessionStorage.getItem('liveInPage') ? sessionStorage.getItem('liveInPage') : 1;
+      this.getPreOrder(this.page);
       window.showOrderInfo = this.showOrderInfo;
+    },
+    beforeRouteEnter(to,from,next){
+      if(from.name == 'checkOut'){
+
+      }else {
+          sessionStorage.removeItem('liveInPage');
+      }
+      next();
     },
   }
 </script>

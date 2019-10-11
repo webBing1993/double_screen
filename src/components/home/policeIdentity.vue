@@ -481,6 +481,13 @@
       unhandleClick (item) {
         item.unhandleLoading = true;
         sessionStorage.setItem('changeTabString', this.changeTabString);
+        if (this.changeTabString == 1) {
+          sessionStorage.setItem('policeIdentityPage',this.page);
+        }else if (this.changeTabString == 2) {
+          sessionStorage.setItem('policeIdentityPage',this.page2);
+        }else {
+          sessionStorage.setItem('policeIdentityPage',this.page1);
+        }
         this.$emit('gotoDtail', item.lvyeReportRecordId);
       },
 
@@ -489,10 +496,14 @@
     mounted () {
       this.loadingShow = true;
       this.getConfig();
-      this.page = 1;
-      this.page1 = 1;
-      this.page2 = 1;
       this.changeTabString = sessionStorage.getItem('changeTabString') ? sessionStorage.getItem('changeTabString') : 1;
+      if (this.changeTabString == 1) {
+        this.page = sessionStorage.getItem('policeIdentityPage') ? sessionStorage.getItem('policeIdentityPage') : 1;
+      }else if (this.changeTabString == 2) {
+        this.page2 = sessionStorage.getItem('policeIdentityPage') ? sessionStorage.getItem('policeIdentityPage') : 1;
+      }else {
+        this.page1 = sessionStorage.getItem('policeIdentityPage') ? sessionStorage.getItem('policeIdentityPage') : 1;
+      }
       this.todayStart = this.timeFetch().todayStart;
       this.todayEnd = this.timeFetch().todayEnd;
       if (this.changeTabString == 1) {
