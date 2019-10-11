@@ -513,7 +513,15 @@
       }else {
         this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
       }
-    }
+    },
+    beforeRouteEnter(to,from,next){
+      if(from.name == 'policeIdentityDetail'){
+
+      }else {
+        sessionStorage.removeItem('policeIdentityPage');
+      }
+      next();
+    },
   }
 </script>
 
