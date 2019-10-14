@@ -133,7 +133,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabFr == 1">
               <div class="input">
-                <input type="text" placeholder="请输入姓名的拼音查询" v-model="searchString1">
+                <input type="text" placeholder="请输入姓名的首字母查询" v-model="searchString1">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">

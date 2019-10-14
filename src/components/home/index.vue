@@ -116,10 +116,11 @@
 
       // 语音播报
       speckText(str){
-        let url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(str);        // baidu
+        let url = "http://tts.baidu.com/text2audio?cuid=baiduid&lan=zh&ctp=1&pdt=311&tex=" + encodeURI(str);        // baidu
         let n = new Audio(url);
         n.src = url;
         n.play();
+        n = null;
       },
 
       // 退出事件

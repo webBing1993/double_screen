@@ -282,6 +282,34 @@
           </div>
         </div>
       </div>
+      <!-- PMS入账异常-->
+      <div class="showPmsAbnormal" v-if="showPmsAbnormal">
+        <div class="shadow"></div>
+        <div class="pmsAbnormal">
+          <div class="pmsAbnormal_content">
+            <div class="pmsAbnormal_fl">
+              <img src="../../assets/qiantai.png" alt="">
+            </div>
+            <div class="pmsAbnormal_fr">
+              <div class="title">结算成功，系统入账异常</div>
+              <div class="content">您可进入交易管理，查看结算信息并手工至PMS系统入账。</div>
+            </div>
+          </div>
+          <div class="know_btn">
+            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal=false;">
+          </div>
+        </div>
+      </div>
+      <!-- 账户余额不足提示-->
+      <div class="balance" v-if="showBalance">
+        <div class="shadow"></div>
+        <div class="balance_content">
+          <div class="title_img"><img src="../../assets/querenshanchu.png" alt=""></div>
+          <div class="title">账户余额不足</div>
+          <div class="content">微信支付宝账户余额不足，请处理后重试</div>
+          <div class="know_btn"><img src="../../assets/Group.png" alt="" @click="showBalance=false"></div>
+        </div>
+      </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText" :style="isScreen ? 'width: 100vw' : 'width: calc(100vw - 480px)'"></loadingList>
     </div>
   </div>
@@ -342,6 +370,8 @@
         isScreen: false,
         sweepingTig: false,   // 扫码结算步骤提示框
         sweepingTig_: false,   // 扫码结算错误提示框
+        showPmsAbnormal: false,  // pms入账异常
+        showBalance: false,  // 账户余额不足提示
       }
     },
     filters: {
@@ -630,6 +660,13 @@
                 this.payTig = false;
                 this.page = 1;
                 this.paymentList(1)
+              }else if(body.data.code == 20003){
+                this.showPmsAbnormal = true;
+              }else if (body.data.code == 10006) {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
               }
             },
             onfail: (body, headers) => {
@@ -657,7 +694,7 @@
           this.infoLoading = false;
         }else if (!regPos.test(this.payMoney)) {
           this.$toast({
-            message: '请输入正确的退款金额!',
+            message: '请输入正确的消费金额!',
             iconClass: 'icon ',
           });
           this.infoLoading = false;
@@ -665,7 +702,7 @@
           this.infoLoading = false;
 //          this.$message('退款金额大于总额');
           this.$toast({
-            message: '退款金额大于总额',
+            message: '消费金额大于总额',
             iconClass: 'icon ',
           });
         }else {
@@ -683,6 +720,8 @@
                 this.payTig = false;
                 this.page = 1;
                 this.paymentList(1);
+              }else if(body.data.code == 20003){
+                this.showPmsAbnormal = true;
               }
             },
             onfail: (body, headers) => {
@@ -1417,6 +1456,111 @@
           .waringTig {
             color: #F5222D;
           }
+        }
+      }
+    }
+  }
+  .showPmsAbnormal {
+    .shadow {
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, .6);
+    }
+    .pmsAbnormal {
+      background: #FFFFFF;
+      border-radius: 20px;
+      width: 960px;
+      position: fixed;
+      z-index: 12;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      .pmsAbnormal_content {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 183px 80px 143px;
+        .pmsAbnormal_fl {
+          img {
+            display: inline-flex;
+            width: 304px;
+            height: 218px;
+          }
+          margin-right: 64px;
+        }
+        .pmsAbnormal_fr {
+          .title {
+            color: #000;
+            font-size: 36px;
+            margin-bottom: 33px;
+            text-align: left;
+          }
+          .content {
+            color: #303133;
+            font-size: 30px;
+            text-align: left;
+          }
+        }
+      }
+      .know_btn {
+        padding-bottom: 60px;
+        text-align: center;
+        img {
+          width: 440px;
+          display: block;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+
+  .balance {
+    .shadow {
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, .6);
+    }
+    .balance_content {
+      background: #FFFFFF;
+      border-radius: 20px;
+      width: 960px;
+      position: fixed;
+      z-index: 12;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      .title_img {
+        img {
+          display: block;
+          width: 160px;
+          margin: 98px auto 25px;
+        }
+      }
+      .title {
+        color: #000;
+        font-size: 36px;
+        margin-bottom: 33px;
+      }
+      .content {
+        color: #303133;
+        font-size: 30px;
+      }
+      .know_btn {
+        margin-top: 57px;
+        padding-bottom: 60px;
+        text-align: center;
+        img {
+          width: 440px;
+          display: block;
+          margin: 0 auto;
         }
       }
     }
