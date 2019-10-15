@@ -45,10 +45,16 @@
         </div>
       </div>
 
-      <!-- 退房待办弹框-->
+      <!-- 退房，发卡槽无卡或回收卡槽满 待办弹框-->
       <div class="quitHouse" v-if="quithouse">
-        <div class="content">
+        <div class="content" v-if="quithouse_">
           【{{onlyItem.roomNo}}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="content" v-if="wuka">
+          发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="content" v-if="manka">
+          回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看
         </div>
         <div class="btns">
           <span class="knowBtn" @click="checkOut">我知道了</span>
@@ -87,7 +93,10 @@
         },  // 权限
         searchVal: 0,
         windowUrl: '',
-        quithouse: false,   // 退房提示
+        quithouse: false,   // 弹框提示
+        quithouse_: false,  // 退房
+        wuka: false,        // 无卡提示
+        manka: false,       // 卡槽满
         onlyItem: {},    // 临时退房数据
       }
     },
@@ -145,33 +154,25 @@
                   this.speakShow = true;
                   this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
-                      let checkOutList = body.data.data.checkoutapply;
-                      let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-                    if (arr_.length == 0) {
-                      this.onlyItem = checkOutList[0];
-                      this.quithouse = true;
-                    }else {
-                      let result = [];
-                      for(var i = 0; i < checkOutList.length; i++){
-                        let obj = checkOutList[i];
-                        let num = obj.id;
-                        let isExist = false;
-                        for(var j = 0; j < arr_.length; j++){
-                          let aj = arr_[j];
-                          let n = aj.id;
-                          if(n == num){
-                            isExist = true;
-                            break;
-                          }
+                      this.findItem(body.data.data, 1);
+                  }else if (body.data.data.faka) {
+                    let arr = [];
+                    let arr_ = [];
+                    body.data.data.faka.forEach(item => {
+                        if (item.type == 'WUKA') {
+                          arr.push(item);
+                        }else if (item.type != 'WUKA' && item.type != 'QUEKA' && item.type != 'FAKA') {
+                          arr_.push(item);
                         }
-                        if(!isExist){
-                          result.push(obj);
-                        }
-                      }
-                      if (result.length != 0) {
-                        this.onlyItem = result[0];
-                        this.quithouse = true;
-                      }
+                    })
+                    let obj = {};
+                    obj.wuka = arr;
+                    obj.manka = arr_;
+                    if (arr.length != 0) {
+                      this.findItem(obj, 2);
+                    }
+                    if (arr_.length != 0) {
+                      this.findItem(obj, 3);
                     }
                   }
               }
@@ -185,6 +186,75 @@
             this.loadingShow = false;
           }
         })
+      },
+
+      // 过滤
+      findItem(data, type) {
+        let checkOutList = '';
+        if (type == 1) {
+          checkOutList = data.checkoutapply;
+        }else if (type == 2) {
+          checkOutList = data.wuka;
+        }else {
+          checkOutList = data.manka;
+        }
+        let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        if (arr_.length == 0) {
+          this.onlyItem = checkOutList[0];
+          if (type == 1) {
+            this.quithouse = true;
+            this.wuka = false;
+            this.manka = false;
+            this.quithouse_ = true;
+          }else if (type == 2) {
+            this.wuka = true;
+            this.quithouse_ = false;
+            this.manka = false;
+            this.quithouse = true;
+          }else {
+            this.manka = true;
+            this.quithouse_ = false;
+            this.wuka = false;
+            this.quithouse = true;
+          }
+        }else {
+          let result = [];
+          for(var i = 0; i < checkOutList.length; i++){
+            let obj = checkOutList[i];
+            let num = obj.id;
+            let isExist = false;
+            for(var j = 0; j < arr_.length; j++){
+              let aj = arr_[j];
+              let n = aj.id;
+              if(n == num){
+                isExist = true;
+                break;
+              }
+            }
+            if(!isExist){
+              result.push(obj);
+            }
+          }
+          if (result.length != 0) {
+            this.onlyItem = result[0];
+            if (type == 1) {
+              this.quithouse = true;
+              this.wuka = false;
+              this.manka = false;
+              this.quithouse_ = true;
+            }else if (type == 2) {
+              this.wuka = true;
+              this.quithouse_ = false;
+              this.manka = false;
+              this.quithouse = true;
+            }else {
+              this.manka = true;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quithouse = true;
+            }
+          }
+        }
       },
 
       // 我知道了
