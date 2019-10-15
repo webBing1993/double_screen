@@ -348,6 +348,8 @@
                     iconClass: 'icon ',
                   });
                   this.gobanck();
+                }else if (body.data.code == 100049 || body.data.code == 100036) {
+                  this.showBalance = true;
                 }
                 this.checked = '';
                 this.payTig = false;

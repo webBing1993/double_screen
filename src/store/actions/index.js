@@ -88,7 +88,7 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000 || response.data.code === 20005 || response.data.code == 20002 || response.data.code == 20003 || response.data.code == 20006 || response.data.code == 10006) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000 || response.data.code === 20005 || response.data.code == 20002 || response.data.code == 20003 || response.data.code == 20006 || response.data.code == 10006 || response.data.code == 100049 || response.data.code == 100036) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {

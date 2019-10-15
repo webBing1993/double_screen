@@ -667,6 +667,8 @@
                   message: body.data.msg,
                   iconClass: 'icon ',
                 });
+              }else if (body.data.code == 100049 || body.data.code == 100036) {
+                this.showBalance = true;
               }
             },
             onfail: (body, headers) => {
@@ -722,6 +724,8 @@
                 this.paymentList(1);
               }else if(body.data.code == 20003){
                 this.showPmsAbnormal = true;
+              }else if (body.data.code == 100049 || body.data.code == 100036) {
+                this.showBalance = true;
               }
             },
             onfail: (body, headers) => {
