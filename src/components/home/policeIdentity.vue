@@ -5,7 +5,7 @@
         <div class="doSthContent">
           <div class="changTabs">
             <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)" :style="changeTabString == 1 ? tabImg[1] : tabImg[0]">待处理{{total != 0 ? "("+total+")" : ''}}</span>
-            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" :style="changeTabString == 2 ? tabImg[1] : tabImg[0]">处理中{{total2 != 0 ? "("+total2+")" : ''}}</span>
+            <!--<span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" :style="changeTabString == 2 ? tabImg[1] : tabImg[0]">处理中{{total2 != 0 ? "("+total2+")" : ''}}</span>-->
             <span :class="changeTabString == 3 ? 'active' : ''" @click="changeTabClick(3)" v-if="showHandledList" :style="changeTabString == 3 ? tabImg[1] : tabImg[0]">已处理{{total1 != 0 ? "("+total1+")" : ''}}</span>
           </div>
           <div class="identityList" v-if="showList && changeTabString == 1">
@@ -227,7 +227,7 @@
         }else {
           this.total = 0;
           this.total1 = 0;
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       }
     },
@@ -272,7 +272,7 @@
         }else {
           this.total = 0;
           this.total2 = 0;
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
         this.$emit('getMessage', index);
       },
@@ -304,7 +304,7 @@
             }else if (this.changeTabString == 2) {
               this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
             }
           }
         }else {
@@ -316,7 +316,7 @@
             }else if (this.changeTabString == 2) {
               this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
             }
           }
         }
@@ -337,7 +337,7 @@
         }else if (this.changeTabString == 2) {
           this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       },
 
@@ -358,7 +358,7 @@
           }else if (this.changeTabString == 2) {
             this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
           }else {
-            this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+            this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
           }
         }else {
           this.searchString2 += item;
@@ -369,7 +369,7 @@
             }else if (this.changeTabString == 2) {
               this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
             }
           },1500)
         }
@@ -389,7 +389,7 @@
         }else if (this.changeTabString == 2) {
           this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       },
       clearSearch1() {
@@ -405,7 +405,7 @@
         }else if (this.changeTabString == 2) {
           this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       },
 
@@ -426,7 +426,7 @@
         this.showList = false;
         this.loadingShow = true;
         this.page1 = val;
-        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, val, 3);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, val, 3);
       },
       handleCurrentChange2(val) {
         console.log(`当前页: ${val}`);
@@ -511,7 +511,7 @@
       }else if (this.changeTabString == 2) {
         this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
       }else {
-        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
       }
     },
     beforeRouteEnter(to,from,next){
