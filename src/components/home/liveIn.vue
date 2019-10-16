@@ -272,6 +272,7 @@
         this.loadingText = '同步中...';
         this.loadingShow = true;
         this.refreshList({
+          pmsType: 2,
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
               this.page = 1;

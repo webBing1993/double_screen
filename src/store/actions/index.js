@@ -337,7 +337,7 @@ const actions = {
   //同步订单列表
   refreshList(ctx, param) {
     ctx.dispatch('resource', {
-      url: '/ecard/orders/pms/refreshList',
+      url: '/ecard/orders/pms/refreshList?type='+param.pmsType,
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
