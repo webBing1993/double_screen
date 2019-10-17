@@ -100,11 +100,11 @@
         <div class="shadow" @click="payTig = false;payMoney = ''"></div>
         <div class="payTigContent">
           <div class="payTig_title">
-            请确认{{payTigStatus == 1 ? '退款' : '结算'}}金额
+            请确认{{payTigStatus == 1 ? '退款' : '消费'}}金额
             <img src="../../assets/guanbi.png" alt="" @click="payTig = false;payMoney = ''">
           </div>
           <div class="payTig_content">
-            <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="payTigStatus == 1 ? '请输入退款金额' : '请输入结算金额'"></div>
+            <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="payTigStatus == 1 ? '请输入退款金额' : '请输入消费金额'"></div>
             <div class="payTig_keyBoard">
               <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
               <span @click="keyCancel_()"><img src="../../assets/shanchuanniu.png" alt=""></span>
