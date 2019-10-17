@@ -244,7 +244,7 @@
               },
               onsuccess: body => {
                 console.log('body:',body);
-                if (body.data.code == 0) {
+                if (body.data.code == 0 && body.data.data) {
                   sessionStorage.setItem('avatar',body.data.data.avatar);
                   sessionStorage.setItem('name',body.data.data.name);
                   sessionStorage.session_id = body.data.data.token;
