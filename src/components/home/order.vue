@@ -175,6 +175,7 @@
               </div>
             </div>
           </div>
+          <div class="corporation">复创客服电话 4001-690-890</div>
         </div>
       </div>
 
@@ -975,6 +976,18 @@
     .order_fr {
       width: 480px;
       background-color: #fff;
+      .corporation {
+        text-align: center;
+        height: 80px;
+        line-height: 80px;
+        font-size: 30px;
+        background-color: #4A90E2;
+        color: #fff;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
       .fast_title {
         position: relative;
         margin: 40px 0;

@@ -762,6 +762,24 @@ const actions = {
     })
   },
 
+  // 旅业退房失败待办
+  updateCheckpmslvStatus(ctx, param){
+    ctx.dispatch('resource_', {
+      url: "/ecard/hotel/wqtException/handle",
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   // 已处理按钮是否显示
   getShowPoliceConfigs(ctx, param){
     ctx.dispatch('resourceGemini', {

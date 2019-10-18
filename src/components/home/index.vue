@@ -148,7 +148,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null) {
+              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.lvyeChangeRoom.length == 0) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
