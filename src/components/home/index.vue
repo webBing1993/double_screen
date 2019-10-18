@@ -152,7 +152,7 @@
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
-                  this.speckText('您有待办事项未处理，点击查看');
+//                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
                       this.findItem(body.data.data, 1);
                   }else if (body.data.data.faka) {
