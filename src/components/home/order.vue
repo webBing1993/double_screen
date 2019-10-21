@@ -6,7 +6,7 @@
           <div class="tabs">
             <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">散客订单</span>
             <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">团队订单</span>
-            <span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)" :style="tabToDay ? tabImg[1] : tabImg[0]">今日预抵</span>
+            <!--<span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)" :style="tabToDay ? tabImg[1] : tabImg[0]">今日预抵</span>-->
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -656,8 +656,8 @@
       getPreOrder (page) {
         this.getQueryByPage({
           data: {
-            start: this.startTime,
-            end: this.endTime,
+            start: "",
+            end: "",
             page: page,
             pageSize: 4,
             payMode: '',
