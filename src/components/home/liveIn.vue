@@ -320,10 +320,20 @@
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$toast({
-              message: '同步超时，请稍后再试',
-              iconClass: 'icon ',
-            });
+            let hint = '';
+            if (error.status === 401) {
+              hint = '登录失效!'
+            } else if (error.status === 1) {
+              hint = '请求超时!';
+            } else {
+              hint = '请求失败'
+            }
+            if (hint != '') {
+              this.$message({
+                message: hint,
+                type: 'error'
+              });
+            }
             this.page = 1;
             this.getPreOrder(1);
           }
