@@ -345,6 +345,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError: (body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
