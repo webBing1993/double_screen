@@ -150,11 +150,11 @@
         <div class="shadow"></div>
         <div class="payTigContent">
           <div class="payTig_title">
-            {{orderDetail.refundVO ? '请确认消费金额' : '请确认消费金额'}}
+            {{orderDetail.refundVO ? '请确认退款金额' : '请确认消费金额'}}
             <img src="../../assets/guanbi.png" alt="" @click="payTig = false;payMoney = '';infoLoading = false;">
           </div>
           <div class="payTig_content">
-            <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="orderDetail.refundVO ? '请确认消费金额' : '请确认消费金额'"></div>
+            <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="orderDetail.refundVO ? '请确认退款金额' : '请确认消费金额'"></div>
             <div class="payTig_keyBoard">
               <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
               <span @click="keyCancel_()"><img src="../../assets/shanchuanniu.png" alt=""></span>
@@ -291,20 +291,14 @@
 //              type: 'warning'
 //            });
             this.$toast({
-              message: '请输入消费金额',
+              message: '请输入退款金额',
               iconClass: 'icon ',
             });
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
-          }else if (this.payMoney == 0) {
-            this.$toast({
-              message: '请输入正确的消费金额',
-              iconClass: 'icon ',
-            });
-            this.infoLoading = false;
           }else if (!regPos.test(this.payMoney)) {
             this.$toast({
-              message: '请输入正确的消费金额',
+              message: '请输入正确的退款金额',
               iconClass: 'icon ',
             });
             this.infoLoading = false;
