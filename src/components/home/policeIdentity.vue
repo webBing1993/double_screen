@@ -458,6 +458,7 @@
                 this.total = parseFloat(headers['x-total-count']);
                 this.unhandleList = [ ...body.data.content];
                 this.hotelConfig = body.data.config;
+                this.$emit('unhandleNumFun', this.total);
               }else if (type == 2) {
                 this.total2 = parseFloat(headers['x-total-count']);
                 this.handleingList = [ ...body.data.content];

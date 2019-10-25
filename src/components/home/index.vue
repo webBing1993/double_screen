@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut" @checkOutLoading="checkOutLoading"></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut" @checkOutLoading="checkOutLoading" @unhandleNumFun="unhandleNumFun"></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -303,7 +303,7 @@
       },
 
       showMsg (val) {
-        this.unhandleList();
+//        this.unhandleList();
       },
 
       // 进公安核验详情
@@ -323,6 +323,11 @@
 //          this.loadingShow = false;
 //        }, 600);
         this.goto('/checkOut/'+val)
+      },
+
+      // 公安核验待处理数据条数
+      unhandleNumFun (val) {
+        this.unhandleNum = val;
       },
 
       checkOutLoading(val) {

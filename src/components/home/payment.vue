@@ -269,6 +269,27 @@
         </div>
       </div>
 
+      <!-- PMS入账异常-->
+      <div class="showPmsAbnormal" v-if="showPmsAbnormal">
+        <div class="shadow"></div>
+        <div class="pmsAbnormal">
+          <div class="title">PMS入账异常</div>
+          <div class="lists">
+            <div class="list">
+              <span>退款金额</span>
+              <span>¥{{payMoney}}</span>
+            </div>
+          </div>
+          <p class="zhuyi_text">
+            注意：由于系统异常，无法自动入账PMS，请手工至PMS入账。
+         </p>
+          <div class="btns">
+            <el-button type="primary" :loading="false" class="btn1" @click="showPmsAbnormal=false;payMoney=''">暂不退款</el-button>
+            <el-button type="primary" :loading="showPmsAbnormalLoading" class="btn" @click="continuedCheckOutRoom()">继续退款</el-button>
+          </div>
+        </div>
+      </div>
+
       <!-- 扫码结算弹框步骤-->
       <div class="sweepingTig" v-if="sweepingTig">
         <div class="shadow"></div>
@@ -283,8 +304,9 @@
           </div>
         </div>
       </div>
-      <!-- PMS入账异常-->
-      <div class="showPmsAbnormal" v-if="showPmsAbnormal">
+
+      <!-- 预授权PMS入账异常-->
+      <div class="showPmsAbnormal_" v-if="showPmsAbnormal_">
         <div class="shadow"></div>
         <div class="pmsAbnormal">
           <div class="pmsAbnormal_content">
@@ -297,10 +319,11 @@
             </div>
           </div>
           <div class="know_btn">
-            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal=false;">
+            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal_=false;">
           </div>
         </div>
       </div>
+
       <!-- 账户余额不足提示-->
       <div class="balance" v-if="showBalance">
         <div class="shadow"></div>
@@ -372,7 +395,11 @@
         sweepingTig: false,   // 扫码结算步骤提示框
         sweepingTig_: false,   // 扫码结算错误提示框
         showPmsAbnormal: false,  // pms入账异常
+        showPmsAbnormal_: false,  // 预授权pms入账异常
         showBalance: false,  // 账户余额不足提示
+        chargeRecordObj: {},
+        showPmsAbnormalLoading: false,  // pms入账btn loading
+        checked: '',  // 判断pms入账是否异常
       }
     },
     filters: {
@@ -622,6 +649,14 @@
         this.payTigStatus = 2;
       },
 
+      //继续退房
+      continuedCheckOutRoom(){
+        this.showPmsAbnormal = false;
+        this.showPmsAbnormalLoading = true;
+        this.checked = true;
+        this.refundMoney();
+      },
+
       // 退款事件
       refundMoney () {
         let regPos = /^\d+(\.\d+)?$/; //非负浮点数
@@ -652,7 +687,8 @@
           this.reimburse({
             data:{
               orderId: this.detailVal.outTradeNo,
-              refundfee: this.payMoney
+              refundfee: this.payMoney,
+              checked: this.checked,
             },
             onsuccess: (body) => {
               this.infoLoading = false;
@@ -671,14 +707,19 @@
               }else if (body.data.code == 100049 || body.data.code == 100036) {
                 this.showBalance = true;
               }
+              this.checked = '';
+              this.payTig = false;
+              this.showPmsAbnormalLoading = false;
             },
             onfail: (body, headers) => {
               this.infoLoading = false;
               this.isScreen = false;
+              this.showPmsAbnormalLoading = false;
             },
             onerror: error => {
               this.infoLoading = false;
               this.isScreen = false;
+              this.showPmsAbnormalLoading = false;
             }
           });
         }
@@ -724,7 +765,7 @@
                 this.page = 1;
                 this.paymentList(1);
               }else if(body.data.code == 20003){
-                this.showPmsAbnormal = true;
+                this.showPmsAbnormal_ = true;
               }else if (body.data.code == 100049 || body.data.code == 100036) {
                 this.showBalance = true;
               }
@@ -1478,6 +1519,75 @@
     }
   }
   .showPmsAbnormal {
+    .shadow {
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, .6);
+    }
+    .pmsAbnormal {
+      background: #FFFFFF;
+      border-radius: 20px;
+      width: 960px;
+      position: fixed;
+      z-index: 12;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      .title {
+        color: #303133;
+        font-size: 30px;
+        position: relative;
+        padding: 30px 40px;
+        border-bottom: 1px solid #D8D8D8;
+      }
+      .lists {
+        padding: 0 40px;
+        .list {
+          padding: 24px 0;
+          font-size: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #000;
+        }
+      }
+      p {
+        color:#F5222D;
+        font-size: 28px;
+        padding: 0 40px;
+      }
+      .btns {
+        margin: 50px 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        .btn1 {
+          border: 1px solid #F5222D;
+          border-radius: 44px;
+          width: 280px;
+          height: 78px;
+          text-align: center;
+          font-size: 30px;
+          color:#F5222D;
+          background-color: #fff;
+        }
+        .btn {
+          background: #1AAD19;
+          border-radius: 44px;
+          width: 380px;
+          height: 78px;
+          text-align: center;
+          font-size: 30px;
+          color: #fff;
+        }
+      }
+    }
+  }
+  .showPmsAbnormal_ {
     .shadow {
       position: fixed;
       z-index: 10;
