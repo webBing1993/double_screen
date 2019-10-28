@@ -26,7 +26,7 @@
                 <div class="list">操作</div>
               </div>
             </div>
-            <div class="content">
+            <div class="content" v-if="!tradeManager">
               <div class="lists" v-if="orderDetail.refundVO.roomFeeStr != '预付房费'">
                 <div class="list">
                   <span>房费</span>
@@ -44,6 +44,20 @@
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.refundFeeStr}}元</span>
+                </div>
+                <div class="list">
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick()" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
+                </div>
+              </div>
+            </div>
+            <div class="content" v-else>
+              <div class="lists">
+                <div class="list">
+                  <span>房费/押金</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : '翼支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                </div>
+                <div class="list">
+                  <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
                 </div>
                 <div class="list">
                   <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick()" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
@@ -369,15 +383,16 @@
                 }else if(body.data.code == 20003){
                   this.showPmsAbnormal = true;
                 }else if (body.data.code == 20006) {
-//                  this.$message({
-//                    message: body.data.data,
-//                    type: 'warning'
-//                  });
                   this.$toast({
                     message: body.data.msg,
                     iconClass: 'icon ',
                   });
                   this.gobanck();
+                }else if (body.data.code == 10006) {
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
+                  });
                 }else if (body.data.code == 100049 || body.data.code == 100036) {
                   this.showBalance = true;
                 }
