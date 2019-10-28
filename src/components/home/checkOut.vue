@@ -322,7 +322,13 @@
             });
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
-          }else if (!regPos.test(this.payMoney)) {
+          }else if (this.payMoney == 0) {
+            this.$toast({
+              message: '请输入正确的消费金额',
+              iconClass: 'icon ',
+            });
+            this.infoLoading = false;
+          } else if (!regPos.test(this.payMoney)) {
             this.$toast({
               message: '请输入正确的退款金额',
               iconClass: 'icon ',
