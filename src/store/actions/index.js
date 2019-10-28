@@ -59,10 +59,7 @@ const actions = {
           if (error.response) {
 
           }else {
-            Vue.prototype.$toast({
-              message: "网络连接已断开",
-              iconClass: 'icon ',
-            });
+
           }
           param.onError && param.onError(error);
         }
