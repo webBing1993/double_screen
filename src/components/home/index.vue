@@ -68,8 +68,10 @@
 </template>
 <script>
   import {mapState,mapActions} from 'vuex';
+  import loadingList from './loading.vue'
   export default {
     name: 'home',
+    components: {loadingList},
     data () {
       return {
         loadingShow: false,
@@ -538,7 +540,7 @@
     .quit {
       .shadow {
         position: fixed;
-        z-index: 10;
+        z-index: 999999999;
         left: 0;
         top: 0;
         width: 100vw;
@@ -550,7 +552,7 @@
         border-radius: 20px;
         width: 375px;
         position: fixed;
-        z-index: 12;
+        z-index: 9999999999;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
