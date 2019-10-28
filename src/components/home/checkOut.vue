@@ -262,6 +262,7 @@
         checked: '',  // 判断pms入账是否异常
         accountItem: {},  // 预授权结算的临时数据
         showBalance: false,  // 账户余额不足提示
+        tradeManager: false, // 退款是否退房费的权限，默认关闭
       }
     },
     methods: {
@@ -334,13 +335,16 @@
               iconClass: 'icon ',
             });
             this.infoLoading = false;
-          }else if (parseFloat(this.payMoney*100) > parseFloat(this.orderDetail.refundVO.refundFeeStr*100)) {
-//            this.$message({
-//              message: '注意：不能大于押金金额',
-//              type: 'warning'
-//            });
+          }else if ((parseFloat(this.payMoney*100) > parseFloat(this.orderDetail.refundVO.refundFeeStr*100)) && !this.tradeManager) {
             this.$toast({
               message: '注意：不能大于押金金额',
+              iconClass: 'icon ',
+            });
+            this.infoLoading = false;
+            this.showPmsAbnormalLoading = false;
+          }else if ((parseFloat(this.payMoney*100) > parseFloat(this.orderDetail.refundVO.totalFee)) && this.tradeManager) {
+            this.$toast({
+              message: '注意：不能大于总金额',
               iconClass: 'icon ',
             });
             this.infoLoading = false;
@@ -573,6 +577,13 @@
     mounted () {
       this.loadingShow = true;
       this.checkOutShow = false;
+      let list = JSON.parse(sessionStorage.getItem('subPermissions'));
+      this.windowUrl = window.location.href.split('#')[0];
+      list.forEach(item => {
+        if (item.tag == 'sp_trade_manager') {
+          this.tradeManager = true;
+        }
+      });
       this.changeItem = sessionStorage.getItem('checkOutItem') ? JSON.parse(sessionStorage.getItem('checkOutItem')) : '';
       this.getDetail();
     },

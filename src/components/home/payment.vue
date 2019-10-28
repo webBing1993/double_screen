@@ -400,6 +400,7 @@
         chargeRecordObj: {},
         showPmsAbnormalLoading: false,  // pms入账btn loading
         checked: '',  // 判断pms入账是否异常
+        tradeManager: false, // 退款是否退房费的权限，默认关闭
       }
     },
     filters: {
@@ -677,11 +678,16 @@
             iconClass: 'icon ',
           });
           this.infoLoading = false;
-        }else if ((this.payMoney * 100) > this.detailVal.totalFee) {
+        }else if (((this.payMoney * 100) > this.detailVal.totalFee) && this.tradeManager) {
           this.infoLoading = false;
-//          this.$message('退款金额大于总额');
           this.$toast({
-            message: '退款金额大于总额',
+            message: '注意：不能大于总金额',
+            iconClass: 'icon ',
+          });
+        }else if (((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && !this.tradeManager) {
+          this.infoLoading = false;
+          this.$toast({
+            message: '注意：不能大于押金金额',
             iconClass: 'icon ',
           });
         }else {
@@ -844,6 +850,13 @@
     mounted () {
       this.loadingShow = true;
       this.timeVal = new Date(new Date(new Date().toLocaleDateString()).getTime());
+      let list = JSON.parse(sessionStorage.getItem('subPermissions'));
+      this.windowUrl = window.location.href.split('#')[0];
+      list.forEach(item => {
+        if (item.tag == 'sp_trade_manager') {
+          this.tradeManager = true;
+        }
+      });
       this.paymentList(1);
       window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
     }
