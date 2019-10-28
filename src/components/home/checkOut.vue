@@ -324,7 +324,7 @@
             this.showPmsAbnormalLoading = false;
           }else if (this.payMoney == 0) {
             this.$toast({
-              message: '请输入正确的消费金额',
+              message: '请输入正确的退款金额',
               iconClass: 'icon ',
             });
             this.infoLoading = false;
