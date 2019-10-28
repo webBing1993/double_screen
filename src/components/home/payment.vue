@@ -37,8 +37,8 @@
               </div>
               <div class="list_fr">
                 <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
-                <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
-                <span v-if="item.channel == 6" class="red">已撤销</span>
+                <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} {{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
+                <span v-if="item.channel == 6" class="red">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已撤销</span>
                 <span v-if="item.channel == 4" class="blue">快速结算</span>
                 <span v-if="item.channel == 5" class="grey">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已结算</span>
                 <img src="../../assets/gengduo.png" alt="">
