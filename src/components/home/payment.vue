@@ -623,6 +623,8 @@
             if (body.data.code == 0) {
               this.channelDetail = false;
               this.paymentList(this.page);
+            }else if (body.data.code == 20003) {
+              this.showPmsAbnormal_ = true;
             }
           },
           onfail: (body, headers) => {
