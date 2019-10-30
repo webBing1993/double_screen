@@ -274,7 +274,7 @@
               this.loadingSure = false;
             },
             onerror: body => {
-              item.loadingSure = false;
+              this.loadingSure = false;
             }
           });
         }else {

@@ -319,7 +319,7 @@
             </div>
           </div>
           <div class="know_btn">
-            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal_=false;">
+            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal_=false;payTig=false">
           </div>
         </div>
       </div>
@@ -776,6 +776,14 @@
                 this.showPmsAbnormal_ = true;
               }else if (body.data.code == 100049 || body.data.code == 100036) {
                 this.showBalance = true;
+              }else if (body.data.code == 10006) {
+                this.payTig = false;
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
+                this.page = 1;
+                this.paymentList(1);
               }
             },
             onfail: (body, headers) => {

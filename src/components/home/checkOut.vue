@@ -206,9 +206,6 @@
             <el-button type="primary" :loading="false" class="btn1" @click="showPmsAbnormal=false">暂不退款</el-button>
             <el-button type="primary" :loading="showPmsAbnormalLoading" class="btn" @click="continuedCheckOutRoom()">继续退款</el-button>
           </div>
-          <div class="know_btn">
-            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal=false;">
-          </div>
         </div>
       </div>
 
@@ -226,7 +223,7 @@
             </div>
           </div>
           <div class="know_btn">
-            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal_=false;">
+            <img src="../../assets/Group.png" alt=""  @click="pmsabnormal">
           </div>
         </div>
       </div>
@@ -291,6 +288,11 @@
         this.$router.replace({name:'liveIn'})
       },
 
+      // 预授权pms入账异常
+      pmsabnormal() {
+        this.showPmsAbnormal_ = false;
+        this.gobanck();
+      },
       // 结账
       payInfoClick(item) {
         if (this.orderDetail.refundVO) {
