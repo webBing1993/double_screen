@@ -122,7 +122,11 @@
         }else if (index == 4) {
           this.replaceto('/policeIdentity');
         }
-        sessionStorage.setItem('tabIndex', index);
+        if (sessionStorage.getItem('pmsPayDetail')) {
+
+        }else {
+          sessionStorage.setItem('tabIndex', index);
+        }
       },
 
       // 语音播报
@@ -394,8 +398,11 @@
       });
       setTimeout(() => {
         let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
-        console.log(dataId.value);
-        this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+        if (sessionStorage.getItem('pmsPayDetail')) {
+
+        }else {
+          this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+        }
       },500);
       this.homeIndexShow = true;
       this.doSthList();
@@ -403,6 +410,9 @@
       this.timer = setInterval(() => {
         this.websocketsend(88888);
       },1500);
+      if (sessionStorage.getItem('pmsPayDetail')) {
+        this.tabClick(3);
+      }
     },
   }
 </script>

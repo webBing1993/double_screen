@@ -833,7 +833,13 @@
           this.sweepingTig_ = true;
         }else {
           this.detailTig(orderId);
-          this.testCloseBarCode();
+          if (sessionStorage.getItem('pmsPayDetail')) {
+            setTimeout(() => {
+              sessionStorage.removeItem('pmsPayDetail');
+            },600);
+          }else {
+            this.testCloseBarCode();
+          }
         }
       },
 
@@ -867,6 +873,9 @@
       });
       this.paymentList(1);
       window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
+      if (sessionStorage.getItem('pmsPayDetail')) {
+        this.getSweepingSettlementOrderId(sessionStorage.getItem('pmsPayDetail'));
+      }
     }
   }
 </script>

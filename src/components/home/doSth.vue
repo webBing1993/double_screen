@@ -63,6 +63,7 @@
                 <div class="roomIn"><span>押金：</span>{{item.depositFeeStr}}元</div>
               </div>
               <div class="list_fr">
+                <span @click="pmsPayDetail(item.orderId)" class="lookDetail">查看详情</span>
                 <span @click="pmsPay(item.orderId)">处理完成</span>
               </div>
             </div>
@@ -240,6 +241,12 @@
             this.loadingShow = false;
           }
         })
+      },
+
+      // 查看详情
+      pmsPayDetail(orderId) {
+        sessionStorage.setItem('pmsPayDetail', orderId);
+        this.goto(-1);
       },
 
       // pms 入住失败处理事件
@@ -474,6 +481,10 @@
                 display: inline-block;
                 border-radius: 32px;
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                margin-left: 15px;
+              }
+              .lookDetail {
+                background-color: #4A90E2;
               }
             }
           }
