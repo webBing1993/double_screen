@@ -4,6 +4,8 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
+const  Version = new Date().getTime();
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -46,7 +48,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+          name: utils.assetsPath('img/[name].[ext]'+'?time='+Version)
         }
       },
       {
@@ -54,7 +56,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('media/[name].[hash:7].[ext]')
+          name: utils.assetsPath('media/[name].[ext]'+'?time='+Version)
         }
       },
       {
@@ -62,7 +64,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+          name: utils.assetsPath('fonts/[name].[ext]'+'?time='+Version)
         }
       }
     ]

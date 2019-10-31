@@ -881,7 +881,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .paymentIndex {
     padding-top: 100px;
@@ -912,14 +912,14 @@
             width: 15px;
           }
         }
-        /deep/ .ivu-icon-ios-close-circle {
+        .ivu-icon-ios-close-circle {
           display: none;
         }
-        /deep/ .ivu-date-picker {
+        .ivu-date-picker {
           width: 480px;
           height: 56px;
         }
-        /deep/ .ivu-input {
+        .ivu-input {
           height: 56px;
           border: none;
           color: #303133;
@@ -930,56 +930,56 @@
           box-shadow: none;
           font-weight: bold;
         }
-        /deep/ .ivu-select-dropdown {
+        .ivu-select-dropdown {
           left: 112px !important;
         }
-        /deep/ .ivu-input:hover {
+        .ivu-input:hover {
           border: none;
         }
-        /deep/ .ivu-input-suffix {
+        .ivu-input-suffix {
           display: none;
         }
-        /deep/ .ivu-input-suffix i {
+        .ivu-input-suffix i {
           font-size: 32px;
           line-height: 72px;
         }
-        /deep/ .ivu-picker-panel-icon-btn i {
+        .ivu-picker-panel-icon-btn i {
           font-size: 32px;
         }
-        /deep/ .ivu-date-picker-cells span {
+        .ivu-date-picker-cells span {
           width: 56px;
           height: 56px;
           line-height: 56px;
           text-align: center;
           margin: 5px 2px 2px 2px;
         }
-        /deep/ .ivu-date-picker-cells {
+        .ivu-date-picker-cells {
           width: 420px;
           margin: 28px;
         }
-        /deep/ .ivu-picker-panel-icon-btn {
+        .ivu-picker-panel-icon-btn {
           width: 74px;
           height: 48px;
         }
-        /deep/ .ivu-date-picker-header {
+        .ivu-date-picker-header {
           height: 48px;
           line-height: 48px;
         }
-        /deep/ .ivu-btn-small {
+        .ivu-btn-small {
           font-size: 32px;
         }
-        /deep/ .ivu-picker-confirm-time {
+        .ivu-picker-confirm-time {
           display: none;
         }
-        /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
+        .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
           width: 239px;
           max-height: 546px;
         }
-        /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
+        .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
           padding: 0;
           text-align: center;
         }
-        /deep/ .ivu-btn-default {
+        .ivu-btn-default {
           display: none;
         }
       }
@@ -1725,33 +1725,33 @@
     }
   }
 
-  /deep/ .el-date-editor.el-input {
+  .el-date-editor.el-input {
     background-color: #FFFFFF;
     padding-left: 40px;
     width: 235px;
   }
 
-  /deep/ .ivu-date-picker-focused input {
+  .ivu-date-picker-focused input {
     box-shadow: none;
   }
 
-  /deep/ .el-input__icon {
+  .el-input__icon {
     font-size: 24px;
     line-height: 56px;
   }
 
-  /deep/ .el-input__prefix {
+  .el-input__prefix {
     left: 26px;
   }
 
-  /deep/ .el-input--prefix .el-input__inner {
+  .el-input--prefix .el-input__inner {
     line-height: 56px;
     font-size: 24px;
     height: 56px;
     border: none;
   }
 
-  /deep/ .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
+  .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
     font-size: 24px;
     font-family: '黑色';
   }
@@ -1769,7 +1769,7 @@
     }
   }
 
-  /deep/ .el-pagination {
+  .el-pagination {
     padding: 30px 0;
     position: fixed;
     width: calc(100vw - 480px);
@@ -1778,7 +1778,7 @@
     z-index: 1;
     background-color: #DEE7F8;
   }
-  /deep/ .el-pager li {
+  .el-pager li {
     background: rgba(0, 0, 0, .3);
     color: #fff;
     margin: 0 10px;
@@ -1788,24 +1788,24 @@
     min-width: 44px;
     font-family: '黑体';
   }
-  /deep/ .el-pagination__total {
+  .el-pagination__total {
     font-size: 20px !important;
     line-height: 44px !important;
     height: 44px !important;
   }
-  /deep/ .el-pager li.active {
+  .el-pager li.active {
     background-color: #1AAD19;
     color: #fff;
   }
-  /deep/ .el-pagination button {
+  .el-pagination button {
     height: 44px;
   }
 
-  /deep/ .el-date-editor .el-icon-circle-close {
+  .el-date-editor .el-icon-circle-close {
     display: none;
   }
 
-  /deep/ .el-date-picker .el-picker-panel__content {
+  .el-date-picker .el-picker-panel__content {
     width: 400px;
   }
 

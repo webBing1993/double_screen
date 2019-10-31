@@ -13,6 +13,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = require('../config/prod.env')
 
+const  Version = new Date().getTime();
+
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
@@ -26,6 +28,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     path: config.build.assetsRoot,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    // filename: utils.assetsPath('js/[name].js'+'?time='+Version),
+    // chunkFilename: utils.assetsPath('js/[id].js'+'?time='+Version)
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -43,10 +47,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].[contenthash].css'),
+      filename: utils.assetsPath('css/[name].css'+'?time='+Version),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
-      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`, 
+      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,
       // increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
       allChunks: true,
     }),

@@ -71,13 +71,23 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log(from);
-  if (from.name != null || from.name != 'login') {
+  if (from.name != null || from.name != 'login' || to.name == 'wuwangluo') {
     router.onError((error) => {
-      const pattern = /Loading chunk (\d)+ failed/g;
-      const isChunkLoadFailed = error.message.match(pattern);
-      if (isChunkLoadFailed) {
-        router.push('/wuwangluo');
+      console.log("error.response", error.response);
+      if (error.response) {
+
+      }else {
+        const pattern = /Loading chunk (\d)+ failed/g;
+        const isChunkLoadFailed = error.message.match(pattern);
+        if (isChunkLoadFailed) {
+          // router.push('/');
+          Vue.prototype.$toast({
+            message: "版本升级，请重新登录",
+            iconClass: 'icon ',
+          });
+          // window.location.href = url;
+          jsObj.LogOut();
+        }
       }
       return;
     });

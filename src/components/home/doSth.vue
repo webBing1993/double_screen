@@ -506,21 +506,5 @@
     }
   }
 
-  /deep/ .el-pagination {
-    margin: 30px 0;
-  }
-  /deep/ .el-pager li {
-    background: rgba(0, 0, 0, .3);
-    color: #999;
-    margin: 0 10px;
-    font-size: 16px;
-  }
-  /deep/ .el-pagination__total {
-    font-size: 16px !important;
-  }
-  /deep/ .el-pager li.active {
-    background-color: #1AAD19;
-    color: #fff;
-  }
 
 </style>

@@ -516,6 +516,7 @@
         this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
       }
     },
+
     beforeRouteEnter(to,from,next){
       if(from.name == 'policeIdentityDetail'){
 
@@ -528,7 +529,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .doSthIndex {
     width: 100vw;
@@ -885,42 +886,5 @@
     }
   }
 
-  /deep/ .el-pagination {
-    padding: 30px 0;
-    position: fixed;
-    width: calc(100vw - 480px);
-    bottom: 0;
-    left: 0;
-    z-index: 1;
-    background-color: #DEE7F8;
-  }
-  /deep/ .el-pager li {
-    background: rgba(0, 0, 0, .3);
-    color: #fff;
-    margin: 0 10px;
-    font-size: 20px;
-    height: 44px;
-    line-height: 44px;
-    min-width: 44px;
-    font-family: '黑体';
-  }
-  /deep/ .el-pagination__total {
-    font-size: 20px !important;
-    line-height: 44px !important;
-    height: 44px !important;
-  }
-  /deep/ .el-pager li.active {
-    background-color: #1AAD19;
-    color: #fff;
-  }
-  /deep/ .el-pagination button {
-    height: 44px;
-  }
-  /deep/ .el-pagination .btn-next .el-icon, .el-pagination .btn-prev .el-icon {
-    font-size: 20px;
-  }
-  /deep/ .el-pagination .btn-prev .el-icon {
-    font-size: 20px;
-  }
 
 </style>

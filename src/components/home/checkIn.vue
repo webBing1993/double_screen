@@ -139,10 +139,10 @@
                 </div>
               </div>
               <div class="btns">
-                <el-button type="danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
-                <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
-                <el-button type="primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
-                <el-button type="primary" class="tig_info" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
+                <el-button type="danger" class="btn_button btn_button_danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
+                <el-button type="primary" class="btn_button btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
+                <el-button type="primary" class="btn_button btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
+                <el-button type="primary" class="tig_info btn_button btn_button_primary" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
               </div>
             </div>
           </div>
@@ -567,7 +567,7 @@
             .btns {
               margin-top: 110px;
               text-align: left;
-              /deep/ button {
+              .btn_button {
                 width: 390px;
                 height: 80px;
                 border-radius: 50px;
@@ -576,12 +576,12 @@
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
               }
 
-              /deep/ .el-button--danger {
+              .btn_button_danger {
                 background-color: #F5222D;
                 margin-right: 60px;
               }
 
-              /deep/ .el-button--primary {
+              .btn_button_primary {
                 background-color: #1AAD19;
               }
               .tig_info {

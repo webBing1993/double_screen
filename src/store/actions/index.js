@@ -118,7 +118,7 @@ const actions = {
           if (error.response) {
 
           }else {
-            router.push('/wuwangluo');
+            // router.push('/wuwangluo');
           }
           param.onError && param.onError(error);
         }
@@ -172,7 +172,7 @@ const actions = {
           if (error.response) {
 
           }else {
-            router.push('/wuwangluo');
+            // router.push('/wuwangluo');
           }
           param.onError && param.onError(error);
         }
@@ -227,7 +227,7 @@ const actions = {
           if (error.response) {
 
           }else {
-            router.push('/wuwangluo');
+            // router.push('/wuwangluo');
           }
           param.onError && param.onError(error);
         }

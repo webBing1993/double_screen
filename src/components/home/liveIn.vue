@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="orderIndex">
+    <div class="liveIn">
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
@@ -293,7 +293,7 @@
         this.getPreOrder(1);
       },
 
-      //同步订单
+      // 同步订单
       getRefreshList(){
         this.showList = false;
         this.showList_ = false;
@@ -582,7 +582,7 @@
       if(from.name == 'checkOut'){
 
       }else {
-          sessionStorage.removeItem('liveInPage');
+        sessionStorage.removeItem('liveInPage');
       }
       next();
     },
@@ -590,9 +590,9 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
-  .orderIndex {
+  .liveIn {
     width: 100vw;
     padding-top: 100px;
     display: flex;

@@ -436,7 +436,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .policeIdentityDetail {
     width: 100vw;
@@ -524,63 +524,6 @@
             height: 72px;
             line-height: 72px;
             padding-left: 30px;
-          }
-          /deep/ .ivu-icon-ios-close-circle {
-            display: none;
-          }
-          /deep/ .ivu-date-picker {
-            width: 480px;
-            height: 72px;
-          }
-          /deep/ .ivu-input {
-            height: 72px;
-            border: 1px solid #979797;
-            color: #303133;
-            font-size: 30px;
-            padding-left: 30px;
-          }
-          /deep/ .ivu-input-suffix {
-            display: none;
-          }
-          /deep/ .ivu-input-suffix i {
-            font-size: 32px;
-            line-height: 72px;
-          }
-          /deep/ .ivu-picker-panel-icon-btn i {
-            font-size: 32px;
-          }
-          /deep/ .ivu-date-picker-cells span {
-            width: 56px;
-            height: 56px;
-            line-height: 56px;
-            text-align: center;
-            margin: 5px 2px 2px 2px;
-          }
-          /deep/ .ivu-date-picker-cells {
-            width: 420px;
-            margin: 28px;
-          }
-          /deep/ .ivu-picker-panel-icon-btn {
-            width: 74px;
-            height: 48px;
-          }
-          /deep/ .ivu-date-picker-header {
-            height: 48px;
-            line-height: 48px;
-          }
-          /deep/ .ivu-btn-small {
-            font-size: 32px;
-          }
-          /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
-            width: 239px;
-            max-height: 546px;
-          }
-          /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
-            padding: 0;
-            text-align: center;
-          }
-          /deep/ .ivu-btn-default {
-            display: none;
           }
           i {
             position: absolute;
@@ -719,9 +662,6 @@
             color: #a4a4a4;
           }
         }
-      }
-      /deep/ .el-message-box__message p {
-        font-size: 20px;
       }
     }
     .detail_fr {
