@@ -281,7 +281,7 @@
             </div>
           </div>
           <p class="zhuyi_text">
-            注意：由于系统异常，无法自动入账PMS，请手工至PMS入账。
+            注意：系统无法自动入账PMS，请手工至PMS入账。
          </p>
           <div class="btns">
             <el-button type="primary" :loading="false" class="btn1" @click="showPmsAbnormal=false;payMoney=''">暂不退款</el-button>
@@ -334,6 +334,19 @@
           <div class="know_btn"><img src="../../assets/Group.png" alt="" @click="showBalance=false"></div>
         </div>
       </div>
+
+      <!-- 退房费的二次确认-->
+      <div class="countinuedQuit" v-if="countinuedQuit">
+        <div class="shadow"></div>
+        <div class="quit_content">
+          <div class="quit_title">退款金额包含房费，请确认是否退款？</div>
+          <div class="quit_tabs">
+            <span class="cancel" @click="countinuedQuit=false;payTig=true;">取消</span>
+            <span class="sure" @click="countinuedQuitSure">确认退款</span>
+          </div>
+        </div>
+      </div>
+
       <loadingList v-if="loadingShow" :loadingText="loadingText" :style="isScreen ? 'width: 100vw' : 'width: calc(100vw - 480px)'"></loadingList>
     </div>
   </div>
@@ -401,6 +414,7 @@
         showPmsAbnormalLoading: false,  // pms入账btn loading
         checked: '',  // 判断pms入账是否异常
         tradeManager: false, // 退款是否退房费的权限，默认关闭
+        countinuedQuit: false,  // 退款的二次确认
       }
     },
     filters: {
@@ -684,6 +698,10 @@
             message: '注意：不能大于总金额',
             iconClass: 'icon ',
           });
+        }else if (((this.payMoney * 100) <= this.detailVal.totalFee) && ((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && this.tradeManager) {
+          this.infoLoading = false;
+          this.payTig = false;
+          this.countinuedQuit = true;
         }else if (((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && !this.tradeManager) {
           this.infoLoading = false;
           this.$toast({
@@ -691,46 +709,59 @@
             iconClass: 'icon ',
           });
         }else {
-          this.isScreen = true;
-          this.reimburse({
-            data:{
-              orderId: this.detailVal.outTradeNo,
-              refundfee: this.payMoney,
-              checked: this.checked,
-            },
-            onsuccess: (body) => {
-              this.infoLoading = false;
-              this.isScreen = false;
-              if(body.data.code == 0){
-                this.payTig = false;
-                this.page = 1;
-                this.paymentList(1)
-              }else if(body.data.code == 20003){
-                this.showPmsAbnormal = true;
-              }else if (body.data.code == 10006) {
-                this.$toast({
-                  message: body.data.msg,
-                  iconClass: 'icon ',
-                });
-              }else if (body.data.code == 100049 || body.data.code == 100036) {
-                this.showBalance = true;
-              }
-              this.checked = '';
-              this.payTig = false;
-              this.showPmsAbnormalLoading = false;
-            },
-            onfail: (body, headers) => {
-              this.infoLoading = false;
-              this.isScreen = false;
-              this.showPmsAbnormalLoading = false;
-            },
-            onerror: error => {
-              this.infoLoading = false;
-              this.isScreen = false;
-              this.showPmsAbnormalLoading = false;
-            }
-          });
+          this.quitTig();
         }
+      },
+
+      // 二次确认
+      countinuedQuitSure() {
+        this.quitTig();
+      },
+
+      // 退款接口
+      quitTig() {
+        this.isScreen = true;
+        this.reimburse({
+          data:{
+            orderId: this.detailVal.outTradeNo,
+            refundfee: this.payMoney,
+            checked: this.checked,
+          },
+          onsuccess: (body) => {
+            this.infoLoading = false;
+            this.isScreen = false;
+            this.countinuedQuit = false;
+            if(body.data.code == 0){
+              this.payTig = false;
+              this.page = 1;
+              this.paymentList(1)
+            }else if(body.data.code == 20003){
+              this.showPmsAbnormal = true;
+            }else if (body.data.code == 10006) {
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+            }else if (body.data.code == 100049 || body.data.code == 100036) {
+              this.showBalance = true;
+            }
+            this.checked = '';
+            this.payTig = false;
+            this.showPmsAbnormalLoading = false;
+          },
+          onfail: (body, headers) => {
+            this.infoLoading = false;
+            this.countinuedQuit = false;
+            this.isScreen = false;
+            this.showPmsAbnormalLoading = false;
+          },
+          onerror: error => {
+            this.infoLoading = false;
+            this.countinuedQuit = false;
+            this.isScreen = false;
+            this.showPmsAbnormalLoading = false;
+          }
+        });
       },
 
       // 结算接口
@@ -1545,6 +1576,66 @@
           }
           .waringTig {
             color: #F5222D;
+          }
+        }
+      }
+    }
+    .countinuedQuit {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .quit_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .quit_title {
+          padding: 50px 30px;
+          border-bottom: 1px solid #D8D8D8;
+          color: #0B0B0B;
+          font-size: 26px;
+          text-align: center;
+          font-weight: bold;
+        }
+        .quit_tabs {
+          display: flex;
+          justify-content: center;
+          span {
+            display: inline-block;
+            width: 50%;
+            position: relative;
+            padding: 30px 0;
+            font-size: 24px;
+            text-align: center;
+            color: #909399;
+          }
+          .sure {
+            background-color: inherit;
+            border-width: 0;
+            border-radius: 20px;
+            color: #1AAD19;
+            font-size: 24px;
+            width: 50%;
+          }
+          span:first-of-type:after {
+            content: '';
+            display: block;
+            background-color: #D8D8D8;
+            width: 1px;
+            height: 64px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
           }
         }
       }

@@ -92,6 +92,10 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {

@@ -200,7 +200,7 @@
             </div>
           </div>
           <p class="zhuyi_text">
-            注意：由于系统异常，无法自动入账PMS，请手工至PMS入账。
+            注意：系统无法自动入账PMS，请手工至PMS入账。
          </p>
           <div class="btns">
             <el-button type="primary" :loading="false" class="btn1" @click="showPmsAbnormal=false">暂不退款</el-button>
@@ -238,6 +238,19 @@
           <div class="know_btn"><img src="../../assets/Group.png" alt="" @click="showBalance=false"></div>
         </div>
       </div>
+
+      <!-- 退房费的二次确认-->
+      <div class="countinuedQuit" v-if="countinuedQuit">
+        <div class="shadow"></div>
+        <div class="quit_content">
+          <div class="quit_title">退款金额包含房费，请确认是否退款？</div>
+          <div class="quit_tabs">
+            <span class="cancel" @click="countinuedQuit=false;payTig=true;">取消</span>
+            <span class="sure" @click="countinuedQuitSure">确认退款</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -274,6 +287,7 @@
         accountItem: {},  // 预授权结算的临时数据
         showBalance: false,  // 账户余额不足提示
         tradeManager: false, // 退款是否退房费的权限，默认关闭
+        countinuedQuit: false,  // 退款的二次确认
       }
     },
     methods: {
@@ -323,16 +337,66 @@
         this.paySure();
       },
 
+      // 二次确认退房费
+      countinuedQuitSure() {
+        this.quitTig();
+      },
+
+      // 退款接口
+      quitTig() {
+        this.refundHandle({
+          data:{
+            checkInRoomId: sessionStorage.getItem('roomcode') ? sessionStorage.getItem('roomcode') : '',
+            orderId: sessionStorage.getItem('checkOutItem') ? JSON.parse(sessionStorage.getItem('checkOutItem')).orderId : this.orderDetail.id,
+            refundfee: this.payMoney,
+            checked: this.checked,
+            ischeckOut: false
+          },
+          onsuccess:(body)=>{
+            if(body.data.code == 0){
+              this.payTig = false;
+              this.quit = true;
+            }else if(body.data.code == 20003){
+              this.showPmsAbnormal = true;
+            }else if (body.data.code == 20006) {
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+              this.gobanck();
+            }else if (body.data.code == 10006) {
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+            }else if (body.data.code == 100049 || body.data.code == 100036) {
+              this.showBalance = true;
+            }
+            this.checked = '';
+            this.countinuedQuit = false;
+            this.payTig = false;
+            this.infoLoading = false;
+            this.showPmsAbnormalLoading = false;
+          },
+          onfail: body => {
+            this.countinuedQuit = false;
+            this.infoLoading = false;
+            this.showPmsAbnormalLoading = false;
+          },
+          onerror: body => {
+            this.countinuedQuit = false;
+            this.infoLoading = false;
+            this.showPmsAbnormalLoading = false;
+          }
+        })
+      },
+
       // 结账弹框确定事件
       paySure() {
         this.infoLoading = true;
         let regPos = /^\d+(\.\d+)?$/; //非负浮点数
         if (this.orderDetail.refundVO) {
           if (this.payMoney == '') {
-//            this.$message({
-//              message: '请输入结账金额',
-//              type: 'warning'
-//            });
             this.$toast({
               message: '请输入退款金额',
               iconClass: 'icon ',
@@ -365,54 +429,13 @@
             });
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
+          }else if ((parseFloat(this.payMoney*100) <= parseFloat(this.orderDetail.refundVO.totalFee)) && (parseFloat(this.payMoney*100) > parseFloat(this.orderDetail.refundVO.refundFeeStr*100)) && this.tradeManager) {
+            this.payTig = false;
+            this.countinuedQuit = true;
+            this.infoLoading = false;
+            this.showPmsAbnormalLoading = false;
           }else {
-            this.refundHandle({
-              data:{
-                checkInRoomId: sessionStorage.getItem('roomcode') ? sessionStorage.getItem('roomcode') : '',
-                orderId: sessionStorage.getItem('checkOutItem') ? JSON.parse(sessionStorage.getItem('checkOutItem')).orderId : this.orderDetail.id,
-                refundfee: this.payMoney,
-                checked: this.checked,
-                ischeckOut: false
-              },
-              onsuccess:(body)=>{
-                if(body.data.code == 0){
-//                  this.$message({
-//                    message: '退款成功',
-//                    type: 'success'
-//                  });
-                  this.payTig = false;
-                  this.quit = true;
-                }else if(body.data.code == 20003){
-                  this.showPmsAbnormal = true;
-                }else if (body.data.code == 20006) {
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
-                  this.gobanck();
-                }else if (body.data.code == 10006) {
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
-                }else if (body.data.code == 100049 || body.data.code == 100036) {
-                  this.showBalance = true;
-                }
-                this.checked = '';
-                this.payTig = false;
-                this.infoLoading = false;
-                this.showPmsAbnormalLoading = false;
-              },
-              onfail: body => {
-//                this.payTig = false;
-                this.infoLoading = false;
-                this.showPmsAbnormalLoading = false;
-              },
-              onerror: body => {
-                this.infoLoading = false;
-                this.showPmsAbnormalLoading = false;
-              }
-            })
+            this.quitTig();
           }
         }else {
           if (this.payMoney == '') {
@@ -961,7 +984,7 @@
         }
       }
     }
-    .quit {
+    .quit, .countinuedQuit {
       .shadow {
         position: fixed;
         z-index: 10;
@@ -974,7 +997,6 @@
       .quit_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 375px;
         position: fixed;
         z-index: 12;
         left: 50%;

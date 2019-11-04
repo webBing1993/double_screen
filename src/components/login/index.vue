@@ -258,8 +258,14 @@
                       }else {
                         this.$message.error('该账号无权限');
                       }
+                      setTimeout(() =>{
+                        this.loginLoading = false;
+                      },1000);
                     },
                     onfail: body => {
+                      this.loginLoading = false;
+                    },
+                    onerror: body => {
                       this.loginLoading = false;
                     }
                   });
