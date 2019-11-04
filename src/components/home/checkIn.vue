@@ -139,10 +139,10 @@
                 </div>
               </div>
               <div class="btns">
-                <el-button type="danger" class="btn_button btn_button_danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
-                <el-button type="primary" class="btn_button btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
-                <el-button type="primary" class="btn_button btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
-                <el-button type="primary" class="tig_info btn_button btn_button_primary" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
+                <el-button type="danger" class=" btn_button_danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
+                <el-button type="primary" class=" btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
+                <el-button type="primary" class=" btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
+                <el-button type="primary" class="tig_info btn_button_primary" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
               </div>
             </div>
           </div>
@@ -434,7 +434,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .checkIn {
     width: 100vw;
@@ -567,7 +567,7 @@
             .btns {
               margin-top: 110px;
               text-align: left;
-              .btn_button {
+              .el-button {
                 width: 390px;
                 height: 80px;
                 border-radius: 50px;

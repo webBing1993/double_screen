@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="doSthIndex" v-show="showPoliceIdentity">
+    <div class="policeIndex" v-show="showPoliceIdentity">
       <div class="police_fl">
         <div class="doSthContent">
           <div class="changTabs">
@@ -531,7 +531,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
 
-  .doSthIndex {
+  .policeIndex {
     width: 100vw;
     .header {
       background: #FFFFFF;

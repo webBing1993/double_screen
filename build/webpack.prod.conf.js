@@ -13,7 +13,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = require('../config/prod.env')
 
-const  Version = new Date().getTime();
+// const  Version = new Date().getTime();
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -47,7 +47,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].css'+'?time='+Version),
+      filename: utils.assetsPath('css/[name].[chunkhash].css'),
+      // filename: utils.assetsPath('css/[name].css'+'?time='+Version),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
       // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,

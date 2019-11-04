@@ -3,14 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0, user-scalabel=0, minimum-scale=1.0,maximum-scale=1.0">
-    <meta http-equiv="cache-control" content="no-store, must-revalidate" />
-    <meta http-equiv="pragma" content="no-store" />
-    <meta http-equiv="Expires" content="0" />
     <title>双屏辅助机</title>
     <!--<script src="static/js/vconsole.min.js"></script>-->
   </head>
   <body>
     <div id="app"></div>
+    <!-- built files will be auto injected -->
   </body>
   <script>
     let windowUrl = null;
@@ -23,6 +21,7 @@
     sessionStorage.setItem('windowUrl', windowUrl);
   </script>
   <style>
+
     body::-webkit-scrollbar {display: none;}
     * { touch-acion : none }
     .mint-toast {
@@ -136,6 +135,7 @@
     .el-message-box__message p {
       font-size: 20px;
     }
+
   </style>
 
   <script>

@@ -338,7 +338,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .doSthIndex {
     width: 100vw;
@@ -440,7 +440,7 @@
                 margin-right: 30px;
               }
             }
-            dis:last-of-type {
+            div:last-of-type {
               color: #303133;
               font-size: 14px;
             }
@@ -491,18 +491,17 @@
         }
       }
     }
-  }
-
-  .noMsg {
-    padding-top: 400px;
-    img {
-      display: block;
-      width: 180px;
-      margin: 0 auto;
-    }
-    p {
-      font-size: 26px;
-      margin-top: 20px;
+    .noMsg {
+      padding-top: 400px;
+      img {
+        display: block;
+        width: 180px;
+        margin: 0 auto;
+      }
+      p {
+        font-size: 26px;
+        margin-top: 20px;
+      }
     }
   }
 
