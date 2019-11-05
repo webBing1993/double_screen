@@ -58,9 +58,7 @@
             <div class="list_content" v-else-if="item.doSthTitle=='PMS入账失败'">
               <div class="list_fl">
                 <div class="roomIn"><span>PMS订单号：</span>{{item.pmsOrderNo}}</div>
-                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
-                <div class="roomIn"><span>房费：</span>{{item.roomFeeStr}}元</div>
-                <div class="roomIn"><span>押金：</span>{{item.depositFeeStr}}元</div>
+                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}  &nbsp;&nbsp;&nbsp;&nbsp;<span>房费：</span>{{item.roomFeeStr == '预付房费' ? '预付房费' : item.roomFeeStr + '元'}}  &nbsp;&nbsp;&nbsp;&nbsp;<span>押金：</span>{{item.depositFeeStr}}元</div>
               </div>
               <div class="list_fr">
                 <span @click="pmsPayDetail(item.orderId)" class="lookDetail">查看详情</span>
@@ -464,6 +462,12 @@
                 }
                 span:only-child {
                   width: 125px;
+                  display: inline-block;
+                }
+              }
+              .rooms {
+                span {
+                  width: 125px !important;
                   display: inline-block;
                 }
               }
