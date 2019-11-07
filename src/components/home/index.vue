@@ -12,6 +12,7 @@
             <span :class="tabIndex == 2 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(2)" data-id="2" v-if="getAllConfigList.qyCheckIn">在住房间</span>
             <span :class="tabIndex == 3 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(3)" data-id="3" v-if="getAllConfigList.isQyPay">交易管理</span>
             <span :class="tabIndex == 4 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(4)" data-id="4" v-if="getAllConfigList.isRztCheck">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
+            <span :class="tabIndex == 5 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(5)" data-id="4">EasyPos</span>
           </div>
         </div>
         <div class="header_fr">
@@ -121,6 +122,8 @@
           this.replaceto('/payment');
         }else if (index == 4) {
           this.replaceto('/policeIdentity');
+        }else {
+          this.replaceto('/independent');
         }
         if (sessionStorage.getItem('pmsPayDetail')) {
 

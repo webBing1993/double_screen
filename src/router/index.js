@@ -59,7 +59,12 @@ const router = new Router({
           name: 'wuwangluo',
           // component: resolve => require(['../components/home/wuwangluo.vue'],resolve),
           component: require('../components/home/wuwangluo.vue').default,
-        }
+        },
+        {
+          path: '/independent',
+          name: 'independent',
+          component: resolve => require(['../components/home/independent.vue'],resolve),
+        },
       ],
     },
     {

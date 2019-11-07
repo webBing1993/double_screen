@@ -319,7 +319,7 @@
             </div>
           </div>
           <div class="know_btn">
-            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormal_=false;payTig=false">
+            <img src="../../assets/Group.png" alt=""  @click="showPmsAbnormalKnow">
           </div>
         </div>
       </div>
@@ -580,6 +580,13 @@
             this.loadingShow = false;
           }
         })
+      },
+
+      // 预授权pms异常我知道了
+      showPmsAbnormalKnow() {
+        this.showPmsAbnormal_= false;
+        this.payTig = false;
+        this.paymentList(this.page);
       },
 
       // 獲取詳情

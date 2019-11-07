@@ -84,7 +84,6 @@ Axios.interceptors.response.use(response => {
         });
         // window.location.href = url;
         jsObj.LogOut();
-        Vue.prototype.$message.error(error.response.data);
     }
     // 返回接口返回的错误信息
     return Promise.reject(error.response.data);

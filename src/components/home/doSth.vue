@@ -77,7 +77,7 @@
             <div class="list_content" v-else-if="item.doSthTitle=='旅业退房失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn"><span>住客姓名：</span><span>{{item.checkInName}}</span></div>
+                <div class="roomIn"><span>住客姓名：</span><span v-for="(i, index) in item.guestList">{{index < (item.guestList.length - 1) ? i.name + '/' : i.name}}</span></div>
               </div>
               <div class="list_fr">
                 <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
