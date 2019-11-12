@@ -12,7 +12,7 @@
             <span :class="tabIndex == 2 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(2)" data-id="2" v-if="getAllConfigList.qyCheckIn">在住房间</span>
             <span :class="tabIndex == 3 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(3)" data-id="3" v-if="getAllConfigList.isQyPay">交易管理</span>
             <span :class="tabIndex == 4 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(4)" data-id="4" v-if="getAllConfigList.isRztCheck">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
-            <span :class="tabIndex == 5 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(5)" data-id="4">EasyPos</span>
+            <span :class="tabIndex == 5 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(5)" data-id="4" v-if="getAllConfigList.independentTrande">EasyPos</span>
           </div>
         </div>
         <div class="header_fr">
@@ -93,6 +93,7 @@
           qyCheckIn: false,  // 在住列表
           isQyPay: false,     // 交易管理
           isRztCheck: false, // 公安验证
+          independentTrande: false, // 独立支付
         },  // 权限
         searchVal: 0,
         windowUrl: '',
@@ -397,6 +398,8 @@
         }else if(item.tag=="sp_check") {
           this.getAllConfigList.isRztCheck = true;
           this.unhandleList();
+        }else if (item.tag == 'sp_independent_trade') {
+          this.getAllConfigList.independentTrande = true;
         }
       });
       setTimeout(() => {

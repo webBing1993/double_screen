@@ -686,14 +686,7 @@
         let regPos = /^\d+(\.\d+)?$/; //非负浮点数
           console.log('this.detailVal',this.detailVal);
         this.infoLoading = true;
-        if (this.payMoney == 0) {
-//          this.$message('请输入正确的退款金额!');
-          this.$toast({
-            message: '请输入正确的退款金额!',
-            iconClass: 'icon ',
-          });
-          this.infoLoading = false;
-        }else if (!regPos.test(this.payMoney)) {
+        if (!regPos.test(this.payMoney)) {
           this.$toast({
             message: '请输入正确的退款金额!',
             iconClass: 'icon ',
