@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="independent">
-      <iframe :src="src" frameborder="0"></iframe>
+      <iframe :src="src" frameborder="0" ref="iframe" v-show="iframeShow"></iframe>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
   </div>
@@ -18,7 +18,9 @@
       return {
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
-        src: "https://wqt.fortrun.cn" + sessionStorage.getItem('windowUrl') + 'independent_collection/#'+"?token=" + sessionStorage.session_id
+        src: "https://wqt.fortrun.cn" + sessionStorage.getItem('windowUrl') + 'independent_collection/#'+"?token=" + encodeURIComponent(sessionStorage.session_id),
+        iframeWin: null,
+        iframeShow: false,
       }
     },
     filters: {
@@ -30,11 +32,27 @@
       ]),
 
 
+      getSweepingSettlementOrderId(orderId, deviceId) {
+      // 给iframe传参
+        this.iframeWin.postMessage({
+          cmd: 'getParams', // cmd 用来判断触发的是什么事件
+          params: {
+            key: orderId,
+            deviceId: deviceId
+          }
+        }, '*')
+      }
+
     },
 
     mounted () {
-//      this.loadingShow = true;
-
+      this.loadingShow = true;
+      setTimeout(() => {
+        this.loadingShow = false;
+        this.iframeShow = true;
+        this.iframeWin = this.$refs.iframe.contentWindow;
+      }, 600);
+      window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
     }
   }
 </script>
