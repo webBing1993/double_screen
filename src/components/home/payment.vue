@@ -726,6 +726,7 @@
             orderId: this.detailVal.outTradeNo,
             refundfee: this.payMoney,
             checked: this.checked,
+            ischeckOut: false
           },
           onsuccess: (body) => {
             this.infoLoading = false;
