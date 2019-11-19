@@ -120,12 +120,12 @@
                   <div class="title"><span>押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
                   <div class="changeItem" v-if="!isPaid">
                     <div class="item_tab" @click="changeFreeDeposit(1)">
-                      <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || isFreeDeposit == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span>免押金</span>
                     </div>
                     <div class="item_tab" @click="changeFreeDeposit(2)"  v-if="!cashFeeTrue">
-                      <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="isFreeDeposit == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span>收押金</span>
                     </div>
@@ -141,8 +141,8 @@
               <div class="btns">
                 <el-button type="danger" class=" btn_button_danger" round :loading="loadingCancel" @click="gobanck()">取消办理</el-button>
                 <el-button type="primary" class=" btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 0">开始办理</el-button>
-                <el-button type="primary" class=" btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
-                <el-button type="primary" class="tig_info btn_button_primary" round :loading="loadingSure" v-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
+                <el-button type="primary" class=" btn_button_primary" round :loading="loadingSure" @click="checkIn()" v-else-if="changeItem.type == 1 && payMode != 0">开始办理</el-button>
+                <el-button type="primary" class="tig_info btn_button_primary" round :loading="loadingSure" v-else-if="changeItem.type == 1 && payMode == 0">开始办理</el-button>
               </div>
             </div>
           </div>
@@ -197,6 +197,7 @@
         paidFeeShow: 0,  // 已付房费
         cashFee: 0,      // 押金
         cashFeeTrue: false,  // 判断是否有无押金配置
+        isFreeDeposit: 1,
         payMode: 0,  // 判断房费支付状态
         cardShow: false,  // 发卡dab权限
         rcShow: false,    // rc单dab权限
@@ -250,6 +251,7 @@
         }else {
           this.changeItem.isFreeDeposit = false;
         }
+        this.isFreeDeposit = num;
       },
 
       // 开始办理
@@ -280,7 +282,7 @@
         }else {
           this.updatePaidMode({
             orderId: this.changeItem.id,
-            isFreeDeposit: this.changeItem.isFreeDeposit,
+            isFreeDeposit: this.isFreeDeposit == 1 ? true : false,
             modeId: this.payMode,
             onsuccess: body => {
               this.loadingShow = false;
@@ -423,6 +425,11 @@
       this.getCard('support_room_card');
       this.getCard('rc_status');
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
+      if (this.changeItem.isFreeDeposit) {
+        this.isFreeDeposit = 1;
+      }else {
+        this.isFreeDeposit = 2;
+      }
       this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
@@ -582,6 +589,9 @@
               }
 
               .btn_button_primary {
+                background-color: #1AAD19;
+              }
+              .el-button--primary {
                 background-color: #1AAD19;
               }
               .tig_info {

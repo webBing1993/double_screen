@@ -586,6 +586,7 @@
       showPmsAbnormalKnow() {
         this.showPmsAbnormal_= false;
         this.payTig = false;
+        this.channelDetail = false;
         this.paymentList(this.page);
       },
 

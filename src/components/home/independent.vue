@@ -41,7 +41,18 @@
             deviceId: deviceId
           }
         }, '*')
-      }
+      },
+
+      // 获取deviceId
+      getDeviceId(deviceId) {
+        console.log('getDeviceId', deviceId);
+        this.iframeWin.postMessage({
+          cmd: 'getParams', // cmd 用来判断触发的是什么事件
+          params: {
+            deviceId: deviceId
+          }
+        }, '*')
+      },
 
     },
 
@@ -51,6 +62,7 @@
         this.loadingShow = false;
         this.iframeShow = true;
         this.iframeWin = this.$refs.iframe.contentWindow;
+        window.getDeviceId = this.getDeviceId;
       }, 600);
       window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
     }
