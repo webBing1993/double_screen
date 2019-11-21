@@ -620,8 +620,8 @@
                 this.sweepingTig = false;
                 this.sweepingTig_ = false;
               }else {
-                this.sweepingTig = true;
-                this.sweepingTig_ = true;
+                this.sweepingTig = false;
+                this.sweepingTig_ = false;
               }
             }
           },
