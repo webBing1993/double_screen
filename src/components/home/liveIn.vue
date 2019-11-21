@@ -524,45 +524,9 @@
 
       // 退房跳转
       gotoCheckOut(item) {
-        item.quitLoading = !item.quitLoading;
-        this.getChargeRecard({
-          data:{
-            checkInRoomId: item.checkInRoomId,
-            orderId: item.orderId ? item.orderId : ''
-          },
-          onsuccess:(body,headers)=>{
-            if(body.data.code == 0){
-              this.$message({
-                message: '退房成功',
-                type: 'success'
-              });
-              this.page = 1;
-              this.getPreOrder(1);
-            }else if (body.data.code == 10006) {
-              this.$toast({
-                message: body.data.msg,
-                iconClass: 'icon ',
-              });
-              item.quitLoading = false;
-            }else if (body.data.code == 20006) {
-              this.$toast({
-                message: body.data.msg,
-                iconClass: 'icon ',
-              });
-              item.quitLoading = false;
-            }else {
-              sessionStorage.setItem('checkOutItem', JSON.stringify(item));
-              sessionStorage.setItem('liveInPage', this.page);
-              this.$emit('goToCheckOut', item.orderId);
-            }
-          },
-          onfail: body => {
-            item.quitLoading = false;
-          },
-          onerror: body => {
-            item.quitLoading = false;
-          }
-        })
+        sessionStorage.setItem('checkOutItem', JSON.stringify(item));
+        sessionStorage.setItem('liveInPage', this.page);
+        this.$emit('goToCheckOut', item.orderId);
       },
 
     },

@@ -78,15 +78,18 @@
               </div>
             </div>
             <div class="checkIn_content checkIn_content_" v-else>
-              <div class="lists">
+              <div class="lists1">
                 <div class="list">
                   <div class="title"><span>总房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem"  v-if="!isPaid">
-                    <div class="item_tab" @click="payModeChange(1)">
-                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
-                      <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span>当面付</span>
-                    </div>
+                </div>
+                <div class="list">
+                  <div class="title"><span>已付房费：</span><span>{{((parseFloat(roomFeeShow) - parseFloat(needPayRoomFeeShow))/100).toFixed(2)}}元</span></div>
+                </div>
+              </div>
+              <div class="lists">
+                <div class="list">
+                  <div class="title"><span>应付房费：</span><span>{{(needPayRoomFeeShow/100).toFixed(2)}}元</span></div>
+                  <div class="changeItem"  v-if="!isPaid && needPayRoomFeeShow != 0">
                     <div class="item_tab" @click="payModeChange(2)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -96,6 +99,11 @@
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span>挂账</span>
+                    </div>
+                    <div class="item_tab" @click="payModeChange(1)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span>设备收款</span>
                     </div>
                   </div>
                   <div class="changeItem"  v-else>
@@ -117,8 +125,8 @@
                   </div>
                 </div>
                 <div class="list">
-                  <div class="title"><span>押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem" v-if="!isPaid">
+                  <div class="title"><span>应付押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
+                  <div class="changeItem" v-if="!isPaid && cashFee != 0">
                     <div class="item_tab" @click="changeFreeDeposit(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || isFreeDeposit == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -194,6 +202,7 @@
         changeItem: '',   // 临时数据
         checkInShow: false,  // 模块显示隐藏
         roomFeeShow: 0,  // 总房费
+        needPayRoomFeeShow: 0,  // 应付房费
         paidFeeShow: 0,  // 已付房费
         cashFee: 0,      // 押金
         cashFeeTrue: false,  // 判断是否有无押金配置
@@ -363,6 +372,7 @@
               }else {
                 this.roomFeeShow = body.data.data.roomFeeShow;
               }
+              this.needPayRoomFeeShow = body.data.data.needPayRoomFeeShow;
               if (body.data.data.needPayFeeShow == 0 && body.data.data.paid) {
                   this.isPaid = true;
               }
@@ -518,9 +528,34 @@
             }
           }
           .checkIn_content {
-            padding: 40px 60px;
+            padding: 40px 0;
+            .lists1 {
+              border-bottom: 1px solid #cccccc;
+              .list {
+                padding: 0 60px;
+                display: flex;
+                align-items: center;
+                margin-bottom: 40px;
+                .title {
+                  color: #303133;
+                  font-weight: bold;
+                  font-size: 26px;
+                  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.04);
+                  width: 358px;
+                  text-align: left;
+                  span:first-of-type {
+                    width: 150px;
+                    display: inline-block;
+                  }
+                  span:last-of-type {
+                    color: #F55825;
+                  }
+                }
+              }
+            }
             .lists {
               margin-bottom: 200px;
+              padding: 40px 60px 0;
               .list {
                 display: flex;
                 align-items: center;
@@ -566,13 +601,15 @@
                       top: 50%;
                       z-index: 2;
                       transform: translate(-50%, -50%);
+                      width: 100%;
+                      display: block;
                     }
                   }
                 }
               }
             }
             .btns {
-              margin-top: 110px;
+              padding: 0 60px;
               text-align: left;
               .el-button {
                 width: 390px;
@@ -603,7 +640,7 @@
           }
           .checkIn_content_ {
             .lists {
-              margin-bottom: 300px;
+              margin-bottom: 130px;
             }
           }
         }

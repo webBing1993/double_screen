@@ -554,6 +554,7 @@
         this.payInfoGetList = [];
         this.getCheckOutInfo({
           orderId:  this.changeItem.orderId,
+          checkInRoomId: this.changeItem.checkInRoomId,
           onsuccess: body => {
             if (body.data.code == 0) {
               this.loadingShow = false;

@@ -521,7 +521,7 @@ const actions = {
   // 获取结账列表详情
   getCheckOutInfo(ctx, param) {
     ctx.dispatch('resource', {
-      url: '/ecard/orders/fee/'+param.orderId,
+      url: '/ecard/orders/fee/'+param.orderId+'?checkInRoomId='+param.checkInRoomId,
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null

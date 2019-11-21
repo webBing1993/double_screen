@@ -73,64 +73,6 @@
           </div>
         </div>
 
-        <!-- 开始办理弹框-->
-        <div class="teamTig" v-if="teamTig">
-          <div class="shadow" @click="teamTig=false"></div>
-          <div class="tigContent">
-            <div class="title">
-              请确认订单支付状态
-              <!--<img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">-->
-              <span @click="teamTig = false;">关闭</span>
-            </div>
-            <div class="tigLists">
-              <div class="tig_list">
-                <div class="list_title_total">
-                  <div class="list_title">总房费：</div>
-                  <div class="list_total">{{(roomFeeShow/100).toFixed(2)}}元</div>
-                </div>
-                <div class="list_tabs">
-                  <div class="list_tab" @click="payModeChange(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    当面付
-                  </div>
-                  <div class="list_tab" @click="payModeChange(2)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    已预付
-                  </div>
-                  <div class="list_tab" @click="payModeChange(3)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    后付/挂账
-                  </div>
-                </div>
-              </div>
-              <div class="tig_list">
-                <div class="list_title_total">
-                  <div class="list_title">押金：</div>
-                  <div class="list_total">{{(cashFee/100).toFixed(2)}}元</div>
-                </div>
-                <div class="list_tabs">
-                  <div class="list_tab" @click="changeFreeDeposit(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
-                    <img src="../../assets/weixuan.png" alt="" v-esle>
-                    免押金
-                  </div>
-                  <div class="list_tab" @click="changeFreeDeposit(2)" v-if="!cashFeeTrue">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    收押金
-                  </div>
-                </div>
-              </div>
-              <p class="tigRemark" v-if="changeItem.remark">订单备注：{{changeItem.remark}}</p>
-            </div>
-            <el-button type="primary" class="tig_btn" :loading="loadingCheckIn"  @click="teamCheckIn()" v-if="payMode != 0">开始办理</el-button>
-            <el-button type="info" disabled class="tig_btn tig_info" :loading="loadingCheckIn"  v-else>开始办理</el-button>
-          </div>
-        </div>
-
         <!-- 是否分房-->
         <div class="isShowScreen" v-if="isShowScreen">
           <div class="shadow" @click="isShowScreen=false"></div>
@@ -243,7 +185,6 @@
         total: 0,      // 总数
         orderLists: [], // 总数据
         changeItem: {},  // 接受临时数据
-        teamTig: false,   // 办理入住提示框
         changeTabString: 1,  // 右侧筛选tab切换
         keyBords1: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K','L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],     // 字母键盘
         keyBords2: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],   // 数字键盘
@@ -255,7 +196,6 @@
         payMode: 0,  // 判断房费支付状态
         isShowScreen: false, // 是否分房
         pmsFlag: true,   // 判断是否对接pms
-        loadingCheckIn: false,  // 判断是否办理 加载中
         tigTeamShow: false,     // 团队主单入住后
         startTime: '',  // 开始时间
         endTime: '',  // 结束时间
@@ -414,29 +354,6 @@
         jsObj.GetOrderProcess();
       },
 
-      teamCheckIn(){
-        this.loadingCheckIn = true;
-        this.updatePaidMode({
-          orderId: this.changeItem.id,
-          isFreeDeposit: this.changeItem.isFreeDeposit,
-          modeId: this.payMode,
-          onsuccess: body => {
-            this.loadingShow = false;
-            if (body.data.code == 0) {
-              this.teamTig = false;
-              this.page = 1;
-              this.getPreOrder(1);
-              this.loadingCheckIn = false;
-              this.SendParameter('SendMessage@'+this.changeItem.id+'')
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        });
-
-      },
-
       // 接收A屏判断是否正在办理入住的结果
       showOrderInfo (isTrue) {
         console.log('isTrue__', isTrue);
@@ -456,10 +373,6 @@
                       if (body.data.code == 0) {
                         this.loadingShow = false;
                         if (body.data.data == null || !body.data.data) {
-//                          this.$message({
-//                            message: '订单已取消',
-//                            type: 'warning'
-//                          });
                           this.$toast({
                             message: "订单已取消",
                             iconClass: 'icon ',
@@ -582,10 +495,6 @@
               message: body.data.data,
               type: 'success'
             });
-//            this.$toast({
-//              message: body.data.data,
-//              iconClass: 'icon ',
-//            });
           },onfail: (body, headers) => {
             this.loadingShow = false;
           },
@@ -1249,138 +1158,6 @@
           .sure {
             width: 50%;
           }
-        }
-      }
-    }
-    .teamTig {
-      .shadow {
-        position: fixed;
-        z-index: 10;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, .6);
-      }
-      .tigContent {
-        background: #FFFFFF;
-        border-radius: 20px;
-        width: 960px;
-        position: fixed;
-        z-index: 12;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        .title {
-          color: #303133;
-          font-size: 30px;
-          position: relative;
-          padding: 30px 50px;
-          font-weight: bold;
-          span {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            cursor: pointer;
-            font-size: 30px;
-            color: #1AAD19;
-          }
-          img {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-          }
-        }
-        .tigLists {
-          margin: 30px 0;
-          padding: 0 50px;
-          position: relative;
-          .tig_list {
-            margin-bottom: 60px;
-            width: 100%;
-            .list_title_total {
-              width: 100%;
-              display: inline-flex;
-              justify-content: flex-start;
-              margin-bottom: 20px;
-              .list_title {
-                color: #303133;
-                font-size: 28px;
-                font-weight: bold;
-              }
-              .list_total {
-                font-size: 30px;
-                font-weight: bold;
-                color: #F55825;
-              }
-            }
-            .list_tabs {
-              width: 100%;
-              display: inline-flex;
-              justify-content: flex-start;
-              .list_tab {
-                position: relative;
-                font-size: 22px;
-                color: #000;
-                font-weight: bold;
-                line-height: 80px;
-                width: 233px;
-                text-align: center;
-                margin-right: 84px;
-                img {
-                  position: absolute;
-                  z-index: -1;
-                  width: 233px;
-                  height: 80px;
-                  left: 0;
-                  top: 0;
-                }
-              }
-              .list_tab:last-of-type {
-                margin-right: 0;
-              }
-            }
-          }
-          .tigRemark {
-            text-align: left;
-            font-size: 30px;
-            color: #000;
-          }
-        }
-        .tigLists:before {
-          position: absolute;
-          top: -30px;
-          left: 50px;
-          display: inline-block;
-          content: '';
-          width: calc(100% - 100px);
-          height: 1px;
-          background-color: #D8D8D8;
-        }
-        .tig_btn {
-          background: #1AAD19;
-          border-radius: 44px;
-          width: 340px;
-          height: 68px;
-          /*line-height: 68px;*/
-          color: #fff;
-          font-size: 20px;
-          cursor: pointer;
-          text-align: center;
-          margin: 30px auto;
-          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }
-        .tig_info {
-          background-color: #d7d7d7;
-          color: #a4a4a4;
-          border: none;
         }
       }
     }

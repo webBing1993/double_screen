@@ -171,7 +171,7 @@
                   if (body.data.data.checkoutapply != null) {
                       this.findItem(body.data.data, 1);
                   }else if (body.data.data.pmspay) {
-//                    this.findItem(body.data.data, 4);
+                    this.findItem(body.data.data, 4);
                   }
               }
             }
