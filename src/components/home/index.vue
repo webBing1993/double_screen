@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut" @checkOutLoading="checkOutLoading" @unhandleNumFun="unhandleNumFun"></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut" @checkOutLoading="checkOutLoading" @unhandleNumFun="unhandleNumFun" :pmsOrderIdChange = 'pmsOrderIdChange'></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -56,6 +56,9 @@
         </div>
         <div class="content" v-if="manka">
           回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="content" v-if="pmsPay">
+          收款成功！收款金额{{onlyItem.totalFeeStr}}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
         </div>
         <div class="btns">
           <span class="knowBtn" @click="checkOut">我知道了</span>
@@ -101,6 +104,8 @@
         quithouse_: false,  // 退房
         wuka: false,        // 无卡提示
         manka: false,       // 卡槽满
+        pmsPay: false,       // pms入账失败
+        pmsOrderIdChange: 0,
         onlyItem: {},    // 临时退房数据
       }
     },
@@ -165,25 +170,8 @@
 //                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
                       this.findItem(body.data.data, 1);
-                  }else if (body.data.data.faka) {
-                    let arr = [];
-                    let arr_ = [];
-                    body.data.data.faka.forEach(item => {
-                        if (item.type == 'WUKA') {
-                          arr.push(item);
-                        }else if (item.type != 'WUKA' && item.type != 'QUEKA' && item.type != 'FAKA') {
-                          arr_.push(item);
-                        }
-                    })
-                    let obj = {};
-                    obj.wuka = arr;
-                    obj.manka = arr_;
-                    if (arr.length != 0) {
-                      this.findItem(obj, 2);
-                    }
-                    if (arr_.length != 0) {
-                      this.findItem(obj, 3);
-                    }
+                  }else if (body.data.data.pmspay) {
+//                    this.findItem(body.data.data, 4);
                   }
               }
             }
@@ -205,8 +193,10 @@
           checkOutList = data.checkoutapply;
         }else if (type == 2) {
           checkOutList = data.wuka;
-        }else {
+        }else if (type == 3) {
           checkOutList = data.manka;
+        }else {
+          checkOutList = data.pmspay;
         }
         let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
         if (arr_.length == 0) {
@@ -216,13 +206,22 @@
             this.wuka = false;
             this.manka = false;
             this.quithouse_ = true;
+            this.pmsPay = false;
           }else if (type == 2) {
             this.wuka = true;
             this.quithouse_ = false;
             this.manka = false;
             this.quithouse = true;
-          }else {
+            this.pmsPay = false;
+          }else if (type == 3){
             this.manka = true;
+            this.quithouse_ = false;
+            this.wuka = false;
+            this.quithouse = true;
+            this.pmsPay = false;
+          }else {
+            this.pmsPay = true;
+            this.manka = false;
             this.quithouse_ = false;
             this.wuka = false;
             this.quithouse = true;
@@ -231,11 +230,11 @@
           let result = [];
           for(var i = 0; i < checkOutList.length; i++){
             let obj = checkOutList[i];
-            let num = obj.id;
+            let num = obj.orderId;
             let isExist = false;
             for(var j = 0; j < arr_.length; j++){
               let aj = arr_[j];
-              let n = aj.id;
+              let n = aj.orderId;
               if(n == num){
                 isExist = true;
                 break;
@@ -252,13 +251,22 @@
               this.wuka = false;
               this.manka = false;
               this.quithouse_ = true;
+              this.pmsPay = false;
             }else if (type == 2) {
               this.wuka = true;
               this.quithouse_ = false;
               this.manka = false;
               this.quithouse = true;
-            }else {
+              this.pmsPay = false;
+            }else if (type == 3){
               this.manka = true;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quithouse = true;
+              this.pmsPay = false;
+            }else {
+              this.pmsPay = true;
+              this.manka = false;
               this.quithouse_ = false;
               this.wuka = false;
               this.quithouse = true;
@@ -282,7 +290,14 @@
         this.quithouse = false;
         arr.push(this.onlyItem);
         sessionStorage.setItem('checkOutList', JSON.stringify(arr));
-        this.goto('/doSth');
+        if (this.onlyItem.id) {
+          this.goto('/doSth');
+        }else {
+          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId);
+          this.tabClick(3);
+          this.pmsOrderIdChange++;
+          this.doSthList();
+        }
       },
 
       // 获取公安核验未处理数据
@@ -617,7 +632,7 @@
       border-radius: 14px;
       width: 676px;
       position: fixed;
-      z-index: 99;
+      z-index: 9;
       top: 100px;
       right: 352px;
       padding: 40px;

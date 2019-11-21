@@ -360,6 +360,7 @@
   export default {
     name: 'payment',
     components: {ElCol, loadingList, DatePicker},
+    props: ['pmsOrderIdChange'],
     data () {
       return {
         loadingShow: false,  // loading
@@ -892,6 +893,14 @@
         jsObj.CloseBarCode();
       }
 
+    },
+
+    watch: {
+      pmsOrderIdChange: function (val) {
+        if (sessionStorage.getItem('pmsPayDetail')) {
+          this.getSweepingSettlementOrderId(sessionStorage.getItem('pmsPayDetail'));
+        }
+      }
     },
 
     mounted () {
