@@ -24,7 +24,7 @@
       </div>
       <div class="paymentAll">
         <div class="paymentLists" v-if="showList">
-          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType)">
+          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType, item.payFlowId)">
             <div class="list_header">
               <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
               <span>交易单号：{{item.orderId}}</span>
@@ -592,13 +592,14 @@
       },
 
       // 獲取詳情
-      detailTig(id,tradeType) {
+      detailTig(id,tradeType,payFlowId) {
         this.loadingShow = true;
         let data = {};
         if (tradeType) {
           data = {
             orderId: id,
-            isRefund: tradeType == 'refund' ? true : false
+            isRefund: tradeType == 'refund' ? true : false,
+            payFlowId: payFlowId
           }
         }else {
           data = {
@@ -620,8 +621,8 @@
                 this.sweepingTig = false;
                 this.sweepingTig_ = false;
               }else {
-                this.sweepingTig = true;
-                this.sweepingTig_ = true;
+                this.sweepingTig = false;
+                this.sweepingTig_ = false;
               }
             }
           },
@@ -640,7 +641,8 @@
         this.canclePreAuthorizedDeposit({
           data: {
             orderId: this.detailVal.outTradeNo || '',
-            remark: ''
+            remark: '',
+            payFlowId: this.detailVal.payFlowId
           },
           onsuccess: body => {
             this.loadingShow = false;
@@ -728,7 +730,8 @@
             orderId: this.detailVal.outTradeNo,
             refundfee: this.payMoney,
             checked: this.checked,
-            ischeckOut: false
+            ischeckOut: false,
+            payFlowId: this.detailVal.payFlowId
           },
           onsuccess: (body) => {
             this.infoLoading = false;
@@ -797,7 +800,8 @@
             data: {
               orderId: this.detailVal.outTradeNo || '',
               amount: this.payMoney,
-              remark: ''
+              remark: '',
+              payFlowId: this.detailVal.payFlowId
             },
             onsuccess: body => {
               this.infoLoading = false;
