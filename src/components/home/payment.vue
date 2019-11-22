@@ -869,6 +869,7 @@
         if (!orderId || orderId == null) {
           this.sweepingTig = true;
           this.sweepingTig_ = true;
+          this.testOpenBarCode();
         }else {
           this.detailTig(orderId);
           if (sessionStorage.getItem('pmsPayDetail')) {
