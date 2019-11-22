@@ -18,7 +18,7 @@
       return {
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
-        src: "https://wqt.fortrun.cn" + sessionStorage.getItem('windowUrl') + 'independent_collection/#'+"?token=" + encodeURIComponent(sessionStorage.session_id),
+        src: '',
         iframeWin: null,
         iframeShow: false,
       }
@@ -46,24 +46,26 @@
       // 获取deviceId
       getDeviceId(deviceId) {
         console.log('getDeviceId', deviceId);
-        this.iframeWin.postMessage({
-          cmd: 'getParams', // cmd 用来判断触发的是什么事件
-          params: {
-            deviceId: deviceId
-          }
-        }, '*')
+//        this.iframeWin.postMessage({
+//          cmd: 'getParams', // cmd 用来判断触发的是什么事件
+//          params: {
+//            deviceId: deviceId
+//          }
+//        }, '*');
+        this.src = "https://wqt.fortrun.cn" + sessionStorage.getItem('windowUrl') + 'independent_collection/#'+"?token=" + encodeURIComponent(sessionStorage.session_id+'/'+deviceId)
       },
 
     },
 
     mounted () {
       this.loadingShow = true;
+      jsObj.getDeviceId();
       setTimeout(() => {
         this.loadingShow = false;
         this.iframeShow = true;
         this.iframeWin = this.$refs.iframe.contentWindow;
-        window.getDeviceId = this.getDeviceId;
       }, 600);
+      window.getDeviceId = this.getDeviceId;
       window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
     }
   }
