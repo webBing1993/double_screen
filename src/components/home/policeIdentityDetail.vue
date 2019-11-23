@@ -13,7 +13,7 @@
           <div class="search">
             <span>房间号：</span>
             <input type="text" placeholder="请输入房间号" :value="detail.roomNumber ? detail.roomNumber : '无'" disabled v-if="!buttonGroupShow">
-            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else>
+            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else @input="changeKeyBords">
             <span class="tig" v-if="!roomShow && roomNum != ''">酒店无该房间，请重新输入</span>
           </div>
           <div class="outTime" v-if="buttonGroupShow">
@@ -181,6 +181,16 @@
       datePickerTime(val) {
         this.outTime = val;
         console.log('datePickerTime', val);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        this.roomList.forEach(item=>{
+          if(this.roomNum == item.room_number){
+            this.roomShow = true;
+          }
+          return;
+        });
       },
 
 
