@@ -185,6 +185,7 @@
 
       // 键盘事件
       changeKeyBords () {
+        this.roomShow = false;
         this.roomList.forEach(item=>{
           if(this.roomNum == item.room_number){
             this.roomShow = true;
