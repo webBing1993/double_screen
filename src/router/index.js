@@ -91,7 +91,9 @@ router.beforeEach((to, from, next) => {
             iconClass: 'icon ',
           });
           // window.location.href = url;
-          jsObj.LogOut();
+          setTimeout(() => {
+            jsObj.LogOut();
+          }, 1000)
         }
       }
       return;
