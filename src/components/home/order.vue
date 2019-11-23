@@ -156,7 +156,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1" @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -166,7 +166,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11" @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
@@ -299,6 +299,24 @@
         }
         this.page = 1;
         this.getPreOrder(1);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        if (this.changeTabString == 1) {
+          this.searchString = this.searchString1;
+          this.page = 1;
+          this.getPreOrder(1);
+        }else {
+          this.searchString = this.searchString2;
+          if (this.searchString2.length == 11) {
+            this.page = 1;
+            this.getPreOrder(1);
+          }else if (this.searchString2.length == 0) {
+            this.page = 1;
+            this.getPreOrder(1);
+          }
+        }
       },
 
       // 右侧筛选tab切换

@@ -133,7 +133,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabFr == 1">
               <div class="input">
-                <input type="text" placeholder="请输入姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入姓名的首字母查询" v-model="searchString1"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -276,6 +276,21 @@
           this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
         this.$emit('getMessage', index);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
+        this.searchString = this.searchString1;
+        if (this.changeTabString == 1) {
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
+        }else {
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+        }
       },
 
       // 右侧筛选tab切换
