@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="homeIndex" v-show="homeIndexShow">
-      <div class="header">
+      <div :class="tabIndex != 5 ? 'header' : 'header header_'">
         <div class="header_fl">
           <div class="changeScreen" @click="openExternalScreen()">
             <img src="../../assets/qiehuan.png" alt="">
@@ -170,8 +170,8 @@
 //                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
                       this.findItem(body.data.data, 1);
-                  }else if (body.data.data.pmspay) {
-//                    this.findItem(body.data.data, 4);
+                  }else if (body.data.data.pmspay.length != 0) {
+                    this.findItem(body.data.data, 4);
                   }
               }
             }
@@ -293,7 +293,7 @@
         if (this.onlyItem.id) {
           this.goto('/doSth');
         }else {
-          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId);
+          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId+'#'+this.onlyItem.payFlowId);
           this.tabClick(3);
           this.pmsOrderIdChange++;
           this.doSthList();
@@ -376,11 +376,8 @@
       },
       websocketonopen(e){ //建立通道
         // let redata = e;
-        console.log('============websocket建立链接==============')
       },
       websocketonmessage(e){ //数据接收
-        console.log('============websocket数据接收成功==============');
-        console.log(e);
         let date = e.data;
         if (date == '"refresh"') {
           this.speakShow = true;
@@ -390,11 +387,9 @@
         }
       },
       websocketsend(agentData){//数据发送
-        console.log('============websocket数据发送成功==============');
         this.websock.send(agentData);
       },
       websocketclose(e){  //关闭通道
-        console.log("关闭通道connection closed (" + e.code + ")");
         this.initWebSocket();
       },
 
@@ -443,7 +438,7 @@
 
   .homeIndex {
     .header {
-      background: #FFFFFF;
+      background: #f7f7f7;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
       height: 100px;
       display: flex;
@@ -567,6 +562,9 @@
           margin-right: 20px;
         }
       }
+    }
+    .header_ {
+      box-shadow: none;
     }
     .quit {
       .shadow {

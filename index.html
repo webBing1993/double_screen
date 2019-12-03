@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0, user-scalabel=0, minimum-scale=1.0,maximum-scale=1.0">
     <title>双屏辅助机</title>
-    <!--<script src="static/js/vconsole.min.js"></script>-->
+    <script src="static/js/vconsole.min.js"></script>
   </head>
   <body>
     <div id="app"></div>
@@ -144,9 +144,9 @@
   <script>
 
     // 小票二维码扫码
-    function getSweepingSettlement(orderId, deviceId) {
+    function getSweepingSettlement(orderId, deviceId, timeVal) {
       console.log('B屏orderId', orderId);
-      getSweepingSettlementOrderId(orderId, deviceId);
+      getSweepingSettlementOrderId(orderId, deviceId, timeVal);
     }
 
     // 检查A屏是否有正在办理的订单

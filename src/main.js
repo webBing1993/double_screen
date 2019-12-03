@@ -101,7 +101,7 @@ import loadingList from './components/home/loading.vue'
 Vue.component('loadingList',loadingList );
 
 /* eslint-disable no-new */
-new Vue({
+let vm = new Vue({
   el: '#app',
   router,
   store,

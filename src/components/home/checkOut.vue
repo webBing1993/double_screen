@@ -9,12 +9,34 @@
             <span>返回</span>
           </div>
           <div class="roomNo">
-            <span>房间号：<span v-for="(item, index) in orderDetail.roomNos">{{index == (orderDetail.roomNos.length - 1) ? item : item + '/'}}</span></span>
+            <span>当前房间：{{orderDetail.subOrderVos[0].roomNo}}</span>
           </div>
           <div class="replayList" @click="replayList">
-            <img src="../../assets/tongbu.png" alt="">
             <span>刷新</span>
           </div>
+          <div class="replayList quitCurrent" @click="quit=true;">
+            <span>退房</span>
+          </div>
+        </div>
+        <div class="roomInfo">
+          <div class="nameRooms">
+            <div class="namePhone">
+              <span class="name">
+                <img src="../../assets/renyuan.png" alt="">
+                <span>{{orderDetail.owner}}</span>
+              </span>
+              <span class="phone">
+                <span>{{orderDetail.ownerTel ? orderDetail.ownerTel : '-'}}</span>
+              </span>
+            </div>
+            <div class="roomsNo">
+              <span>
+                <img src="../../assets/fangjian.png" alt="">
+                <span v-for="(item, index) in orderDetail.roomNos">{{index == (orderDetail.roomNos.length - 1) ? item : item + '/'}}</span>
+              </span>
+            </div>
+          </div>
+          <div class="remark">备注：{{orderDetail.remark ? orderDetail.remark : '-'}}</div>
         </div>
         <div class="check_content" v-show="checkOutShow">
           <!-- 微前台收款-->
@@ -46,7 +68,7 @@
                   <span class="red">{{orderDetail.refundVO.refundFeeStr}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick()" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(item)" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
                 </div>
               </div>
             </div>
@@ -60,7 +82,7 @@
                   <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick()" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(item)" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">退款</el-button>
                 </div>
               </div>
             </div>
@@ -77,14 +99,14 @@
             <div class="content">
               <div class="lists" v-for="item in orderDetail.preAuthorizedDeposit">
                 <div class="list">
-                  <span>房费押金</span>
+                  <span>预授权(房费押金)</span>
                   <span>{{item.payFlag == 1 ? '微信预授权' : item.payFlag == 2 ? '支付宝预授权' : '翼支付预授权'}}  {{datetimeparse(item.finishTime, 'yy/MM/dd hh:mm')}} </span>
                 </div>
                 <div class="list">
                   <span class="red">{{(item.totalFee/100).toFixed(2)}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green" @click="payInfoClick(item)" v-if="item.channel == 4">结账</el-button>
+                  <el-button type="primary" :loading="false" class="btn green" @click="payInfoClick(item)" v-if="item.channel == 4">结算</el-button>
                 </div>
               </div>
             </div>
@@ -119,6 +141,28 @@
                 </div>
                 <div class="list">
                   <el-button type="primary" :loading="false" class="btn green" @click="lookInfoList(2)">查看明细</el-button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="payInfo" v-else>
+            <div class="header">
+              <div class="lists">
+                <div class="list">PMS账单</div>
+                <div class="list">金额</div>
+                <div class="list">操作</div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="lists">
+                <div class="list">
+                  <span>总收款 0笔</span>
+                </div>
+                <div class="list">
+                  <span class="green">{{(payInfoGetNum/100).toFixed(2)}}元</span>
+                </div>
+                <div class="list">
+
                 </div>
               </div>
             </div>
@@ -309,6 +353,7 @@
       },
       // 结账
       payInfoClick(item) {
+        this.accountItem = item;
         if (this.orderDetail.refundVO) {
           this.accountRefund({
             data: {
@@ -324,7 +369,6 @@
           })
         }else {
           this.payMoney = '';
-          this.accountItem = item;
           this.payTig = true;
         }
       },
@@ -350,7 +394,8 @@
             orderId: sessionStorage.getItem('checkOutItem') ? JSON.parse(sessionStorage.getItem('checkOutItem')).orderId : this.orderDetail.id,
             refundfee: this.payMoney,
             checked: this.checked,
-            ischeckOut: false
+            ischeckOut: false,
+            payFlowId: this.accountItem.payFlowId
           },
           onsuccess:(body)=>{
             if(body.data.code == 0){
@@ -461,7 +506,8 @@
               data: {
                 orderId: this.changeItem.orderId || '',
                 amount: this.payMoney,
-                remark: ''
+                remark: '',
+                payFlowId: this.accountItem.payFlowId
               },
               onsuccess: body => {
                 if (body.data.code == 0) {
@@ -502,7 +548,8 @@
         this.accountCheckout({
           data: {
             checkInRoomId: this.changeItem.checkInRoomId,
-            amount: this.payMoney
+            amount: this.payMoney,
+            payFlowId: this.orderDetail.payFlowId,
           },
           onsuccess: body => {
             this.payMoney  = '';
@@ -554,11 +601,12 @@
         this.payInfoGetList = [];
         this.getCheckOutInfo({
           orderId:  this.changeItem.orderId,
+          checkInRoomId: this.changeItem.checkInRoomId,
           onsuccess: body => {
             if (body.data.code == 0) {
               this.loadingShow = false;
               this.orderDetail = body.data.data;
-              if (this.orderDetail.pmsOrder.length != 0) {
+              if (this.orderDetail.pmsOrder && this.orderDetail.pmsOrder.length != 0) {
                 this.orderDetail.pmsOrder.forEach((item, index) => {
                   if (item.type == 1) {
                     this.payConsumeList.push(item);
@@ -606,6 +654,7 @@
     },
     beforeMount () {
       this.loadingShow = false;
+      this.changeItem = sessionStorage.getItem('checkOutItem') ? JSON.parse(sessionStorage.getItem('checkOutItem')) : '';
     },
 
     mounted () {
@@ -618,7 +667,6 @@
           this.tradeManager = true;
         }
       });
-      this.changeItem = sessionStorage.getItem('checkOutItem') ? JSON.parse(sessionStorage.getItem('checkOutItem')) : '';
       this.getDetail();
     },
   }
@@ -643,6 +691,7 @@
         text-align: left;
         padding: 24px 0 24px 60px;
         position: relative;
+        border-bottom: 1px solid #CCCCCC;
         div {
           display: inline-flex;
           align-items: center;
@@ -668,17 +717,49 @@
         .replayList {
           position: absolute;
           top: 50%;
-          right: 74px;
+          right: 280px;
           transform: translateY(-50%);
-          font-size: 28px;
-          color: #1AAD19;
-          padding: 0 30px;
-          img {
-            display: inline-block;
-            width: 44px;
-            height: 44px;
-            margin-right: 7px;
+          font-size: 24px;
+          color: #fff;
+          background-image: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);
+          box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
+          border-radius: 32px;
+          padding: 8px 50px;
+        }
+        .quitCurrent {
+          background: #1AAD19;
+          right: 80px;
+        }
+      }
+      .roomInfo {
+        padding: 30px 80px 30px 60px;
+        .nameRooms {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          margin-bottom: 30px;
+          .namePhone, .roomsNo {
+            span {
+              display: inline-flex;
+              align-items: center;
+              img {
+                width: 24px;
+                height: 24px;
+                margin-right: 16px;
+              }
+              span {
+                font-size: 24px;
+                color: #000;
+                margin-right: 32px;
+                display: inline-flex;
+              }
+            }
           }
+        }
+        .remark {
+          color: #303133;
+          font-size: 24px;
+          text-align: left;
         }
       }
       .check_content {
@@ -698,6 +779,9 @@
               padding-right: 79px;
             }
           }
+        }
+        .header:first-of-type {
+          border-top: 0;
         }
         .list {
           display: inline-flex;
@@ -997,7 +1081,7 @@
         top: 50%;
         transform: translate(-50%, -50%);
         .quit_title {
-          padding: 50px 30px;
+          padding: 50px 100px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
           font-size: 26px;
@@ -1024,7 +1108,7 @@
             font-size: 24px;
             width: 50%;
           }
-          span:first-of-type:after {
+          .cancel:first-of-type:after {
             content: '';
             display: block;
             background-color: #D8D8D8;
