@@ -12,11 +12,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/double-screen': {
+      '/ecard-wechat': {
         target: 'http://qa.fortrun.cn:9051',
         changeOrigin: true,
         pathRewrite: {
-          '^/double-screen': ''
+          '^/ecard-wechat': ''
         }
       },
       '/': {
