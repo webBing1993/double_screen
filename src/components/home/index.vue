@@ -1,17 +1,18 @@
 <template>
   <div>
     <div class="homeIndex" v-show="homeIndexShow">
-      <div class="header">
+      <div :class="tabIndex != 5 ? 'header' : 'header header_'">
         <div class="header_fl">
-          <div class="changeScreen" @click="OpenExternalScreen('OpenExternalScreen')">
+          <div class="changeScreen" @click="openExternalScreen()">
             <img src="../../assets/qiehuan.png" alt="">
-            <span>切换外屏</span>
+            <span>查看外屏</span>
           </div>
           <div class="tabs" ref="tabs">
             <span :class="tabIndex == 1 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(1)" data-id="1" v-if="getAllConfigList.qyOrders">办理入住</span>
             <span :class="tabIndex == 2 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(2)" data-id="2" v-if="getAllConfigList.qyCheckIn">在住房间</span>
             <span :class="tabIndex == 3 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(3)" data-id="3" v-if="getAllConfigList.isQyPay">交易管理</span>
             <span :class="tabIndex == 4 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(4)" data-id="4" v-if="getAllConfigList.isRztCheck">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
+            <span :class="tabIndex == 5 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(5)" data-id="4" v-if="getAllConfigList.independentTrande">EasyPos</span>
           </div>
         </div>
         <div class="header_fr">
@@ -30,7 +31,7 @@
         </div>
       </div>
       <div class="content">
-        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal"></router-view>
+        <router-view @getMessage="showMsg" @gotoDtail="policeIdentity" @gocheckIn="gotocheckIn" :searchVal="searchVal" @goToCheckOut="goCheckOut" @checkOutLoading="checkOutLoading" @unhandleNumFun="unhandleNumFun" :pmsOrderIdChange = 'pmsOrderIdChange'></router-view>
       </div>
 
       <!-- 退出弹框提示-->
@@ -45,15 +46,40 @@
         </div>
       </div>
 
+      <!-- 退房，发卡槽无卡或回收卡槽满 待办弹框-->
+      <div class="quitHouse" v-if="quithouse">
+        <div class="content" v-if="quithouse_">
+          【{{onlyItem.roomNo}}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="content" v-if="wuka">
+          发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="content" v-if="manka">
+          回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看
+        </div>
+        <div class="content" v-if="pmsPay">
+          收款成功！收款金额{{onlyItem.totalFeeStr}}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
+        </div>
+        <div class="btns">
+          <span class="knowBtn" @click="checkOut">我知道了</span>
+          <span class="lookDetail" @click="lookDetail">查看详情</span>
+        </div>
+      </div>
+
+      <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
   </div>
 </template>
 <script>
   import {mapState,mapActions} from 'vuex';
+  import loadingList from './loading.vue'
   export default {
     name: 'home',
+    components: {loadingList},
     data () {
       return {
+        loadingShow: false,
+        loadingText: '加载中...',
         homeIndexShow: false,  // 模板显示隐藏
         tabIndex: 1,  // tab切换
         myInfo: {
@@ -70,8 +96,17 @@
           qyCheckIn: false,  // 在住列表
           isQyPay: false,     // 交易管理
           isRztCheck: false, // 公安验证
+          independentTrande: false, // 独立支付
         },  // 权限
         searchVal: 0,
+        windowUrl: '',
+        quithouse: false,   // 弹框提示
+        quithouse_: false,  // 退房
+        wuka: false,        // 无卡提示
+        manka: false,       // 卡槽满
+        pmsPay: false,       // pms入账失败
+        pmsOrderIdChange: 0,
+        onlyItem: {},    // 临时退房数据
       }
     },
     methods: {
@@ -91,24 +126,36 @@
         }else if (index == 3) {
           sessionStorage.removeItem('changeTabString');
           this.replaceto('/payment');
-        }else {
+        }else if (index == 4) {
           this.replaceto('/policeIdentity');
+        }else {
+          this.replaceto('/independent');
         }
-        sessionStorage.setItem('tabIndex', index);
+        if (sessionStorage.getItem('pmsPayDetail')) {
+
+        }else {
+          sessionStorage.setItem('tabIndex', index);
+        }
       },
 
       // 语音播报
       speckText(str){
-        let url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(str);        // baidu
+        let url = "http://tts.baidu.com/text2audio?cuid=baiduid&lan=zh&ctp=1&pdt=311&tex=" + encodeURI(str);        // baidu
         let n = new Audio(url);
         n.src = url;
         n.play();
+        n = null;
       },
 
       // 退出事件
       sure() {
         this.quit = false;
-        this.replaceto('/');
+//        window.location.href = this.windowUrl;
+        this.logOut();
+      },
+
+      logOut() {
+        jsObj.LogOut();
       },
 
       // 获取列表
@@ -116,14 +163,141 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0) {
+              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.lvyeChangeRoom.length == 0) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
+//                  this.speckText('您有待办事项未处理，点击查看');
+                  if (body.data.data.checkoutapply != null) {
+                      this.findItem(body.data.data, 1);
+                  }else if (body.data.data.pmspay.length != 0) {
+                    this.findItem(body.data.data, 4);
+                  }
               }
             }
+            this.loadingShow = false;
+          },
+          onfail: body => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
           }
         })
+      },
+
+      // 过滤
+      findItem(data, type) {
+        let checkOutList = '';
+        if (type == 1) {
+          checkOutList = data.checkoutapply;
+        }else if (type == 2) {
+          checkOutList = data.wuka;
+        }else if (type == 3) {
+          checkOutList = data.manka;
+        }else {
+          checkOutList = data.pmspay;
+        }
+        let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        if (arr_.length == 0) {
+          this.onlyItem = checkOutList[0];
+          if (type == 1) {
+            this.quithouse = true;
+            this.wuka = false;
+            this.manka = false;
+            this.quithouse_ = true;
+            this.pmsPay = false;
+          }else if (type == 2) {
+            this.wuka = true;
+            this.quithouse_ = false;
+            this.manka = false;
+            this.quithouse = true;
+            this.pmsPay = false;
+          }else if (type == 3){
+            this.manka = true;
+            this.quithouse_ = false;
+            this.wuka = false;
+            this.quithouse = true;
+            this.pmsPay = false;
+          }else {
+            this.pmsPay = true;
+            this.manka = false;
+            this.quithouse_ = false;
+            this.wuka = false;
+            this.quithouse = true;
+          }
+        }else {
+          let result = [];
+          for(var i = 0; i < checkOutList.length; i++){
+            let obj = checkOutList[i];
+            let num = obj.orderId;
+            let isExist = false;
+            for(var j = 0; j < arr_.length; j++){
+              let aj = arr_[j];
+              let n = aj.orderId;
+              if(n == num){
+                isExist = true;
+                break;
+              }
+            }
+            if(!isExist){
+              result.push(obj);
+            }
+          }
+          if (result.length != 0) {
+            this.onlyItem = result[0];
+            if (type == 1) {
+              this.quithouse = true;
+              this.wuka = false;
+              this.manka = false;
+              this.quithouse_ = true;
+              this.pmsPay = false;
+            }else if (type == 2) {
+              this.wuka = true;
+              this.quithouse_ = false;
+              this.manka = false;
+              this.quithouse = true;
+              this.pmsPay = false;
+            }else if (type == 3){
+              this.manka = true;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quithouse = true;
+              this.pmsPay = false;
+            }else {
+              this.pmsPay = true;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quithouse = true;
+            }
+          }
+        }
+      },
+
+      // 我知道了
+      checkOut() {
+        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        this.quithouse = false;
+        arr.push(this.onlyItem);
+        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
+        this.doSthList();
+      },
+
+      // 查看详情
+      lookDetail() {
+        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        this.quithouse = false;
+        arr.push(this.onlyItem);
+        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
+        if (this.onlyItem.id) {
+          this.goto('/doSth');
+        }else {
+          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId+'#'+this.onlyItem.payFlowId);
+          this.tabClick(3);
+          this.pmsOrderIdChange++;
+          this.doSthList();
+        }
       },
 
       // 获取公安核验未处理数据
@@ -132,22 +306,29 @@
           data: {
             createTimeStart: '',
             createTimeEnd: '',
-            reportInStatuses: ["NONE","PENDING","FAILED"],//需要的入住上报旅业状态
+            reportInStatuses: ["NONE","FAILED"],//需要的入住上报旅业状态
             desc: true,
             name: ''  // 搜索
           },
-          limit: 4,
-          offset: 1,
+          limit: 5,
+          offset: 0,
           onsuccess: (body, headers) => {
+            this.loadingShow = false;
             if (body.errcode == 0) {
               this.unhandleNum = headers['x-total-count'];
             }
+          },
+          onfail: body => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
           }
         });
       },
 
       showMsg (val) {
-        this.unhandleList();
+//        this.unhandleList();
       },
 
       // 进公安核验详情
@@ -160,8 +341,26 @@
         this.goto('/checkIn/'+val);
       },
 
-      OpenExternalScreen(type) {
-        document.title = new Date().getSeconds() + "@" + type;
+      // 进入退房详情
+      goCheckOut(val) {
+        this.loadingShow = true;
+//        setTimeout(() => {
+//          this.loadingShow = false;
+//        }, 600);
+        this.goto('/checkOut/'+val)
+      },
+
+      // 公安核验待处理数据条数
+      unhandleNumFun (val) {
+        this.unhandleNum = val;
+      },
+
+      checkOutLoading(val) {
+        this.loadingShow = false;
+      },
+
+      openExternalScreen() {
+        jsObj.OpenExternalScreen();
       },
 
       //初始化weosocket
@@ -169,7 +368,7 @@
         //ws地址
         let mymessage = encodeURIComponent(sessionStorage.session_id+sessionStorage.hotel_id);
         let wsuri = '';
-        wsuri = "wss://wqt.fortrun.cn/p/v2.8.1.0/todolistws?wsCode=" + mymessage;  // qa
+        wsuri = "wss://wqt.fortrun.cn" + sessionStorage.getItem('windowUrl') + "todolistws?wsCode=" + mymessage;  // qa
         this.websock = new WebSocket(wsuri);
         this.websock.onopen = this.websocketonopen;
         this.websock.onmessage = this.websocketonmessage;
@@ -177,31 +376,28 @@
       },
       websocketonopen(e){ //建立通道
         // let redata = e;
-        console.log('============websocket建立链接==============')
       },
       websocketonmessage(e){ //数据接收
-        console.log('============websocket数据接收成功==============');
-        console.log(e);
         let date = e.data;
         if (date == '"refresh"') {
           this.speakShow = true;
-          this.speckText('您有待办事项未处理，点击查看');
           this.unhandleList();
           this.searchVal++;
+          this.doSthList();
         }
       },
       websocketsend(agentData){//数据发送
-        console.log('============websocket数据发送成功==============')
         this.websock.send(agentData);
       },
       websocketclose(e){  //关闭通道
-        console.log("关闭通道connection closed (" + e.code + ")");
+        this.initWebSocket();
       },
 
     },
 
     mounted () {
       let list = JSON.parse(sessionStorage.getItem('subPermissions'));
+      this.windowUrl = window.location.href.split('#')[0];
       list.forEach(item => {
         if (item.tag == 'sp_checkin') {
           this.getAllConfigList.qyOrders = true;
@@ -212,12 +408,17 @@
         }else if(item.tag=="sp_check") {
           this.getAllConfigList.isRztCheck = true;
           this.unhandleList();
+        }else if (item.tag == 'sp_independent_trade') {
+          this.getAllConfigList.independentTrande = true;
         }
       });
       setTimeout(() => {
         let dataId = document.getElementsByClassName('homeTab')[0].attributes[1];
-        console.log(dataId.value);
-        this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+        if (sessionStorage.getItem('pmsPayDetail')) {
+
+        }else {
+          this.tabClick(sessionStorage.getItem('tabIndex') ? sessionStorage.getItem('tabIndex') : dataId.value);
+        }
       },500);
       this.homeIndexShow = true;
       this.doSthList();
@@ -225,6 +426,9 @@
       this.timer = setInterval(() => {
         this.websocketsend(88888);
       },1500);
+      if (sessionStorage.getItem('pmsPayDetail')) {
+        this.tabClick(3);
+      }
     },
   }
 </script>
@@ -234,7 +438,7 @@
 
   .homeIndex {
     .header {
-      background: #FFFFFF;
+      background: #f7f7f7;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
       height: 100px;
       display: flex;
@@ -359,10 +563,13 @@
         }
       }
     }
+    .header_ {
+      box-shadow: none;
+    }
     .quit {
       .shadow {
         position: fixed;
-        z-index: 10;
+        z-index: 999999999;
         left: 0;
         top: 0;
         width: 100vw;
@@ -374,7 +581,7 @@
         border-radius: 20px;
         width: 375px;
         position: fixed;
-        z-index: 12;
+        z-index: 9999999999;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
@@ -414,6 +621,48 @@
             top: 50%;
             transform: translateY(-50%);
           }
+        }
+      }
+    }
+    .quitHouse {
+      background: #FFFFFF;
+      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.40);
+      border-radius: 14px;
+      width: 676px;
+      position: fixed;
+      z-index: 9;
+      top: 100px;
+      right: 352px;
+      padding: 40px;
+      .content {
+        font-size: 24px;
+        color: #303133;
+        text-align: left;
+        span {
+          color: #F5A623;
+        }
+      }
+      .btns {
+        margin-top: 30px;
+        text-align: right;
+        span {
+          box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
+          border-radius: 32px;
+          width: 160px;
+          height: 64px;
+          font-size: 22px;
+          display: inline-block;
+          text-align: center;
+          line-height: 64px;
+        }
+        .knowBtn {
+          background: #FFFFFF;
+          color: #303133;
+          margin-right: 30px;
+        }
+        .lookDetail {
+          background-color: #1AAD19;
+          color: #fff;
         }
       }
     }

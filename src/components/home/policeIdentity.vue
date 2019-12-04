@@ -1,11 +1,12 @@
 <template>
   <div>
-    <div class="doSthIndex" v-show="showPoliceIdentity">
+    <div class="policeIndex" v-show="showPoliceIdentity">
       <div class="police_fl">
         <div class="doSthContent">
           <div class="changTabs">
-            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理{{total != 0 ? "("+total+")" : ''}}</span>
-            <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" v-if="showHandledList">已处理{{total1 != 0 ? "("+total1+")" : ''}}</span>
+            <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)" :style="changeTabString == 1 ? tabImg[1] : tabImg[0]">待处理{{total != 0 ? "("+total+")" : ''}}</span>
+            <!--<span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)" :style="changeTabString == 2 ? tabImg[1] : tabImg[0]">处理中{{total2 != 0 ? "("+total2+")" : ''}}</span>-->
+            <span :class="changeTabString == 3 ? 'active' : ''" @click="changeTabClick(3)" v-if="showHandledList" :style="changeTabString == 3 ? tabImg[1] : tabImg[0]">已处理{{total1 != 0 ? "("+total1+")" : ''}}</span>
           </div>
           <div class="identityList" v-if="showList && changeTabString == 1">
             <div class="list" v-for="item in unhandleList"  @click="unhandleClick(item)">
@@ -24,7 +25,7 @@
                   </div>
                   <div class="li"  v-if="hotelConfig.show_similarity==='true'">
                     <span>相似度：</span>
-                    <span class="blue">{{item.similarity}}%</span>
+                    <span :class="item.similarity == 0 ? 'red' : 'blue'">{{item.similarity}}%</span>
                   </div>
                 </div>
                 <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading" v-if="item.reportInStatus != 'PENDING'">立即处理</el-button>
@@ -45,6 +46,43 @@
             </div>
           </div>
           <div class="identityList" v-if="showList && changeTabString == 2">
+            <div class="list" v-for="item in handleingList"  @click="unhandleClick(item)">
+              <div class="list_header">
+                核验时间：{{datetimeparse(item.createdTime, 'yy/MM/dd hh:mm')}}
+            </div>
+              <div class="list_content">
+                <div class="lis">
+                  <div class="li">
+                    <span>姓名：</span>
+                    <span>{{item.name}}</span>
+                  </div>
+                  <div class="li">
+                    <span>身份证：</span>
+                    <span>{{idnumber(item.idCard)}}</span>
+                  </div>
+                  <div class="li"  v-if="hotelConfig.show_similarity==='true'">
+                    <span>相似度：</span>
+                    <span :class="item.similarity == 0 ? 'red' : 'blue'">{{item.similarity}}%</span>
+                  </div>
+                </div>
+                <el-button type="primary" class="tig_btn" :loading="item.unhandleLoading" v-if="item.reportInStatus != 'PENDING'">立即处理</el-button>
+                <el-button type="primary" class="tig_btn tig_btning" :loading="item.unhandleLoading" v-else>处理中</el-button>
+              </div>
+            </div>
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange2"
+              :current-page.sync="page2"
+              :page-size="5"
+              layout="total, prev, pager, next"
+              :total="total2" v-if="handleingList.length != 0">
+            </el-pagination>
+            <div class="noMsg" v-if="handleingList.length == 0">
+              <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
+              <p>暂无内容</p>
+            </div>
+          </div>
+          <div class="identityList" v-if="showList && changeTabString == 3">
             <div class="list" v-for="item in handleList"  @click="unhandleClick(item)">
               <div class="list_header list_header_">
                 核验时间：{{datetimeparse(item.createdTime, 'yy/MM/dd hh:mm')}}
@@ -95,7 +133,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabFr == 1">
               <div class="input">
-                <input type="text" placeholder="请输入姓名的拼音查询" v-model="searchString1">
+                <input type="text" placeholder="请输入姓名的首字母查询" v-model="searchString1"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -134,13 +172,28 @@
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
         showList: false,
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         changeTabString: 1,  // tab选中
         page: 1,  // 当前页数
         page1: 1,  // 当前页数
+        page2: 1,  // 当前页数
         total: 0, // 总条数
+        total2: 0, // 总条数
         total1: 0, // 总条数
-        unhandleList: [],  // 代办未处理列表
-        handleList: [],  //代办已处理列表
+        unhandleList: [],  // 未处理列表
+        handleingList: [],  // 处理中列表
+        handleList: [],  // 已处理列表
         showHandledList: true,  // 是否显示已处理
         showPoliceIdentity: false,  // 是否显示模板
         hotelConfig: {},  // 权限
@@ -163,12 +216,19 @@
         console.log(val);   // 接收父组件的值
         this.page = 1;
         this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
           this.total1 = 0;
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+          this.total2 = 0;
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.total1 = 0;
+          this.total = 0;
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
           this.total = 0;
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+          this.total1 = 0;
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       }
     },
@@ -201,14 +261,36 @@
         this.loadingShow = true;
         this.page = 1;
         this.page1 = 1;
+        this.page2 = 1;
         if (index == 1) {
           this.total1 = 0;
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+          this.total2 = 0;
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (index == 2) {
+          this.total = 0;
+          this.total1 = 0;
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
           this.total = 0;
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+          this.total2 = 0;
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
         this.$emit('getMessage', index);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
+        this.searchString = this.searchString1;
+        if (this.changeTabString == 1) {
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
+        }else {
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+        }
       },
 
       // 右侧筛选tab切换
@@ -224,14 +306,21 @@
 
       keyCancel (event, type) {
         event.preventDefault();
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (type == 1) {
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
             if (this.changeTabString == 1) {
-              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+              this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+            }else if (this.changeTabString == 2) {
+              this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
             }
           }
         }else {
@@ -239,9 +328,11 @@
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
             if (this.changeTabString == 1) {
-              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+              this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+            }else if (this.changeTabString == 2) {
+              this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
             }
           }
         }
@@ -252,10 +343,17 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       },
 
@@ -263,22 +361,31 @@
       keyEntry(event, item,type) {
         event.preventDefault();
         clearTimeout(this.timer);
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
           if (this.changeTabString == 1) {
-            this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+            this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+          }else if (this.changeTabString == 2) {
+            this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
           }else {
-            this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+            this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
           }
         }else {
           this.searchString2 += item;
           this.searchString = this.searchString2;
           this.timer = setTimeout(() => {
             if (this.changeTabString == 1) {
-              this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+              this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+            }else if (this.changeTabString == 2) {
+              this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
             }else {
-              this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+              this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
             }
           },1500)
         }
@@ -288,19 +395,33 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
+        this.loadingShow = true;
+        this.showList = false;
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
         if (this.changeTabString == 1) {
-          this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
         }else {
-          this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
       },
 
@@ -314,14 +435,21 @@
         this.showList = false;
         this.loadingShow = true;
         this.page = val;
-        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', val, 1);
+        this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', val, 1);
       },
       handleCurrentChange1(val) {
         console.log(`当前页: ${val}`);
         this.showList = false;
         this.loadingShow = true;
         this.page1 = val;
-        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, val, 2);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, val, 3);
+      },
+      handleCurrentChange2(val) {
+        console.log(`当前页: ${val}`);
+        this.showList = false;
+        this.loadingShow = true;
+        this.page2 = val;
+        this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', val, 2);
       },
 
       // 获取列表
@@ -345,6 +473,10 @@
                 this.total = parseFloat(headers['x-total-count']);
                 this.unhandleList = [ ...body.data.content];
                 this.hotelConfig = body.data.config;
+                this.$emit('unhandleNumFun', this.total);
+              }else if (type == 2) {
+                this.total2 = parseFloat(headers['x-total-count']);
+                this.handleingList = [ ...body.data.content];
               }else {
                 this.total1 = parseFloat(headers['x-total-count']);
                 this.handleList = [ ...body.data.content];
@@ -355,6 +487,9 @@
           },
           onfail: (body, headers) => {
             this.loadingShow = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
           }
         })
       },
@@ -363,6 +498,13 @@
       unhandleClick (item) {
         item.unhandleLoading = true;
         sessionStorage.setItem('changeTabString', this.changeTabString);
+        if (this.changeTabString == 1) {
+          sessionStorage.setItem('policeIdentityPage',this.page);
+        }else if (this.changeTabString == 2) {
+          sessionStorage.setItem('policeIdentityPage',this.page2);
+        }else {
+          sessionStorage.setItem('policeIdentityPage',this.page1);
+        }
         this.$emit('gotoDtail', item.lvyeReportRecordId);
       },
 
@@ -371,24 +513,40 @@
     mounted () {
       this.loadingShow = true;
       this.getConfig();
-      this.page = 1;
-      this.page1 = 1;
       this.changeTabString = sessionStorage.getItem('changeTabString') ? sessionStorage.getItem('changeTabString') : 1;
+      if (this.changeTabString == 1) {
+        this.page = sessionStorage.getItem('policeIdentityPage') ? sessionStorage.getItem('policeIdentityPage') : 1;
+      }else if (this.changeTabString == 2) {
+        this.page2 = sessionStorage.getItem('policeIdentityPage') ? sessionStorage.getItem('policeIdentityPage') : 1;
+      }else {
+        this.page1 = sessionStorage.getItem('policeIdentityPage') ? sessionStorage.getItem('policeIdentityPage') : 1;
+      }
       this.todayStart = this.timeFetch().todayStart;
       this.todayEnd = this.timeFetch().todayEnd;
       if (this.changeTabString == 1) {
-        this.policeIdentityList(JSON.stringify(["NONE","PENDING","FAILED"]), '', '', this.page, 1);
+        this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+      }else if (this.changeTabString == 2) {
+        this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
       }else {
-        this.policeIdentityList(JSON.stringify(["SUCCESS","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 2);
+        this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
       }
-    }
+    },
+
+    beforeRouteEnter(to,from,next){
+      if(from.name == 'policeIdentityDetail'){
+
+      }else {
+        sessionStorage.removeItem('policeIdentityPage');
+      }
+      next();
+    },
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
-  .doSthIndex {
+  .policeIndex {
     width: 100vw;
     .header {
       background: #FFFFFF;
@@ -504,6 +662,9 @@
                   .blue {
                     color: #1AAD19;
                   }
+                  .red {
+                    color: #F5222D;
+                  }
                 }
                 .li:first-of-type {
                   width: 220px;
@@ -602,6 +763,7 @@
               border: 1px solid #9A9A9A;
               border-radius: 44px;
               padding-left: 30px;
+              padding-right: 60px;
               font-size: 20px;
               color: #333;
               height: 64px;
@@ -739,42 +901,5 @@
     }
   }
 
-  /deep/ .el-pagination {
-    padding: 30px 0;
-    position: fixed;
-    width: calc(100vw - 480px);
-    bottom: 0;
-    left: 0;
-    z-index: 1;
-    background-color: #DEE7F8;
-  }
-  /deep/ .el-pager li {
-    background: rgba(0, 0, 0, .3);
-    color: #fff;
-    margin: 0 10px;
-    font-size: 20px;
-    height: 44px;
-    line-height: 44px;
-    min-width: 44px;
-    font-family: '黑体';
-  }
-  /deep/ .el-pagination__total {
-    font-size: 20px !important;
-    line-height: 44px !important;
-    height: 44px !important;
-  }
-  /deep/ .el-pager li.active {
-    background-color: #1AAD19;
-    color: #fff;
-  }
-  /deep/ .el-pagination button {
-    height: 44px;
-  }
-  /deep/ .el-pagination .btn-next .el-icon, .el-pagination .btn-prev .el-icon {
-    font-size: 20px;
-  }
-  /deep/ .el-pagination .btn-prev .el-icon {
-    font-size: 20px;
-  }
 
 </style>

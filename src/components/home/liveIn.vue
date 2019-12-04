@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="orderIndex">
+    <div class="liveIn">
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)">按房号排</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)">按离店时间</span>
+            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">按房号排</span>
+            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">按离店时间</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -44,8 +44,9 @@
                   <div class="listCell">
                     <p class="name"><span v-for="(i, index) in item.guestList">{{i.name ? i.name + ((index+1) < item.guestList.length ? '/' : '') : '-'}}</span>
                     </p>
-                    <div class="tongbu_status" @click="add(item)" v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 ">添加同住人</div>
+                    <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 "  @click="add(item)">添加同住人</el-button>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
+                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">详单</el-button>
                   </div>
                 </div>
               </div>
@@ -81,7 +82,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
@@ -91,7 +92,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -118,6 +119,19 @@
           </div>
         </div>
       </div>
+      <!-- 判断A屏是否有订单在操作-->
+      <div class="tigTeamShow" v-if="tigOrderShow">
+        <div class="shadow"></div>
+        <div class="tig_content">
+          <div class="tig_title">
+            <p>外屏正在办理中，请查看外屏对订单【退出办理】后重新尝试</p>
+          </div>
+          <div class="tig_btns">
+            <span class="cancel" @click="tigOrderShow=false;changeItem.tongbuLoading = false;">取消</span>
+            <span class="sure" @click="openScreen">查看外屏</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -135,6 +149,19 @@
         loadingText: '同步中...', // loading text
         showList: false,
         showList_: false,
+        tigOrderShow: false,
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         tabIndex: 1,  // tab切换
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
@@ -164,7 +191,7 @@
     },
     methods: {
       ...mapActions([
-        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule', 'sendCardRule'
+        'replaceto', 'getNoPmsQueryCheckInList', 'refreshList', 'getRefreshTime', 'guestCount', 'cardRule', 'sendCardRule', 'getChargeRecard'
       ]),
 
       // 获取权限
@@ -193,6 +220,19 @@
         }
         this.page = 1;
         this.getPreOrder(1);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        if (this.changeTabString == 1) {
+          this.searchString = this.searchString2;
+          this.page = 1;
+          this.getPreOrder(1);
+        }else {
+          this.searchString = this.searchString1;
+          this.page = 1;
+          this.getPreOrder(1);
+        }
       },
 
       // 右侧筛选tab切换
@@ -266,7 +306,7 @@
         this.getPreOrder(1);
       },
 
-      //同步订单
+      // 同步订单
       getRefreshList(){
         this.showList = false;
         this.showList_ = false;
@@ -276,6 +316,7 @@
           pmsType: 2,
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
+              this.searchString = this.searchString2 = this.searchString1 = '';
               this.page = 1;
               this.getPreOrder(1);
               this.initRefreshTime();
@@ -292,10 +333,20 @@
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$message({
-              message: "同步超时，请稍后再试",
-              type: 'error'
-            });
+            let hint = '';
+            if (error.status === 401) {
+              hint = '登录失效!'
+            } else if (error.status === 1) {
+              hint = '请求超时!';
+            } else {
+              hint = '请求失败'
+            }
+            if (hint != '') {
+              this.$message({
+                message: hint,
+                type: 'error'
+              });
+            }
             this.page = 1;
             this.getPreOrder(1);
           }
@@ -309,6 +360,7 @@
         this.showList_ = false;
         this.loadingText = '加载中...';
         this.loadingShow = true;
+        this.searchString = this.searchString2 = this.searchString1 = '';
         this.getPreOrder(1);
       },
 
@@ -338,6 +390,10 @@
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data.list) {
+              body.data.data.list.forEach(item => {
+                  item.quitLoading = false;
+                  item.tongbuLoading = false;
+              });
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
               this.showList = true;
@@ -345,6 +401,11 @@
             }
           },
           onfail: (body, headers) => {
+            this.loadingShow = false;
+            this.showList = false;
+            this.showList_ = false;
+          },
+          onerror: error => {
             this.loadingShow = false;
             this.showList = false;
             this.showList_ = false;
@@ -369,29 +430,72 @@
 
       // 添加同住人
       add (item) {
-        // 判断是否满住
-        this.guestCount({
-          subOrderId: item.subOrderId,
-          onsuccess: body => {
-            if (body.data.code == 0) {
-                if (body.data.data < item.maxGuest && body.data.data < 4) {
-                  this.changeItem = item;
-                  if (this.cardShow) {
-                    this.fakaTig = true;
+        this.changeItem = item;
+        item.tongbuLoading = true;
+        // 先判断A屏正在办理ing
+        this.getOrderProcess();
+//        this.showOrderInfo(true);
+      },
+
+      getOrderProcess() {
+        jsObj.GetOrderProcess();
+      },
+
+      // 接收A屏判断是否正在办理入住的结果
+      showOrderInfo (isTrue) {
+        if (isTrue != 'true') {
+          // 判断是否满住
+          this.guestCount({
+            subOrderId: this.changeItem.subOrderId,
+            onsuccess: body => {
+              if (body.data.code == 0) {
+                if (body.data.data.status == 4 && body.data.data.orderGuestVos) {
+                  if (body.data.data.orderGuestVos.length < body.data.data.maxCheckinCount && body.data.data.orderGuestVos.length < 4) {
+                    if (this.cardShow) {
+                      this.fakaTig = true;
+                    }else {
+                      this.goAdd(0);
+                    }
                   }else {
-                    this.goAdd(0);
+                    this.$toast({
+                      message: '该房间已住满',
+                      iconClass: 'icon ',
+                    });
+                    this.page = 1;
+                    this.getPreOrder(1);
                   }
                 }else {
-                  this.$message({
-                    message: '该房间已住满',
-                    type: 'warning'
+                  this.$toast({
+                    message: '该房间已离店',
+                    iconClass: 'icon ',
                   });
                   this.page = 1;
                   this.getPreOrder(1);
                 }
+              }
+              this.changeItem.tongbuLoading = false;
+            },
+            onfail: body => {
+              this.changeItem.tongbuLoading = false;
+            },
+            onerror: body => {
+              this.changeItem.tongbuLoading = false;
             }
-          }
-        });
+          });
+        }else {
+          this.tigOrderShow = true;
+        }
+      },
+
+      openScreen () {
+        this.openExternalScreen();
+        this.tigOrderShow = false;
+        this.getPreOrder(this.page);
+      },
+
+      // 查看外屏
+      openExternalScreen() {
+        jsObj.OpenExternalScreen();
       },
 
       // 不发卡
@@ -420,14 +524,22 @@
             if (body.data.code == 0) {
               this.page = 1;
               this.getPreOrder(1);
-              this.SendTeamOrderMessage(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
+              this.SendTeamOrderMsg(this.changeItem.orderId, this.changeItem.subOrderId, istrue, false, false, true);
             }
           }
         });
       },
 
-      SendTeamOrderMessage(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
-        document.title = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+      SendTeamOrderMsg(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
+        jsObj.sendParameter = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+        jsObj.SendTeamOrderMessage();
+      },
+
+      // 退房跳转
+      gotoCheckOut(item) {
+        sessionStorage.setItem('checkOutItem', JSON.stringify(item));
+        sessionStorage.setItem('liveInPage', this.page);
+        this.$emit('goToCheckOut', item.orderId);
       },
 
     },
@@ -439,15 +551,25 @@
       this.loadingShow = true;
       this.showList = false;
       this.showList_ = false;
-      this.getPreOrder(1);
+      this.page = sessionStorage.getItem('liveInPage') ? sessionStorage.getItem('liveInPage') : 1;
+      this.getPreOrder(this.page);
+      window.showOrderInfo = this.showOrderInfo;
+    },
+    beforeRouteEnter(to,from,next){
+      if(from.name == 'checkOut'){
+
+      }else {
+        sessionStorage.removeItem('liveInPage');
+      }
+      next();
     },
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
-  .orderIndex {
+  .liveIn {
     width: 100vw;
     padding-top: 100px;
     display: flex;
@@ -575,7 +697,7 @@
                     margin-bottom: 5px;
                   }
                   .name {
-                    width: 56%;
+                    width: 42%;
                   }
                 }
               }
@@ -595,13 +717,14 @@
             }
             .tongbu_status {
               position: absolute;
-              right: 0;
+              right: 164px;
               top: 0;
               background: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 13px 0;
+              display: inline-block;
+              padding: 17px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
@@ -612,6 +735,7 @@
               background: #d7d7d7;
               color: #a4a4a4;
               box-shadow: none;
+              padding: 13px 0;
             }
             .banli_status {
               position: absolute;
@@ -621,7 +745,7 @@
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
               width: 146px;
-              padding: 13px 0;
+              padding: 17px 0;
               text-align: center;
               font-size: 20px;
               color: #fff;
@@ -699,6 +823,7 @@
               border: 1px solid #9A9A9A;
               border-radius: 44px;
               padding-left: 30px;
+              padding-right: 60px;
               font-size: 20px;
               color: #333;
               height: 64px;
@@ -820,6 +945,84 @@
       width: 480px;
       height: calc(100vh - 100px);
       background-color: #fff;
+    }
+    .tigTeamShow {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .tig_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        width: 960px;
+        padding: 0 25px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .tig_title {
+          color: #0B0B0B;
+          font-size: 36px;
+          position: relative;
+          padding: 60px 50px;
+          font-weight: bold;
+          p {
+            width : auto;  // 必设
+            display : inline-block; // 不能设置为block
+            text-align : left; // 居左显示
+          }
+          img {
+            position: absolute;
+            right: 10px;
+            top: 25%;
+            transform: translateY(-50%);
+            display: block;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+          }
+        }
+        .tig_btns {
+          border-top: 1px solid #D8D8D8;
+          color:#4378BA;
+          padding: 38px 0;
+          font-size: 32px;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.04);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          span:only-child {
+            text-align: center;
+            width: 100%;
+            display: block;
+          }
+          .cancel {
+            color: #000;
+            width: 50%;
+            position: relative;
+          }
+          .cancel:after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 56px;
+            background-color: #D8D8D8;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+          }
+          .sure {
+            width: 50%;
+          }
+        }
+      }
     }
     .fakaTig {
       .shadow {

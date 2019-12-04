@@ -4,9 +4,9 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)">散客订单</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)">团队订单</span>
-            <span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)">今日预抵</span>
+            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">散客订单</span>
+            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">团队订单</span>
+            <!--<span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)" :style="tabToDay ? tabImg[1] : tabImg[0]">今日预抵</span>-->
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -73,67 +73,9 @@
           </div>
         </div>
 
-        <!-- 开始办理弹框-->
-        <div class="teamTig" v-if="teamTig">
-          <div class="shadow"></div>
-          <div class="tigContent">
-            <div class="title">
-              请确认订单支付状态
-              <!--<img src="../../assets/guanbi.png" alt="" @click="teamTig = false;">-->
-              <span @click="teamTig = false;">关闭</span>
-            </div>
-            <div class="tigLists">
-              <div class="tig_list">
-                <div class="list_title_total">
-                  <div class="list_title">总房费：</div>
-                  <div class="list_total">{{(roomFeeShow/100).toFixed(2)}}元</div>
-                </div>
-                <div class="list_tabs">
-                  <div class="list_tab" @click="payModeChange(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    当面付
-                  </div>
-                  <div class="list_tab" @click="payModeChange(2)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    已预付
-                  </div>
-                  <div class="list_tab" @click="payModeChange(3)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    后付/挂账
-                  </div>
-                </div>
-              </div>
-              <div class="tig_list">
-                <div class="list_title_total">
-                  <div class="list_title">押金：</div>
-                  <div class="list_total">{{(cashFee/100).toFixed(2)}}元</div>
-                </div>
-                <div class="list_tabs">
-                  <div class="list_tab" @click="changeFreeDeposit(1)">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || changeItem.isFreeDeposit">
-                    <img src="../../assets/weixuan.png" alt="" v-esle>
-                    免押金
-                  </div>
-                  <div class="list_tab" @click="changeFreeDeposit(2)" v-if="!cashFeeTrue">
-                    <img src="../../assets/xuanzhongle.png" alt="" v-if="!changeItem.isFreeDeposit">
-                    <img src="../../assets/weixuan.png" alt="" v-else>
-                    收押金
-                  </div>
-                </div>
-              </div>
-              <p class="tigRemark" v-if="changeItem.remark">订单备注：{{changeItem.remark}}</p>
-            </div>
-            <el-button type="primary" class="tig_btn" :loading="loadingCheckIn"  @click="teamCheckIn()" v-if="payMode != 0">开始办理</el-button>
-            <el-button type="info" disabled class="tig_btn tig_info" :loading="loadingCheckIn"  v-else>开始办理</el-button>
-          </div>
-        </div>
-
         <!-- 是否分房-->
         <div class="isShowScreen" v-if="isShowScreen">
-          <div class="shadow"></div>
+          <div class="shadow" @click="isShowScreen=false"></div>
           <div class="isShowScreen_content">
             <div class="isShowScreen_title">请先对房间进行分房，才可办理入住</div>
             <div class="isShowScreen_tabs">
@@ -156,7 +98,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1" @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -166,7 +108,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11" @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
@@ -191,6 +133,20 @@
           </div>
         </div>
       </div>
+
+      <!-- 判断A屏是否有订单在操作-->
+      <div class="tigTeamShow" v-if="tigOrderShow">
+        <div class="shadow"></div>
+        <div class="tig_content">
+          <div class="tig_title">
+            <p>外屏正在办理中，请查看外屏对订单【退出办理】后重新尝试</p>
+          </div>
+          <div class="tig_btns">
+            <span class="cancel" @click="tigOrderShow=false;changeItem.loadingBanli = false;">取消</span>
+            <span class="sure" @click="openScreen">查看外屏</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -208,6 +164,18 @@
         loadingText: '同步中...', // loading text
         showList: false,
         showList_: false,
+        tabImg: [
+          {
+            backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          },
+          {
+            backgroundImage: "url(" + require("../../assets/anniuxuanzhong.png") + ")",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100% 100%",
+          }
+        ],    // tab bg
         tabIndex: 1,  // tab切换
         tabToDay: true,  // tab今日预抵
         searchString: '',  // 搜索
@@ -217,7 +185,6 @@
         total: 0,      // 总数
         orderLists: [], // 总数据
         changeItem: {},  // 接受临时数据
-        teamTig: false,   // 办理入住提示框
         changeTabString: 1,  // 右侧筛选tab切换
         keyBords1: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K','L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],     // 字母键盘
         keyBords2: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],   // 数字键盘
@@ -229,10 +196,10 @@
         payMode: 0,  // 判断房费支付状态
         isShowScreen: false, // 是否分房
         pmsFlag: true,   // 判断是否对接pms
-        loadingCheckIn: false,  // 判断是否办理 加载中
         tigTeamShow: false,     // 团队主单入住后
         startTime: '',  // 开始时间
         endTime: '',  // 结束时间
+        tigOrderShow: false, // 判断A屏是否有订单在操作
       }
     },
     filters: {
@@ -272,6 +239,24 @@
         }
         this.page = 1;
         this.getPreOrder(1);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        if (this.changeTabString == 1) {
+          this.searchString = this.searchString1;
+          this.page = 1;
+          this.getPreOrder(1);
+        }else {
+          this.searchString = this.searchString2;
+          if (this.searchString2.length == 11) {
+            this.page = 1;
+            this.getPreOrder(1);
+          }else if (this.searchString2.length == 0) {
+            this.page = 1;
+            this.getPreOrder(1);
+          }
+        }
       },
 
       // 右侧筛选tab切换
@@ -377,25 +362,38 @@
       //办理入住
       checkGoIn(item) {
         item.loadingBanli = true;
-        // 判断是否为今日订单
-        this.sendCheck({
-            id: item.id,
+        this.changeItem = item;
+        // 先判断A屏正在办理ing
+        this.getOrderProcess();
+//        this.showOrderInfo(true)
+      },
+
+      getOrderProcess() {
+        jsObj.GetOrderProcess();
+      },
+
+      // 接收A屏判断是否正在办理入住的结果
+      showOrderInfo (isTrue) {
+        console.log('isTrue__', isTrue);
+        if (isTrue != 'true') {
+          // 判断是否为今日订单
+          this.sendCheck({
+            id: this.changeItem.id,
             subOrderId: '',
             onsuccess: body => {
               if (body.data.code == 0) {
-                if (item.type == 1) {
+                if (this.changeItem.type == 1) {
                   this.getOrderFree({
                     data: {
-                      orderId: item.id
+                      orderId: this.changeItem.id
                     },
                     onsuccess: body => {
-                      console.log('body.code',body.data);
                       if (body.data.code == 0) {
                         this.loadingShow = false;
                         if (body.data.data == null || !body.data.data) {
-                          this.$message({
-                            message: '订单已取消',
-                            type: 'warning'
+                          this.$toast({
+                            message: "订单已取消",
+                            iconClass: 'icon ',
                           });
                           this.page = 1;
                           this.getPreOrder(1);
@@ -418,86 +416,77 @@
                           }
                           this.payMode = body.data.data.payMode;
                           this.ispaid = body.data.data.paid;
-                          if (body.data.data.needPayFeeShow != 0 && !this.ispaid) {
-//                            this.teamTig = true;
-                            sessionStorage.setItem('changeItem', JSON.stringify(item));
-                            sessionStorage.setItem('currentChange', this.page);
-                            sessionStorage.setItem('gotoCheckIn', true);
-                            this.$emit('gocheckIn', item.id);
-                          }else {
-                            this.page = 1;
-                            this.getPreOrder(1);
-                            this.OpenExternalScreen('SendMessage@'+item.id+'')
-                          }
-                          this.changeItem = item;
+                          sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
+                          sessionStorage.setItem('currentChange', this.page);
+                          sessionStorage.setItem('gotoCheckIn', true);
+                          this.$emit('gocheckIn', this.changeItem.id);
                         }
 
                       }else {
                         this.loadingShow = false;
                       }
-                      item.loadingBanli = false;
+                      this.changeItem.loadingBanli = false;
                     },
                     onfail: (body, headers) => {
-                      item.loadingBanli = false;
+                      this.changeItem.loadingBanli = false;
+                      this.loadingShow = false;
+                    },
+                    onerror: error => {
+                      this.changeItem.loadingBanli = false;
                       this.loadingShow = false;
                     }
                   });
                 }else {
                   // 团队订单办理入住进行跳转
                   this.loadingShow = false;
-                  item.loadingBanli = false;
-                  sessionStorage.setItem('changeItem', JSON.stringify(item));
+                  this.changeItem.loadingBanli = false;
+                  sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
                   sessionStorage.setItem('currentChange', this.page);
                   sessionStorage.setItem('gotoCheckIn', true);
-                  this.$emit('gocheckIn', item.id);
+                  this.$emit('gocheckIn', this.changeItem.id);
                 }
               }else if (body.data.code == 888000) {
                 this.loadingShow = false;
-                item.loadingBanli = false;
-                this.changeItem = item;
+                this.changeItem.loadingBanli = false;
                 this.tigTeamShow = true;
               }else {
-                item.loadingBanli = false;
+                this.changeItem.loadingBanli = false;
                 this.loadingShow = false;
               }
             },
             onfail: (body, headers) => {
-              console.log('body',body.data);
-              item.loadingBanli = false;
+              this.changeItem.loadingBanli = false;
               if (body.data.code == 89000 || body.data.code == 79000 || body.data.code == 69000) {
                 this.page = 1;
                 this.getPreOrder(1);
               }else {
                 this.loadingShow = false;
               }
+            },
+            onerror: error => {
+              this.changeItem.loadingBanli = false;
+              this.loadingShow = false;
             }
-        });
-      },
-      teamCheckIn(){
-        this.loadingCheckIn = true;
-        this.updatePaidMode({
-          orderId: this.changeItem.id,
-          isFreeDeposit: this.changeItem.isFreeDeposit,
-          modeId: this.payMode,
-          onsuccess: body => {
-            this.loadingShow = false;
-            if (body.data.code == 0) {
-              this.teamTig = false;
-              this.page = 1;
-              this.getPreOrder(1);
-              this.loadingCheckIn = false;
-              this.OpenExternalScreen('SendMessage@'+this.changeItem.id+'')
-            }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          }
-        });
-
+          });
+        }else {
+          this.tigOrderShow = true;
+        }
       },
 
-      OpenExternalScreen(type) {
-        document.title = new Date().getSeconds() + "@" + type;
+      openScreen () {
+        this.openExternalScreen();
+        this.tigOrderShow = false;
+        this.getPreOrder(this.page);
+      },
+
+      // 查看外屏
+      openExternalScreen() {
+        jsObj.OpenExternalScreen();
+      },
+
+      SendParameter(type) {
+        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
+        jsObj.SendMessage();
       },
 
       // 请先将团队主单入住后才能操作 我知道了
@@ -529,10 +518,6 @@
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$message({
-              message: "同步超时，请稍后再试",
-              type: 'error'
-            });
             this.getPreOrder(this.page);
           }
         })
@@ -548,6 +533,7 @@
           pmsType: 1,
           onsuccess:body=>{
             if (body.data.data == '同步成功') {
+              this.searchString = this.searchString2 = this.searchString1 = '';
               this.page = 1;
               this.getPreOrder(1);
               this.initRefreshTime();
@@ -564,10 +550,20 @@
           },
           onerror: error => {
             this.loadingShow = false;
-            this.$message({
-              message: "同步超时，请稍后再试",
-              type: 'error'
-            });
+            let hint = '';
+            if (error.status === 401) {
+              hint = '登录失效!'
+            } else if (error.status === 1) {
+              hint = '请求超时!';
+            } else {
+              hint = '请求失败'
+            }
+            if (hint != '') {
+              this.$message({
+                message: hint,
+                type: 'error'
+              });
+            }
             this.page = 1;
             this.getPreOrder(1);
           }
@@ -581,6 +577,7 @@
         this.showList_ = false;
         this.loadingText = '加载中...';
         this.loadingShow = true;
+        this.searchString = this.searchString2 = this.searchString1 = '';
         this.getPreOrder(1);
       },
 
@@ -597,8 +594,8 @@
       getPreOrder (page) {
         this.getQueryByPage({
           data: {
-            start: this.startTime,
-            end: this.endTime,
+            start: "",
+            end: "",
             page: page,
             pageSize: 4,
             payMode: '',
@@ -632,6 +629,11 @@
             this.showList_ = true;
           },
           onfail: (body, headers) => {
+            this.loadingShow = false;
+            this.showList = false;
+            this.showList_ = false;
+          },
+          onerror: error => {
             this.loadingShow = false;
             this.showList = false;
             this.showList_ = false;
@@ -715,6 +717,7 @@
       }
       this.getPreOrder(this.page);
       this.$route.meta.isBack = false;
+      window.showOrderInfo = this.showOrderInfo;
     },
     beforeRouteEnter(to,from,next){
       if(from.name == 'checkIn'){
@@ -726,7 +729,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .orderIndex {
     width: 100vw;
@@ -749,17 +752,17 @@
           padding: 40px 0;
           .tab {
             padding: 18px 30px;
-            background: #FFFFFF;
-            box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
-            border-radius: 40px;
+            /*background: #FFFFFF;*/
+            /*box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);*/
+            /*border-radius: 40px;*/
             color: #303133;
             font-size: 20px;
             margin-right: 30px;
             font-weight: bold;
           }
           .active {
-            background-color: #C8E1C8;
-            border: 1px solid #1AAD19;
+            /*background-color: #C8E1C8;*/
+            /*border: 1px solid #1AAD19;*/
             color: #1AAD19;
           }
         }
@@ -861,8 +864,11 @@
                 margin-left: 20px;
               }
               .list_cell:last-of-type {
-                width: 48%;
+                width: 47%;
                 position: relative;
+                .listCell {
+                  width: 42%;
+                }
               }
             }
             .remark {
@@ -971,6 +977,7 @@
             input {
               border: 1px solid #9A9A9A;
               border-radius: 44px;
+              padding-right: 60px;
               padding-left: 30px;
               font-size: 20px;
               color: #333;
@@ -1120,6 +1127,11 @@
           position: relative;
           padding: 60px 50px;
           font-weight: bold;
+          p {
+            width : auto;  // 必设
+            display : inline-block; // 不能设置为block
+            text-align : left; // 居左显示
+          }
           img {
             position: absolute;
             right: 10px;
@@ -1137,138 +1149,33 @@
           padding: 38px 0;
           font-size: 32px;
           text-shadow: 0 2px 4px rgba(0,0,0,0.04);
-        }
-      }
-    }
-    .teamTig {
-      .shadow {
-        position: fixed;
-        z-index: 10;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, .6);
-      }
-      .tigContent {
-        background: #FFFFFF;
-        border-radius: 20px;
-        width: 960px;
-        position: fixed;
-        z-index: 12;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        .title {
-          color: #303133;
-          font-size: 30px;
-          position: relative;
-          padding: 30px 50px;
-          font-weight: bold;
-          span {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            cursor: pointer;
-            font-size: 30px;
-            color: #1AAD19;
-          }
-          img {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-          }
-        }
-        .tigLists {
-          margin: 30px 0;
-          padding: 0 50px;
-          position: relative;
-          .tig_list {
-            margin-bottom: 60px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          span:only-child {
+            text-align: center;
             width: 100%;
-            .list_title_total {
-              width: 100%;
-              display: inline-flex;
-              justify-content: flex-start;
-              margin-bottom: 20px;
-              .list_title {
-                color: #303133;
-                font-size: 28px;
-                font-weight: bold;
-              }
-              .list_total {
-                font-size: 30px;
-                font-weight: bold;
-                color: #F55825;
-              }
-            }
-            .list_tabs {
-              width: 100%;
-              display: inline-flex;
-              justify-content: flex-start;
-              .list_tab {
-                position: relative;
-                font-size: 22px;
-                color: #000;
-                font-weight: bold;
-                line-height: 80px;
-                width: 233px;
-                text-align: center;
-                margin-right: 84px;
-                img {
-                  position: absolute;
-                  z-index: -1;
-                  width: 233px;
-                  height: 80px;
-                  left: 0;
-                  top: 0;
-                }
-              }
-              .list_tab:last-of-type {
-                margin-right: 0;
-              }
-            }
+            display: block;
           }
-          .tigRemark {
-            text-align: left;
-            font-size: 30px;
+          .cancel {
             color: #000;
+            width: 50%;
+            position: relative;
           }
-        }
-        .tigLists:before {
-          position: absolute;
-          top: -30px;
-          left: 50px;
-          display: inline-block;
-          content: '';
-          width: calc(100% - 100px);
-          height: 1px;
-          background-color: #D8D8D8;
-        }
-        .tig_btn {
-          background: #1AAD19;
-          border-radius: 44px;
-          width: 340px;
-          height: 68px;
-          /*line-height: 68px;*/
-          color: #fff;
-          font-size: 20px;
-          cursor: pointer;
-          text-align: center;
-          margin: 30px auto;
-          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }
-        .tig_info {
-          background-color: #d7d7d7;
-          color: #a4a4a4;
-          border: none;
+          .cancel:after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 56px;
+            background-color: #D8D8D8;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+          }
+          .sure {
+            width: 50%;
+          }
         }
       }
     }
@@ -1330,41 +1237,4 @@
     }
   }
 
-  /deep/ .el-pagination {
-    padding: 30px 0;
-    position: fixed;
-    width: calc(100vw - 480px);
-    bottom: 0;
-    left: 0;
-    z-index: 1;
-    background-color: #DEE7F8;
-  }
-  /deep/ .el-pager li {
-    background: rgba(0, 0, 0, .3);
-    color: #fff;
-    margin: 0 10px;
-    font-size: 20px;
-    height: 44px;
-    line-height: 44px;
-    min-width: 44px;
-    font-family: '黑体';
-  }
-  /deep/ .el-pagination__total {
-    font-size: 20px !important;
-    line-height: 44px !important;
-    height: 44px !important;
-  }
-  /deep/ .el-pager li.active {
-    background-color: #1AAD19;
-    color: #fff;
-  }
-  /deep/ .el-pagination button {
-    height: 44px;
-  }
-  /deep/ .el-pagination .btn-next .el-icon, .el-pagination .btn-prev .el-icon {
-    font-size: 20px;
-  }
-  /deep/ .el-pagination .btn-prev .el-icon {
-    font-size: 20px;
-  }
 </style>

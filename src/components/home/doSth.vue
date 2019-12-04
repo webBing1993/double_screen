@@ -25,7 +25,16 @@
                 <span>{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
               </div>
             </div>
-            <div class="list_content" v-if="item.doSthTitle=='发卡失败'">
+            <div class="list_content" v-if="item.doSthTitle=='退房申请'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="checkOut">客人申请退房，房卡已回收，请及时处理</div>
+              </div>
+              <div class="list_fr">
+                <!--<span @click="pmsCheckIn(item.id)">处理完成</span>-->
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='发卡失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
                 <div class="roomIn" v-if="item.type == 'QUEKA'"><span>失败原因：</span>缺卡</div>
@@ -49,14 +58,14 @@
             <div class="list_content" v-else-if="item.doSthTitle=='PMS入账失败'">
               <div class="list_fl">
                 <div class="roomIn"><span>PMS订单号：</span>{{item.pmsOrderNo}}</div>
-                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}</div>
-                <div class="roomIn"><span>入账金额：</span>{{item.totalFeeStr}}</div>
+                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}  &nbsp;&nbsp;&nbsp;&nbsp;<span>房费：</span>{{item.roomFeeStr == '预付房费' ? '预付房费' : (item.roomFeeStr != null ? item.roomFeeStr + '元' : '无')}}  &nbsp;&nbsp;&nbsp;&nbsp;<span>押金：</span>{{item.depositFeeStr != '免押' ? (item.depositFeeStr != null ? item.depositFeeStr+'元' : '无') : item.depositFeeStr}}</div>
               </div>
               <div class="list_fr">
-                <span @click="pmsPay(item.orderId)">处理完成</span>
+                <span @click="pmsPayDetail(item.orderId, item.payFlowId)" class="lookDetail">查看详情</span>
+                <span @click="pmsPay(item.orderId, item.payFlowId)">处理完成</span>
               </div>
             </div>
-            <div class="list_content" v-else>
+            <div class="list_content" v-else-if="item.doSthTitle == '前台支付'">
               <div class="list_fl">
                 <div class="rooms"><span>预订人：</span>{{item.owner}} {{item.ownerTel}}</div>
                 <div class="roomIn"><span>订单金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
@@ -65,54 +74,31 @@
                 <span @click="nativepay(item.id)">处理完成</span>
               </div>
             </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='旅业退房失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>住客姓名：</span><span v-for="(i, index) in item.guestList">{{index < (item.guestList.length - 1) ? i.name + '/' : i.name}}</span></div>
+              </div>
+              <div class="list_fr">
+                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='旅业换房失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>原房间号：</span>{{item.oldRoomNo ? item.oldRoomNo : '-'}}</div>
+                <div class="rooms"><span>新房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>住客姓名：</span><span>{{item.checkInName}}</span></div>
+              </div>
+              <div class="list_fr">
+                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+              </div>
+            </div>
           </div>
-          <!--<el-pagination-->
-            <!--@size-change="handleSizeChange"-->
-            <!--@current-change="handleCurrentChange"-->
-            <!--:current-page.sync="page"-->
-            <!--:page-size="10"-->
-            <!--layout="total, prev, pager, next"-->
-            <!--:total="total" v-if="doSthLists.length != 0">-->
-          <!--</el-pagination>-->
           <div class="noMsg" v-if="doSthLists.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
             <p>暂无内容</p>
           </div>
         </div>
-        <!--<div class="doSthLists" v-if="changeTabString == 2">
-          <div class="list" v-for="item in doSthLists1">
-            <div class="list_header">
-              <div>
-                <span class="title">{{item.title}}</span>
-                <span>{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
-              </div>
-              <div>
-                处理人：{{item.founder}} {{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}
-              </div>
-            </div>
-            <div class="list_content">
-              <div class="list_fl">
-                <div class="rooms"><span>房间号：</span>{{item.roomNo}}</div>
-                <div class="roomIn"><span>住客信息：</span>{{item.contactName}}</div>
-              </div>
-              <div class="list_fr">
-                <span>处理完成</span>
-              </div>
-            </div>
-          </div>
-          &lt;!&ndash;<el-pagination&ndash;&gt;
-            &lt;!&ndash;@size-change="handleSizeChange"&ndash;&gt;
-            &lt;!&ndash;@current-change="handleCurrentChange1"&ndash;&gt;
-            &lt;!&ndash;:current-page.sync="page1"&ndash;&gt;
-            &lt;!&ndash;:page-size="10"&ndash;&gt;
-            &lt;!&ndash;layout="total, prev, pager, next"&ndash;&gt;
-            &lt;!&ndash;:total="total1" v-if="doSthLists.length != 0">&ndash;&gt;
-          &lt;!&ndash;</el-pagination>&ndash;&gt;
-          <div class="noMsg" v-if="doSthLists.length == 0">
-            <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
-            <p>暂无内容</p>
-          </div>
-        </div>-->
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
     </div>
@@ -145,7 +131,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay'
+        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay', 'updateCheckpmslvStatus'
       ]),
 
       // tab
@@ -181,10 +167,20 @@
               let pmscheckin = [];  // pms入住失败代办
               let pmspay = [];   // pms入账失败
               let nativepay = [];  // 前台支付
+              let checkoutapply = [];  // 退房申请
+              let lvyeCheckout = [];   // 旅业退房
+              let lvyeChangeRoom = [];  // 旅业换房
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
+              checkoutapply = body.data.data.checkoutapply != null ? body.data.data.checkoutapply : [];
+              lvyeCheckout = body.data.data.lvyeCheckout;
+              lvyeChangeRoom = body.data.data.lvyeChangeRoom;
+              checkoutapply.forEach(item => {
+                item.doSthTitle = '退房申请';
+                item.createTime = item.applyTime;
+              });
               faka.forEach(item => {
                 item.doSthTitle = '发卡失败';
               });
@@ -197,13 +193,22 @@
               nativepay.forEach(item => {
                 item.doSthTitle = '前台支付';
               });
-              this.doSthLists = faka.concat(pmscheckin, pmspay, nativepay);
+              lvyeCheckout.forEach(item => {
+                item.doSthTitle = '旅业退房失败';
+              });
+              lvyeChangeRoom.forEach(item => {
+                item.doSthTitle = '旅业换房失败';
+              });
+              this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom);
               this.doSthLists.sort(this.compare('createTime'));
               console.log('this.doSthLists',this.doSthLists);
             }
             this.showList = true;
           },
           onfail: (body, headers) => {
+            this.loadingShow = false;
+          },
+          onerror: error => {
             this.loadingShow = false;
           }
         })
@@ -236,6 +241,12 @@
         })
       },
 
+      // 查看详情
+      pmsPayDetail(orderId, payFlowId) {
+        sessionStorage.setItem('pmsPayDetail', orderId+"#"+payFlowId);
+        this.goto(-1);
+      },
+
       // pms 入住失败处理事件
       pmsCheckIn(id) {
         this.loadingShow = true;
@@ -256,11 +267,12 @@
       },
 
       // pms入账失败处理事件
-      pmsPay(id) {
+      pmsPay(id, payFlowId) {
         this.loadingShow = true;
         this.updateWechatPay({
           data:{
-            orderId: id
+            orderId: id,
+            payFlowId: payFlowId
           },
           onsuccess: (body) => {
             if(body.data.code == 0){
@@ -292,6 +304,29 @@
           }
         })
       },
+
+      // 旅业退房、换房失败
+      lvyeCheckout(id, subOrderId) {
+        this.loadingShow = true;
+        this.updateCheckpmslvStatus({
+          data: {
+            id: id,
+            hotelId: sessionStorage.hotel_id,
+            subOrderId: subOrderId,
+            deviceId: ''
+          },
+          onsuccess: (body) => {
+            if (body.data.code == 0) {
+              this.doSthList();
+            }else {
+              this.loadingShow = false;
+            }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
+          }
+        })
+      },
     },
 
     mounted () {
@@ -302,7 +337,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less">
 
   .doSthIndex {
     width: 100vw;
@@ -404,7 +439,7 @@
                 margin-right: 30px;
               }
             }
-            dis:last-of-type {
+            div:last-of-type {
               color: #303133;
               font-size: 14px;
             }
@@ -431,6 +466,12 @@
                   display: inline-block;
                 }
               }
+              .rooms {
+                span {
+                  width: 125px !important;
+                  display: inline-block;
+                }
+              }
             }
             .list_fr {
               span {
@@ -445,42 +486,29 @@
                 display: inline-block;
                 border-radius: 32px;
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                margin-left: 15px;
+              }
+              .lookDetail {
+                background-color: #4A90E2;
               }
             }
           }
         }
       }
     }
+    .noMsg {
+      padding-top: 400px;
+      img {
+        display: block;
+        width: 180px;
+        margin: 0 auto;
+      }
+      p {
+        font-size: 26px;
+        margin-top: 20px;
+      }
+    }
   }
 
-  .noMsg {
-    padding-top: 400px;
-    img {
-      display: block;
-      width: 180px;
-      margin: 0 auto;
-    }
-    p {
-      font-size: 26px;
-      margin-top: 20px;
-    }
-  }
-
-  /deep/ .el-pagination {
-    margin: 30px 0;
-  }
-  /deep/ .el-pager li {
-    background: rgba(0, 0, 0, .3);
-    color: #999;
-    margin: 0 10px;
-    font-size: 16px;
-  }
-  /deep/ .el-pagination__total {
-    font-size: 16px !important;
-  }
-  /deep/ .el-pager li.active {
-    background-color: #1AAD19;
-    color: #fff;
-  }
 
 </style>

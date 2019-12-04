@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="policeIdentityDetail">
-      <div class="detail_fl" v-if="!loadingShow">
+      <div class="detail_fl" v-if="!loadingShow" :style="buttonGroupShow ? detailFlWidth[0] : detailFlWidth[1]">
         <div class="bgCheckTop"></div>
         <div class="goback">
           <div @click="gobanck">
@@ -13,7 +13,7 @@
           <div class="search">
             <span>房间号：</span>
             <input type="text" placeholder="请输入房间号" :value="detail.roomNumber ? detail.roomNumber : '无'" disabled v-if="!buttonGroupShow">
-            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else>
+            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else @input="changeKeyBords">
             <span class="tig" v-if="!roomShow && roomNum != ''">酒店无该房间，请重新输入</span>
           </div>
           <div class="outTime" v-if="buttonGroupShow">
@@ -78,7 +78,7 @@
           </div>
         </div>
       </div>
-      <div class="detail_fr" v-if="!loadingShow">
+      <div class="detail_fr" v-if="!loadingShow && buttonGroupShow">
         <div>
           <div class="fast_title">
             <img src="../../assets/xiantiao.png" alt="">
@@ -100,6 +100,23 @@
                 <span v-for="item in keyBords1" @click="keyEntry($event, item)">{{item}}</span>
                 <span @click="keyCancel()"><img src="../../assets/shanchuanniu.png" alt=""></span>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 相似度太低提示框-->
+      <div class="lowsimilarity" v-if="lowsimilarity">
+        <div class="shadow"></div>
+        <div class="similarityContent">
+          <div class="title">
+            <img src="../../assets/guanbi.png" alt="" @click="cancelsimilarity">
+          </div>
+          <div class="content">
+            <img src="../../assets/xiangsidutaidi.png" alt="">
+            <p>此人相似度太低，是否确认上传？</p>
+            <div class="btns">
+              <el-button type="primary" class="btn" :loading="similarityCancel" @click="cancelsimilarity()">取消</el-button>
+              <el-button type="primary" class="btn" :loading="similaritySure" @click="suresimilarity()">确认</el-button>
             </div>
           </div>
         </div>
@@ -135,8 +152,12 @@
         outTime: '',   // 最晚离店时间
         inTimeFilter: Date.parse(new Date()),
         days: 1,
-        buttonGroupShow: false,
+        buttonGroupShow: false, // 区分待处理还是已处理的详情
+        detailFlWidth: ["width: calc(100vw - 560px);", "width: calc(100vw - 80px);"],
         hotelConfig: {},  // 权限
+        similarityCancel: false,  // 相似度太低弹框取消loading
+        similaritySure: false,    // 相似度太低弹框确认loading
+        lowsimilarity: false,     // 相似度太低提示
       }
     },
     watch: {
@@ -160,6 +181,17 @@
       datePickerTime(val) {
         this.outTime = val;
         console.log('datePickerTime', val);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        this.roomShow = false;
+        this.roomList.forEach(item=>{
+          if(this.roomNum == item.room_number){
+            this.roomShow = true;
+          }
+          return;
+        });
       },
 
 
@@ -237,6 +269,9 @@
             }
             this.buttonGroup();
             this.loadingShow = false;
+          },
+          onerror: error => {
+            this.loadingShow = false;
           }
         })
       },
@@ -269,69 +304,93 @@
                 message: '拒绝成功',
                 type: 'success'
               });
+//              this.$toast({
+//                message: '拒绝成功',
+//                iconClass: 'icon ',
+//              });
               this.$emit('getMessage', this.$route.params.id);
               this.gobanck();
             }else {
-              this.$message.error(body.errmsg);
+//              this.$message.error(body.errmsg);
+              this.$toast({
+                message: body.errmsg,
+                iconClass: 'icon ',
+              });
             }
             this.loadingRefund = false;
           },
           onfail: body => {
             this.loadingRefund = false;
+          },
+          onerror: error => {
+            this.loadingRefund = false;
           }
         })
+      },
+
+      // 相似度太低确认框
+      suresimilarity() {
+        this.similaritySure = true;
+        let getRoom_id='';
+        let room = this.detail.roomNum;
+        this.roomList.forEach(item=>{
+          if(room == item.room_number){
+            getRoom_id= item.room_id;
+          }
+          return;
+        });
+        this.reportLvYe({
+          data:{
+            roomId: getRoom_id || '',
+            mobile:'',
+            lvyeReportRecordIds: this.detail.lvyeReportRecordId.split(' '),//旅业上报记录Id
+            roomNumber: this.roomNum,//房间号
+            nights: this.days,//入住晚数
+            inTime: this.inTimeFilter,//入住时间
+            outTime: Date.parse(this.outTime),//离店时间
+            guestType:this.guestType,
+          },
+          onsuccess: (body) => {
+            if (body.errcode == 0) {
+              this.$toast({
+                message: '正在上传旅业',
+                iconClass: 'icon ',
+              });
+              this.$emit('getMessage', this.$route.params.id);
+              this.gobanck();
+            }
+            this.lowsimilarity = false;
+            this.similaritySure = false;
+            this.loadingCheckIn = false;
+          },
+          onfail: body => {
+            this.lowsimilarity = false;
+            this.similaritySure = false;
+            this.loadingCheckIn = false;
+          },
+          onerror: error => {
+            this.lowsimilarity = false;
+            this.similaritySure = false;
+            this.loadingCheckIn = false;
+          }
+        });
+      },
+
+      // 相似度太低取消框
+      cancelsimilarity() {
+        this.similarityCancel = true;
+        setTimeout(() => {
+          this.loadingCheckIn = false;
+          this.similarityCancel = false;
+          this.lowsimilarity = false;
+        },500);
       },
 
       // 上传旅业
       setMultiConfirm() {
         this.loadingCheckIn = true;
         if (this.detail.similarity < 70) {
-          this.$confirm('此人相似度太低, 是否确认上传?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            let getRoom_id='';
-            let room = this.detail.roomNum;
-            this.roomList.forEach(item=>{
-              if(room == item.room_number){
-                getRoom_id= item.room_id;
-              }
-              return;
-            });
-            this.reportLvYe({
-              data:{
-                roomId: getRoom_id || '',
-                mobile:'',
-                lvyeReportRecordIds: this.detail.lvyeReportRecordId.split(' '),//旅业上报记录Id
-                roomNumber: this.roomNum,//房间号
-                nights: this.days,//入住晚数
-                inTime: this.inTimeFilter,//入住时间
-                outTime: Date.parse(this.outTime),//离店时间
-                guestType:this.guestType,
-              },
-              onsuccess: (body) => {
-                if (body.errcode == 0) {
-                  this.$message({
-                    type: 'success',
-                    message: '正在上传旅业'
-                  });
-                  this.$emit('getMessage', this.$route.params.id);
-                  this.gobanck();
-                }
-                this.loadingCheckIn = false;
-              },
-              onfail: body => {
-                this.loadingCheckIn = false;
-              }
-            });
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消上传'
-            });
-            this.loadingCheckIn = false;
-          });
+          this.lowsimilarity = true;
         }else {
           let getRoom_id='';
           let room = this.detail.roomNum;
@@ -354,9 +413,13 @@
             },
             onsuccess: (body) => {
               if (body.errcode == 0) {
-                this.$message({
-                  type: 'success',
-                  message: '正在上传旅业'
+//                this.$message({
+//                  type: 'success',
+//                  message: '正在上传旅业'
+//                });
+                this.$toast({
+                  message: '正在上传旅业',
+                  iconClass: 'icon ',
                 });
                 this.$emit('getMessage', this.$route.params.id);
                 this.gobanck();
@@ -364,6 +427,9 @@
               this.loadingCheckIn = false;
             },
             onfail: body => {
+              this.loadingCheckIn = false;
+            },
+            onerror: error => {
               this.loadingCheckIn = false;
             }
           });
@@ -381,7 +447,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style lang="less" scoped>
 
   .policeIdentityDetail {
     width: 100vw;
@@ -469,63 +535,6 @@
             height: 72px;
             line-height: 72px;
             padding-left: 30px;
-          }
-          /deep/ .ivu-icon-ios-close-circle {
-            display: none;
-          }
-          /deep/ .ivu-date-picker {
-            width: 480px;
-            height: 72px;
-          }
-          /deep/ .ivu-input {
-            height: 72px;
-            border: 1px solid #979797;
-            color: #303133;
-            font-size: 30px;
-            padding-left: 30px;
-          }
-          /deep/ .ivu-input-suffix {
-            display: none;
-          }
-          /deep/ .ivu-input-suffix i {
-            font-size: 32px;
-            line-height: 72px;
-          }
-          /deep/ .ivu-picker-panel-icon-btn i {
-            font-size: 32px;
-          }
-          /deep/ .ivu-date-picker-cells span {
-            width: 56px;
-            height: 56px;
-            line-height: 56px;
-            text-align: center;
-            margin: 5px 2px 2px 2px;
-          }
-          /deep/ .ivu-date-picker-cells {
-            width: 420px;
-            margin: 28px;
-          }
-          /deep/ .ivu-picker-panel-icon-btn {
-            width: 74px;
-            height: 48px;
-          }
-          /deep/ .ivu-date-picker-header {
-            height: 48px;
-            line-height: 48px;
-          }
-          /deep/ .ivu-btn-small {
-            font-size: 32px;
-          }
-          /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
-            width: 239px;
-            max-height: 546px;
-          }
-          /deep/ .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list ul li {
-            padding: 0;
-            text-align: center;
-          }
-          /deep/ .ivu-btn-default {
-            display: none;
           }
           i {
             position: absolute;
@@ -664,9 +673,6 @@
             color: #a4a4a4;
           }
         }
-      }
-      /deep/ .el-message-box__message p {
-        font-size: 20px;
       }
     }
     .detail_fr {
@@ -845,6 +851,72 @@
       width: 480px;
       height: calc(100vh - 100px);
       background-color: #fff;
+    }
+    .lowsimilarity {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .similarityContent {
+        background: #FFFFFF;
+        border-radius: 20px;
+        width: 960px;
+        padding: 0 25px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .title {
+          display: flex;
+          justify-content: flex-end;
+          padding: 40px 35px;
+          img {
+            width: 24px;
+            height: 24px;
+            display: block;
+          }
+        }
+        .content {
+          text-align: center;
+          img {
+            width: 260px;
+            display: block;
+            margin: 0 auto;
+          }
+          p {
+            margin-top: 32px;
+            color: #606266;
+            font-size: 36px;
+          }
+          .btns {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 52px 135px;
+            .btn {
+              font-size: 30px;
+              border: 2px solid #1AAD19;
+              border-radius: 44px;
+              height: 88px;
+              width: 264px;
+            }
+            .btn:first-of-type {
+              background-color: #fff;
+              color: #1AAD19;
+            }
+            .btn:last-of-type {
+              background: #1AAD19;
+              color: #fff;
+            }
+          }
+        }
+      }
     }
   }
 

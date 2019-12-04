@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -48,7 +48,23 @@ export default new Router({
           path: '/checkIn/:id',
           name: 'checkIn',
           component: resolve => require(['../components/home/checkIn.vue'],resolve),
-        }
+        },
+        {
+          path: '/checkOut/:id',
+          name: 'checkOut',
+          component: resolve => require(['../components/home/checkOut.vue'],resolve),
+        },
+        {
+          path: '/wuwangluo',
+          name: 'wuwangluo',
+          // component: resolve => require(['../components/home/wuwangluo.vue'],resolve),
+          component: require('../components/home/wuwangluo.vue').default,
+        },
+        {
+          path: '/independent',
+          name: 'independent',
+          component: resolve => require(['../components/home/independent.vue'],resolve),
+        },
       ],
     },
     {
@@ -57,4 +73,44 @@ export default new Router({
       component: resolve => require(['../components/home/doSth.vue'],resolve),
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  if (from.name != null || from.name != 'login' || to.name == 'wuwangluo') {
+    router.onError((error) => {
+      console.log("error.response", error.response);
+      if (error.response) {
+
+      }else {
+        const pattern = /Loading chunk (\d)+ failed/g;
+        const isChunkLoadFailed = error.message.match(pattern);
+        if (isChunkLoadFailed) {
+          // router.push('/');
+          Vue.prototype.$toast({
+            message: "版本升级，请重新登录",
+            iconClass: 'icon ',
+          });
+          // window.location.href = url;
+          setTimeout(() => {
+            jsObj.LogOut();
+          }, 1000)
+        }
+      }
+      return;
+    });
+    next();
+  }else {
+    // router.onError((error) => {
+    //   Vue.prototype.$toast({
+    //     message: '网络断开连接',
+    //     iconClass: 'icon ',
+    //   });
+    //   return;
+    // });
+    next();
+  }
+});
+
+
+
+export default router

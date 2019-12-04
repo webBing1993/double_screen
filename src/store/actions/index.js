@@ -4,19 +4,6 @@ import router from '../../router/index.js'
 import httpTool from '../../tool/httpTool.js'
 import Vue from 'vue'
 
-function openFullScreen() {
-  const loading = Vue.prototype.$loading({
-    lock: true,
-    text: '加载中...',
-    background: 'rgba(0, 0, 0, 0.01)'
-  });
-  return loading;
-}
-
-function closeFullScreen(loading){
-  loading.close();
-}
-
 const actions = {
 
   goto: (ctx, param) => {
@@ -34,7 +21,7 @@ const actions = {
 
   request: (ctx, param) => {
     axios({
-      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: {
@@ -50,9 +37,17 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.errcode !== 0) {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
@@ -60,6 +55,15 @@ const actions = {
         // ctx.dispatch ('showLoading', false);
         if(error){
           console.log("error",error);
+          console.log('error.response',error.response);
+          if (error.response) {
+
+          }else {
+            // Vue.prototype.$toast({
+            //   message: "网络连接已断开",
+            //   iconClass: 'icon ',
+            // });
+          }
           param.onError && param.onError(error);
         }
 
@@ -68,9 +72,8 @@ const actions = {
   },
 
   resource: (ctx, param) => {
-    // openFullScreen();
     axios({
-      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -85,26 +88,42 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      // closeFullScreen (openFullScreen());
-      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000) {
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 888000 || response.data.code === 20005 || response.data.code == 20002 || response.data.code == 20003 || response.data.code == 20006 || response.data.code == 10006 || response.data.code == 100049 || response.data.code == 100036) {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$toast(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
       error => {
-        // closeFullScreen (openFullScreen());
         if(error){
           console.log("error",error);
+          if (error.response) {
+
+          }else {
+            // router.push('/wuwangluo');
+          }
           param.onError && param.onError(error);
         }
 
@@ -112,9 +131,8 @@ const actions = {
     )
   },
   resource_: (ctx, param) => {
-    // openFullScreen();
     axios({
-      url: httpTool.httpUrlEnv() + 'double-screen' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'double-screen' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -129,7 +147,6 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      // closeFullScreen (openFullScreen());
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
@@ -137,18 +154,31 @@ const actions = {
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
       error => {
-        // closeFullScreen (openFullScreen());
         if(error){
-          console.log("error",error)
+          console.log("error",error);
+          if (error.response) {
+
+          }else {
+            // router.push('/wuwangluo');
+          }
+          param.onError && param.onError(error);
         }
 
       }
@@ -156,9 +186,8 @@ const actions = {
   },
 
   resourceGemini: (ctx, param) => {
-    // openFullScreen();
     axios({
-      url: httpTool.httpUrlEnv() + 'gemini' + param.url,
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'gemini' + param.url,
       method: param.method || 'GET',
       baseURL: '/',
       headers: param.headers || {
@@ -173,7 +202,6 @@ const actions = {
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
     }).then(response => {
       console.log("response",response);
-      // closeFullScreen (openFullScreen());
       if (response.data.code == 0 || response.data.errcode == 0) {
         param.onSuccess && param.onSuccess(response)
       }
@@ -181,18 +209,31 @@ const actions = {
         router.replace('/');
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
       else {
-        Vue.prototype.$message.error(response.data.msg);
+        // Vue.prototype.$message.error(response.data.msg);
+        Vue.prototype.$toast({
+          message: response.data.msg,
+          iconClass: 'icon ',
+        });
         param.onFail && param.onFail(response)
       }
     }).catch(
       error => {
-        // closeFullScreen (openFullScreen());
         if(error){
-          console.log("error",error)
+          console.log("error",error);
+          if (error.response) {
+
+          }else {
+            // router.push('/wuwangluo');
+          }
+          param.onError && param.onError(error);
         }
 
       }
@@ -209,7 +250,11 @@ const actions = {
         param.onsuccess ? param.onsuccess(body) : null
       },
       onFail: body => {
-      }
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -224,7 +269,10 @@ const actions = {
       },
       onFail: body => {
         param.onfail ? param.onfail(body) : null
-      }
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -235,7 +283,13 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -246,7 +300,13 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -261,6 +321,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -277,6 +340,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -292,6 +358,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -306,6 +375,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -316,7 +388,30 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
-      }
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 获取房间号列表
+  getRooms(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/preOrderRoom/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -330,6 +425,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -345,7 +443,7 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
-      onError: (body, headers) => {
+      onError:(body, headers) => {
         param.onerror ? param.onerror(body, headers) : null
       },
     })
@@ -362,6 +460,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -376,19 +477,60 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
   // 添加入住人判断是否满住
   guestCount(ctx, param) {
     ctx.dispatch('resource', {
-      url: '/ecard/orders/subOrder/'+param.subOrderId+'/guestCount',
+      url: '/ecard/orders/subOrder/'+param.subOrderId+'/subOrderInfo',
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 结账后退房
+  accountCheckout(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/checkOut',
+      body: param.data,
+      method: 'POST',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 获取结账列表详情
+  getCheckOutInfo(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/fee/'+param.orderId+'?checkInRoomId='+param.checkInRoomId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -403,6 +545,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -420,6 +565,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -434,6 +582,63 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  //退款处理
+  refundHandle(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/updateRefundMoney',
+      method: 'POST',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 收款退款
+  accountRefund(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/getNeedRefundFee',
+      method: 'POST',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  //获取支付纪录
+  getChargeRecard(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/workWechat/room/checkOut',
+      method: 'POST',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -450,6 +655,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -464,6 +672,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -480,6 +691,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -493,6 +707,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -508,6 +725,9 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -521,6 +741,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -537,6 +760,27 @@ const actions = {
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 旅业退房失败待办
+  updateCheckpmslvStatus(ctx, param){
+    ctx.dispatch('resource_', {
+      url: "/ecard/hotel/wqtException/handle",
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -550,6 +794,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -566,6 +813,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -580,6 +830,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -592,6 +845,9 @@ const actions = {
       },
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -608,6 +864,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -623,6 +882,9 @@ const actions = {
       onFail:(response) => {
         param.onfail ? param.onfail(response.body, response.headers) : null
       },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
     })
   },
 
@@ -636,6 +898,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },
@@ -651,6 +916,9 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
       },
     })
   },

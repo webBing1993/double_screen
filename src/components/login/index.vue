@@ -4,7 +4,7 @@
         <div class="header">
           <div class="bg"><img src="../../assets/logoBg.png" alt=""></div>
          <div class="title_timer">
-           <div class="title">欢迎使用智慧接待前台</div>
+           <div class="title"><img src="../../assets/zhuihuijiedai.png" alt=""></div>
            <div class="timer">{{nowTime}}</div>
          </div>
         </div>
@@ -178,20 +178,29 @@
             },
             onsuccess: body => {
               this.entryAll = true;
+              console.log('body.data', body.data);
               if (body.data.code == 0) {
                 if (body.data.data == '' || body.data.data == null) {
                   this.phoneCode = 1;
                   this.timer();
-                }
-                if (body.data.data.code != 0) {
-                  this.$message.error(body.data.data.msg);
+                }else {
+                  this.$toast({
+                    message: body.data.data.msg,
+                    iconClass: 'icon ',
+                  });
                 }
               }else {
-                this.$message.error(body.data.data.msg);
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
               }
             },
             onfail: body => {
-              this.$message.error(body.data.msg);
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
             }
           })
         }
@@ -235,7 +244,7 @@
               },
               onsuccess: body => {
                 console.log('body:',body);
-                if (body.data.code == 0) {
+                if (body.data.code == 0 && body.data.data) {
                   sessionStorage.setItem('avatar',body.data.data.avatar);
                   sessionStorage.setItem('name',body.data.data.name);
                   sessionStorage.session_id = body.data.data.token;
@@ -249,8 +258,14 @@
                       }else {
                         this.$message.error('该账号无权限');
                       }
+                      setTimeout(() =>{
+                        this.loginLoading = false;
+                      },1000);
                     },
                     onfail: body => {
+                      this.loginLoading = false;
+                    },
+                    onerror: body => {
                       this.loginLoading = false;
                     }
                   });
@@ -262,6 +277,9 @@
               onfail: body => {
                 this.loginLoading = false;
                 this.$message.error(body.data.msg);
+              },
+              onerror: body => {
+                this.loginLoading = false;
               }
             })
           }
@@ -285,6 +303,7 @@
       sessionStorage.removeItem('checkOutItem');
       sessionStorage.removeItem('changeTabString');
       sessionStorage.removeItem('gotoCheckIn');
+      sessionStorage.removeItem('checkOutList');
       clearInterval(this.getTimer);
       next();
     }
@@ -312,7 +331,7 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: calc(100% - 80px);
+        width: 100%;
         height: 109px;
         display: flex;
         justify-content: space-between;
@@ -322,11 +341,15 @@
           font-size: 48px;
           color: #000;
           font-weight: bold;
+          display: inline-flex;
+          img {
+            height: 54px;
+          }
         }
         .timer {
           font-weight: bold;
           color: #000;
-          font-size: 34px;
+          font-size: 36px;
         }
       }
     }
