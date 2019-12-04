@@ -103,7 +103,7 @@
                     <div class="item_tab" @click="payModeChange(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span>设备收款</span>
+                      <span>在线收款</span>
                     </div>
                   </div>
                 </div>
@@ -113,7 +113,7 @@
                     <div class="item_tab" @click="changeFreeDeposit(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || isFreeDeposit == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span>免押金</span>
+                      <span>不收押金</span>
                     </div>
                     <div class="item_tab" @click="changeFreeDeposit(2)"  v-if="!cashFeeTrue">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="isFreeDeposit == 2">
@@ -523,9 +523,6 @@
                   span:first-of-type {
                     width: 150px;
                     display: inline-block;
-                  }
-                  span:last-of-type {
-                    color: #F55825;
                   }
                 }
               }

@@ -46,7 +46,7 @@
                     </p>
                     <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 "  @click="add(item)">添加同住人</el-button>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
-                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">退房</el-button>
+                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">详单</el-button>
                   </div>
                 </div>
               </div>
