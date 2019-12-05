@@ -132,6 +132,17 @@
                   <el-button type="primary" :loading="false" class="btn green" @click="lookInfoList(1)">查看明细</el-button>
                 </div>
               </div>
+              <div class="lists" v-else>
+                <div class="list">
+                  <span>总收款 0笔</span>
+                </div>
+                <div class="list">
+                  <span class="green">{{(payInfoGetNum/100).toFixed(2)}}元</span>
+                </div>
+                <div class="list">
+
+                </div>
+              </div>
               <div class="lists" v-if="payConsumeList.length != 0">
                 <div class="list">
                   <span>总消费 {{payConsumeList.length}}笔</span>
@@ -141,6 +152,17 @@
                 </div>
                 <div class="list">
                   <el-button type="primary" :loading="false" class="btn green" @click="lookInfoList(2)">查看明细</el-button>
+                </div>
+              </div>
+              <div class="lists" v-else>
+                <div class="list">
+                  <span>总消费 0笔</span>
+                </div>
+                <div class="list">
+                  <span class="red">{{(payInfoConsumeNum/100).toFixed(2)}}元</span>
+                </div>
+                <div class="list">
+
                 </div>
               </div>
             </div>
@@ -160,6 +182,17 @@
                 </div>
                 <div class="list">
                   <span class="green">{{(payInfoGetNum/100).toFixed(2)}}元</span>
+                </div>
+                <div class="list">
+
+                </div>
+              </div>
+              <div class="lists">
+                <div class="list">
+                  <span>总消费 0笔</span>
+                </div>
+                <div class="list">
+                  <span class="red">{{(payInfoConsumeNum/100).toFixed(2)}}元</span>
                 </div>
                 <div class="list">
 
