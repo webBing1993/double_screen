@@ -83,7 +83,7 @@
                   <div class="title"><span>总房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
                 </div>
                 <div class="list">
-                  <div class="title"><span>入账房费：</span><span>{{((parseFloat(roomFeeShow) - parseFloat(needPayRoomFeeShow))/100).toFixed(2)}}元</span></div>
+                  <div class="title"><span>入账房费：</span><span>{{((parseFloat(paidFeeShow))/100).toFixed(2)}}元</span></div>
                 </div>
               </div>
               <div class="lists">
@@ -349,7 +349,8 @@
               }else {
                 this.roomFeeShow = body.data.data.roomFeeShow;
               }
-              this.needPayRoomFeeShow = body.data.data.needPayRoomFeeShow;
+              this.paidFeeShow = body.data.data.paidFeeShow;
+              this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
               if (body.data.data.needPayFeeShow == 0 && body.data.data.paid) {
                   this.isPaid = true;
               }
