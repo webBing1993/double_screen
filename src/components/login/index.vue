@@ -287,6 +287,10 @@
       },
     },
 
+    beforeMount () {
+      jsObj.getBrowserFinish()
+    },
+
     mounted () {
        this.nowTime = this.getDateTime();
        this.getTimer = setInterval(() => {
