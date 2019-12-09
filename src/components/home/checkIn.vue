@@ -89,7 +89,7 @@
               <div class="lists">
                 <div class="list">
                   <div class="title"><span>应付房费：</span><span>{{(needPayRoomFeeShow/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem"  v-if="!isPaid && needPayRoomFeeShow != 0">
+                  <div class="changeItem"  v-if="!isPaid">
                     <div class="item_tab" @click="payModeChange(2)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -351,7 +351,7 @@
               }
               this.paidFeeShow = body.data.data.paidFeeShow;
               this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
-              if (body.data.data.needPayFeeShow == 0 && body.data.data.paid) {
+              if (this.needPayRoomFeeShow == 0) {
                   this.isPaid = true;
               }
               this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
