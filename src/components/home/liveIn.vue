@@ -101,7 +101,10 @@
               </div>
             </div>
           </div>
-          <div class="corporation">复创客服电话 4001-690-890</div>
+          <div class="corporation">
+            <p>复创客服电话 4001-690-890</p>
+            <p>技术支持电话 021-62593690</p>
+          </div>
         </div>
       </div>
 
@@ -761,8 +764,7 @@
       background-color: #fff;
       .corporation {
         text-align: center;
-        height: 80px;
-        line-height: 80px;
+        padding: 10px 0;
         font-size: 30px;
         background-color: #4A90E2;
         color: #fff;
