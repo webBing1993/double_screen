@@ -68,7 +68,7 @@
                   <span class="red">{{orderDetail.refundVO.refundFeeStr}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(item)" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
                 </div>
               </div>
             </div>
@@ -82,7 +82,7 @@
                   <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(item)" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">退款</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">退款</el-button>
                 </div>
               </div>
             </div>
