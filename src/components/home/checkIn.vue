@@ -89,7 +89,7 @@
               <div class="lists">
                 <div class="list">
                   <div class="title"><span>应付房费：</span><span>{{(needPayRoomFeeShow/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem"  v-if="!isPaid">
+                  <div class="changeItem"  v-if="needPayRoomFeeShow != 0">
                     <div class="item_tab" @click="payModeChange(2)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -109,7 +109,7 @@
                 </div>
                 <div class="list">
                   <div class="title"><span>应付押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem" v-if="!isPaid && cashFee != 0">
+                  <div class="changeItem" v-if="cashFee != 0">
                     <div class="item_tab" @click="changeFreeDeposit(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || isFreeDeposit == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -188,7 +188,6 @@
         cardShow: false,  // 发卡dab权限
         rcShow: false,    // rc单dab权限
         rooms: [],  // 房间号列表
-        isPaid: false  // 判断是否付过钱了
       }
     },
     methods: {
@@ -353,9 +352,6 @@
               this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
               if (this.needPayRoomFeeShow < 0) {
                 this.needPayRoomFeeShow = 0;
-              }
-              if (this.needPayRoomFeeShow == 0) {
-                  this.isPaid = true;
               }
               this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
               this.checkInShow = true;
