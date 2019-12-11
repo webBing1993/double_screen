@@ -351,6 +351,9 @@
               }
               this.paidFeeShow = body.data.data.paidFeeShow;
               this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
+              if (this.needPayRoomFeeShow < 0) {
+                this.needPayRoomFeeShow = 0;
+              }
               if (this.needPayRoomFeeShow == 0) {
                   this.isPaid = true;
               }

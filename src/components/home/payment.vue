@@ -5,14 +5,17 @@
         <span>交易时间</span>
         <span class="time_change">
           <i @click="preDay"><img src="../../assets/shaungyige.png" alt=""></i>
-          <DatePicker
+          <el-date-picker
+            ref="datePicker"
             type="date"
+            v-model="timeVal"
             format="yyyy/MM/dd"
+            value-format="yyyy/MM/dd"
             placeholder="选择日期"
-            :value="timeVal"
             @on-change="datePicker"
           >
-            </DatePicker>
+          </el-date-picker>
+          <span class="noTime" @click="datePickerChange" v-if="noTime">请选择日期</span>
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
         <span class="items">
@@ -419,6 +422,7 @@
         checked: '',  // 判断pms入账是否异常
         tradeManager: false, // 退款是否退房费的权限，默认关闭
         countinuedQuit: false,  // 退款的二次确认
+        noTime: false,   // 为了搜索不显示日期
       }
     },
     filters: {
@@ -431,18 +435,31 @@
 
       // 前一天
       preDay() {
-        this.timeVal = new Date(this.timeVal.getTime() - 24 * 60 * 60 * 1000);
-        this.loadingShow = true;
-        this.showList = false;
-        this.paymentList(1);
+        if (this.noTime) {
+           return
+        }else {
+          this.timeVal = new Date(this.timeVal.getTime() - 24 * 60 * 60 * 1000);
+          this.loadingShow = true;
+          this.showList = false;
+          this.paymentList(1);
+        }
       },
 
       // 后一天
       nextDay() {
-        this.timeVal = new Date(this.timeVal.getTime() + 24 * 60 * 60 * 1000);
-        this.loadingShow = true;
-        this.showList = false;
-        this.paymentList(1);
+        if (this.noTime) {
+            return
+        }else {
+          this.timeVal = new Date(this.timeVal.getTime() + 24 * 60 * 60 * 1000);
+          this.loadingShow = true;
+          this.showList = false;
+          this.paymentList(1);
+        }
+      },
+
+      // 唤起日期选择
+      datePickerChange() {
+        this.$refs.datePicker.showPicker();
       },
 
       // 日期选择
@@ -450,6 +467,8 @@
         this.loadingShow = true;
         console.log('datePciker',val);
         console.log('date', new Date(val));
+        this.noTime = false;
+        this.searchString1 = this.searchString2 = this.searchString1 = '';
         this.timeVal = new Date(val);
         this.showList = false;
         this.paymentList(1);
@@ -586,6 +605,11 @@
             this.loadingShow = false;
             if (body.data.code == 0) {
               this.paymentLists = body.data.data.data;
+              if (this.paymentLists.length != 0) {
+                this.noTime = true;
+              }else {
+                this.noTime = false;
+              }
               this.total = body.data.data.total;
             }
             this.showList = true;
@@ -974,6 +998,19 @@
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
+        .noTime {
+          position: absolute;
+          left: 55px;
+          top: 0;
+          width: 244px;
+          height: 56px;
+          line-height: 56px;
+          color: #303133;
+          font-size: 20px;
+          text-align: center;
+          background-color: #fff;
+        }
         i {
           margin-top: 6px;
           img {
@@ -1854,8 +1891,8 @@
 
   .el-date-editor.el-input {
     background-color: #FFFFFF;
-    padding-left: 40px;
-    width: 235px;
+    /*padding-left: 40px;*/
+    /*width: 235px;*/
   }
 
   .ivu-date-picker-focused input {
@@ -1873,9 +1910,14 @@
 
   .el-input--prefix .el-input__inner {
     line-height: 56px;
-    font-size: 24px;
     height: 56px;
     border: none;
+    font-size: 20px;
+    padding-left: 30px;
+    outline: none;
+    text-align: center;
+    box-shadow: none;
+    font-weight: 700;
   }
 
   .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
@@ -1934,6 +1976,54 @@
 
   .el-date-picker .el-picker-panel__content {
     width: 400px;
+  }
+
+  .el-picker-panel {
+    left: 112px !important;
+  }
+  .el-date-picker__header {
+    height: 48px;
+    line-height: 48px;
+  }
+  .el-picker-panel__icon-btn {
+    width: 36px;
+    height: 48px;
+    color: #303133;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 0;
+  }
+  .el-date-picker__header-label {
+    color: #303133;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 48px;
+  }
+  .el-date-picker {
+    width: 482px;
+  }
+  .el-date-picker .el-picker-panel__content {
+    width: 420px;
+    margin: 28px;
+  }
+  .el-date-table th , .el-date-table td{
+    color: #303133;
+    font-size: 20px;
+    font-weight: 700;
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    text-align: center;
+    margin: 5px 2px 2px;
+  }
+  .el-date-table td.next-month, .el-date-table td.prev-month {
+    color: #c5c8ce;
+  }
+  .el-popper .popper__arrow, .el-popper .popper__arrow::after {
+    display: none;
+  }
+  .el-icon-date:before {
+    display: none;
   }
 
 
