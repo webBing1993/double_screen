@@ -10,9 +10,11 @@
             format="yyyy/MM/dd"
             placeholder="选择日期"
             :value="timeVal"
+            ref="pickerDate"
             @on-change="datePicker"
           >
             </DatePicker>
+          <span class="noTime" @click="datePickerChange">请选择日期</span>
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
         <span class="items">
@@ -443,6 +445,13 @@
         this.loadingShow = true;
         this.showList = false;
         this.paymentList(1);
+      },
+
+      // 唤起日期选择
+      datePickerChange() {
+          console.log(222);
+          console.log(this.$refs.pickerDate);
+        this.$refs.pickerDate.$el.firstElementChild.focus();
       },
 
       // 日期选择
@@ -974,6 +983,19 @@
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
+        .noTime {
+          position: absolute;
+          left: 55px;
+          top: 0;
+          width: 244px;
+          height: 56px;
+          line-height: 56px;
+          color: #303133;
+          font-size: 20px;
+          text-align: center;
+          background-color: #fff;
+        }
         i {
           margin-top: 6px;
           img {
