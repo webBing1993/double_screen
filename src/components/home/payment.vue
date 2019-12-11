@@ -12,7 +12,7 @@
             format="yyyy/MM/dd"
             value-format="yyyy/MM/dd"
             placeholder="选择日期"
-            @on-change="datePicker"
+            @change="datePicker"
           >
           </el-date-picker>
           <span class="noTime" @click="datePickerChange" v-if="noTime">请选择日期</span>
@@ -468,7 +468,7 @@
         console.log('datePciker',val);
         console.log('date', new Date(val));
         this.noTime = false;
-        this.searchString1 = this.searchString2 = this.searchString1 = '';
+        this.searchString1 = this.searchString2 = this.searchString = '';
         this.timeVal = new Date(val);
         this.showList = false;
         this.paymentList(1);
@@ -605,7 +605,7 @@
             this.loadingShow = false;
             if (body.data.code == 0) {
               this.paymentLists = body.data.data.data;
-              if (this.paymentLists.length != 0) {
+              if (this.paymentLists.length == 0 && this.searchString != '') {
                 this.noTime = true;
               }else {
                 this.noTime = false;
