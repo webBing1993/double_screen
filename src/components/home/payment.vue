@@ -723,7 +723,7 @@
         this.showPmsAbnormal = false;
         this.showPmsAbnormalLoading = true;
         this.checked = true;
-        this.refundMoney();
+        this.quitTig();
       },
 
       // 退款事件
