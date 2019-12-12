@@ -203,7 +203,7 @@
         </div>
       </div>
       <div class="bgCheckTop"></div>
-      <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
+      <loadingList v-show="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
 
       <!-- 明细-->
       <div class="channelDetail" v-if="channelDetail">
@@ -704,12 +704,6 @@
         }
       });
       this.getDetail();
-    },
-    beforeRouteLeave (to, from, next) {
-      this.loadingShow = false;
-      setTimeout(() => {
-        next();
-      }, 600);
     },
   }
 </script>
