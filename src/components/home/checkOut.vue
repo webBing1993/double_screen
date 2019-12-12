@@ -572,7 +572,7 @@
 
       cancel() {
         this.quit = false;
-        this.gobanck();
+//        this.gobanck();
       },
 
       // 退房操作
