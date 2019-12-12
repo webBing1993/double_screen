@@ -702,6 +702,10 @@
       });
       this.getDetail();
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 

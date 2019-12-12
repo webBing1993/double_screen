@@ -564,6 +564,7 @@
       }else {
         sessionStorage.removeItem('liveInPage');
       }
+      this.loadingShow = false;
       next();
     },
   }

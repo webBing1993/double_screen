@@ -726,6 +726,7 @@
       if(from.name == 'checkIn'){
         to.meta.isBack = true;
       }
+      this.loadingShow = false;
       next();
     },
   }

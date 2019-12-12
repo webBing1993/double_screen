@@ -78,6 +78,10 @@
       window.getDeviceId = this.getDeviceId;
 
       window.sonPageClick = this.sonPageClick;
+    },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
     }
   }
 </script>

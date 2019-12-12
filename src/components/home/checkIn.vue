@@ -424,6 +424,10 @@
         this.getOrderFreeList();
       }
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 
