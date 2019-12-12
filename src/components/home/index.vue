@@ -117,6 +117,7 @@
       // tab切换
       tabClick (index) {
         this.tabIndex = index;
+        this.loadingShow = false;
         if (index == 1) {
           sessionStorage.removeItem('changeTabString');
           this.replaceto('/order');

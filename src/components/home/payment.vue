@@ -583,6 +583,7 @@
 
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+        this.isScreen = false;
         this.loadingShow = true;
         this.showList = false;
         this.paymentList(val);
@@ -678,6 +679,7 @@
 
       // 撤销预授权
       accountCancelSure() {
+        this.isScreen = true;
         this.loadingShow = true;
         this.canclePreAuthorizedDeposit({
           data: {
@@ -765,7 +767,6 @@
 
       // 退款接口
       quitTig() {
-        this.isScreen = true;
         this.reimburse({
           data:{
             orderId: this.detailVal.outTradeNo,
@@ -780,6 +781,8 @@
             this.countinuedQuit = false;
             if(body.data.code == 0){
               this.payTig = false;
+              this.isScreen = true;
+              this.loadingShow = true;
               this.page = 1;
               this.paymentList(1)
             }else if(body.data.code == 20003){
@@ -836,7 +839,6 @@
             iconClass: 'icon ',
           });
         }else {
-          this.isScreen = true;
           this.depositConsume({
             data: {
               orderId: this.detailVal.outTradeNo || '',
@@ -849,6 +851,8 @@
               this.isScreen = false;
               if (body.data.code == 0) {
                 this.payTig = false;
+                this.isScreen = true;
+                this.loadingShow = true;
                 this.page = 1;
                 this.paymentList(1);
               }else if(body.data.code == 20003){
@@ -861,6 +865,8 @@
                   message: body.data.msg,
                   iconClass: 'icon ',
                 });
+                this.isScreen = true;
+                this.loadingShow = true;
                 this.page = 1;
                 this.paymentList(1);
               }
