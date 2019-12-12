@@ -787,8 +787,10 @@
               span {
                 font-size: 24px;
                 color: #000;
-                margin-right: 32px;
                 display: inline-flex;
+              }
+              span:only-of-type {
+                margin-right: 32px;
               }
             }
           }
