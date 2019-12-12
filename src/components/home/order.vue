@@ -726,9 +726,12 @@
       if(from.name == 'checkIn'){
         to.meta.isBack = true;
       }
-      this.loadingShow = false;
       next();
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 

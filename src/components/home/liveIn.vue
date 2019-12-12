@@ -564,9 +564,12 @@
       }else {
         sessionStorage.removeItem('liveInPage');
       }
-      this.loadingShow = false;
       next();
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 
