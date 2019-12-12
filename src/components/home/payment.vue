@@ -935,7 +935,7 @@
 
       // 扫码请求A屏操作
       testOpenBarCode() {
-        jsObj.OpenBarCode();
+        jsObj.OpenBarCode("");
       },
 
       // 关闭小票扫码 客户端点击关闭操作

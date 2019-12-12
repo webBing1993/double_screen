@@ -433,6 +433,7 @@
           onsuccess:(body)=>{
             if(body.data.code == 0){
               this.payTig = false;
+              sessionStorage.setItem('quitSe', 1);
               this.quit = true;
             }else if(body.data.code == 20003){
               this.showPmsAbnormal = true;
@@ -572,7 +573,10 @@
 
       cancel() {
         this.quit = false;
-//        this.gobanck();
+        if (sessionStorage.getItem('quitSe') == 1) {
+          sessionStorage.removeItem('quitSe');
+          this.replayList();
+        }
       },
 
       // 退房操作
@@ -597,14 +601,13 @@
                 message: body.data.msg,
                 iconClass: 'icon ',
               });
-              this.gobanck();
             }else if (body.data.code == 20006) {
               this.$toast({
                 message: body.data.msg,
                 iconClass: 'icon ',
               });
-              this.gobanck();
             }
+            this.replayList();
             this.quitLoading = false;
             this.quit = false;
           },
@@ -704,12 +707,10 @@
     },
     beforeRouteLeave (to, from, next) {
       this.loadingShow = false;
-      next();
+      setTimeout(() => {
+        next();
+      }, 600);
     },
-    destroyed() {
-      console.log('销毁了');
-      this.loadingShow = false;
-    }
   }
 </script>
 
