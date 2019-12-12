@@ -541,6 +541,7 @@
       }else {
         sessionStorage.removeItem('policeIdentityPage');
       }
+      this.loadingShow = false;
       next();
     },
   }

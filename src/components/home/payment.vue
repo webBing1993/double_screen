@@ -968,6 +968,10 @@
       if (sessionStorage.getItem('pmsPayDetail')) {
         this.getSweepingSettlementOrderId(sessionStorage.getItem('pmsPayDetail'));
       }
+    },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
     }
   }
 </script>

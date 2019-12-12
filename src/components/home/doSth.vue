@@ -332,6 +332,10 @@
     mounted () {
       this.loadingShow = true;
       this.doSthList();
+    },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
     }
   }
 </script>
