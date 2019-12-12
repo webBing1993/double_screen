@@ -705,6 +705,10 @@
     beforeRouteLeave (to, from, next) {
       this.loadingShow = false;
       next();
+    },
+    destroyed() {
+      console.log('销毁了');
+      this.loadingShow = false;
     }
   }
 </script>
