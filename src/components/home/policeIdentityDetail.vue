@@ -254,6 +254,7 @@
         this.newIdentityDetail({
           identity_id: this.$route.params.id,
           onsuccess: body => {
+            this.$emit('checkOutLoading', 1);
             if (body.errcode == 0) {
               this.detail = body.data.content;
               this.hotelConfig = body.data.config;
@@ -270,7 +271,12 @@
             this.buttonGroup();
             this.loadingShow = false;
           },
+          onfail: body => {
+            this.$emit('checkOutLoading', 1);
+            this.loadingShow = false;
+          },
           onerror: error => {
+            this.$emit('checkOutLoading', 1);
             this.loadingShow = false;
           }
         })

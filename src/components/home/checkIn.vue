@@ -329,6 +329,7 @@
             orderId: this.changeItem.id
           },
           onsuccess: body => {
+            this.$emit('checkOutLoading', 1);
             console.log('body.code',body.data);
             if (body.data.code == 0) {
               this.loadingShow = false;
@@ -361,10 +362,12 @@
             }
           },
           onfail: (body, headers) => {
+            this.$emit('checkOutLoading', 1);
             this.checkInShow = true;
             this.loadingShow = false;
           },
           onerror: body => {
+            this.$emit('checkOutLoading', 1);
             item.loadingShow = false;
           }
         });
