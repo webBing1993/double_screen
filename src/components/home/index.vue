@@ -334,20 +334,19 @@
 
       // 进公安核验详情
       policeIdentity(val) {
+        this.loadingShow = true;
         this.goto('/policeIdentityDetail/'+val);
       },
 
       // 进入团队投屏前选择
       gotocheckIn(val) {
+        this.loadingShow = true;
         this.goto('/checkIn/'+val);
       },
 
       // 进入退房详情
       goCheckOut(val) {
         this.loadingShow = true;
-//        setTimeout(() => {
-//          this.loadingShow = false;
-//        }, 600);
         this.goto('/checkOut/'+val)
       },
 
