@@ -342,13 +342,13 @@
       </div>
 
       <!-- 退房费的二次确认-->
-      <div class="countinuedQuit" v-if="countinuedQuit">
+      <div class="countinuedQuit"  v-if="countinuedQuit">
         <div class="shadow"></div>
         <div class="quit_content">
           <div class="quit_title">退款金额包含房费，请确认是否退款？</div>
           <div class="quit_tabs">
             <span class="cancel" @click="countinuedQuit=false;payTig=true;">取消</span>
-            <span class="sure" @click="countinuedQuitSure">确认退款</span>
+            <el-button type="primary" :loading="countinuedQuitSureLoading" class="sure" @click="countinuedQuitSure()">确认退款</el-button>
           </div>
         </div>
       </div>
@@ -423,6 +423,7 @@
         tradeManager: false, // 退款是否退房费的权限，默认关闭
         countinuedQuit: false,  // 退款的二次确认
         noTime: false,   // 为了搜索不显示日期
+        countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
       }
     },
     filters: {
@@ -762,6 +763,7 @@
 
       // 二次确认
       countinuedQuitSure() {
+        this.countinuedQuitSureLoading = true;
         this.quitTig();
       },
 
@@ -779,6 +781,7 @@
             this.infoLoading = false;
             this.isScreen = false;
             this.countinuedQuit = false;
+            this.countinuedQuitSureLoading = false;
             if(body.data.code == 0){
               this.payTig = false;
               this.isScreen = true;
@@ -804,12 +807,14 @@
             this.countinuedQuit = false;
             this.isScreen = false;
             this.showPmsAbnormalLoading = false;
+            this.countinuedQuitSureLoading = false;
           },
           onerror: error => {
             this.infoLoading = false;
             this.countinuedQuit = false;
             this.isScreen = false;
             this.showPmsAbnormalLoading = false;
+            this.countinuedQuitSureLoading = false;
           }
         });
       },
@@ -1708,8 +1713,11 @@
             color: #1AAD19;
             font-size: 24px;
             width: 50%;
+            span {
+              color: #1AAD19;
+            }
           }
-          span:first-of-type:after {
+          .cancel:first-of-type:after {
             content: '';
             display: block;
             background-color: #D8D8D8;
