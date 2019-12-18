@@ -302,6 +302,7 @@
           this.checkInGetOptions({
             orderId: this.$route.params.id,
             onsuccess: body => {
+              this.$emit('checkOutLoading', 1);
               if (body.data.code == 0) {
                  if (body.data.data != null) {
                     this.isfaka = body.data.data.sendCard ? body.data.data.sendCard : false;
@@ -314,10 +315,12 @@
             },onfail: body => {
               this.checkInShow = true;
               this.loadingShow = false;
+              this.$emit('checkOutLoading', 1);
             },
             onerror: error => {
               this.checkInShow = true;
               this.loadingShow = false;
+              this.$emit('checkOutLoading', 1);
             }
           })
       },
