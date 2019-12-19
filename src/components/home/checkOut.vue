@@ -68,7 +68,7 @@
                   <span class="red">{{orderDetail.refundVO.refundFeeStr}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">结账</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit">退款</el-button>
                 </div>
               </div>
             </div>
@@ -82,7 +82,7 @@
                   <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="(!orderDetail.deposits[0].refund && !orderDetail.isFreeDeposit)">退款</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="(!orderDetail.deposits[0].refund)">退款</el-button>
                 </div>
               </div>
             </div>
@@ -323,7 +323,7 @@
           <div class="quit_title">退款金额包含房费，请确认是否退款？</div>
           <div class="quit_tabs">
             <span class="cancel" @click="countinuedQuit=false;payTig=true;">取消</span>
-            <span class="sure" @click="countinuedQuitSure">确认退款</span>
+            <el-button type="primary" :loading="countinuedQuitSureLoading" class="sure" @click="countinuedQuitSure()">确认退款</el-button>
           </div>
         </div>
       </div>
@@ -365,6 +365,7 @@
         showBalance: false,  // 账户余额不足提示
         tradeManager: false, // 退款是否退房费的权限，默认关闭
         countinuedQuit: false,  // 退款的二次确认
+        countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
       }
     },
     methods: {
@@ -416,6 +417,7 @@
 
       // 二次确认退房费
       countinuedQuitSure() {
+        this.countinuedQuitSureLoading = true;
         this.quitTig();
       },
 
@@ -456,16 +458,19 @@
             this.payTig = false;
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
+            this.countinuedQuitSureLoading = false;
           },
           onfail: body => {
             this.countinuedQuit = false;
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
+            this.countinuedQuitSureLoading = false;
           },
           onerror: body => {
             this.countinuedQuit = false;
             this.infoLoading = false;
             this.showPmsAbnormalLoading = false;
+            this.countinuedQuitSureLoading = false;
           }
         })
       },
@@ -1145,6 +1150,9 @@
             color: #1AAD19;
             font-size: 24px;
             width: 50%;
+            span {
+              color: #1AAD19;
+            }
           }
           .cancel:first-of-type:after {
             content: '';
