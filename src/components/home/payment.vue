@@ -924,8 +924,8 @@
           this.sweepingTig_ = true;
           this.testOpenBarCode();
         }else {
-          if (orderId.indexOf('_') != -1) {
-            this.detailTig(orderId.split('_')[0], '', orderId.split('_')[1]);
+          if (orderId.indexOf('#') != -1) {
+            this.detailTig(orderId.split('#')[0], '', orderId.split('#')[1]);
           }else {
             this.detailTig(orderId, '', '');
           }
