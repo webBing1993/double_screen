@@ -664,8 +664,9 @@
                 this.sweepingTig = false;
                 this.sweepingTig_ = false;
               }else {
-                this.sweepingTig = false;
-                this.sweepingTig_ = false;
+                this.sweepingTig = true;
+                this.sweepingTig_ = true;
+                this.testOpenBarCode();
               }
             }
           },
