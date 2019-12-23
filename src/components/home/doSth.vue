@@ -243,7 +243,7 @@
 
       // 查看详情
       pmsPayDetail(orderId, payFlowId) {
-        sessionStorage.setItem('pmsPayDetail', orderId+"#"+payFlowId);
+        sessionStorage.setItem('pmsPayDetail', orderId+"-"+payFlowId);
         this.goto(-1);
       },
 

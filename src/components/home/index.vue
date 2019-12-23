@@ -294,7 +294,7 @@
         if (this.onlyItem.id) {
           this.goto('/doSth');
         }else {
-          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId+'#'+this.onlyItem.payFlowId);
+          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId+'-'+this.onlyItem.payFlowId);
           this.tabClick(3);
           this.pmsOrderIdChange++;
           this.doSthList();
