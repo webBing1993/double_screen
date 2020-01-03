@@ -123,7 +123,7 @@
 
       <!-- 預授權詳情-->
       <div class="channelDetail" v-if="channelDetail">
-        <div class="shadow" @click="channelDetail=false"></div>
+        <div class="shadow" @click="channelDetail=false;payMoney = ''"></div>
         <div class="detail">
           <div class="detail_content">
             <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
@@ -637,6 +637,7 @@
       // 獲取詳情
       detailTig(id,tradeType,payFlowId) {
         this.loadingShow = true;
+        this.payMoney = '';
         let data = {};
         if (tradeType) {
           data = {
