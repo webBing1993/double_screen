@@ -666,6 +666,7 @@
               this.loadingShow = false;
               this.checkOutShow = true;
             }
+            this.payMoney = '';
             this.$emit('checkOutLoading', 1);
           },
           onfail: body => {
