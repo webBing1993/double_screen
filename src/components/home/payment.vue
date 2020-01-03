@@ -616,6 +616,7 @@
               }else {
                 this.noTime = false;
               }
+              this.payMoney = '';
               this.total = body.data.data.total;
             }
             this.showList = true;
