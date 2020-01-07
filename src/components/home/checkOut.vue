@@ -40,7 +40,7 @@
         </div>
         <div class="check_content" v-show="checkOutShow">
           <!-- 微前台收款-->
-          <div class="payInfo" v-if="orderDetail.refundVO">
+          <div class="payInfo" v-if="orderDetail.refundVO && orderDetail.deposits && orderDetail.deposits[0].payFlag < 4">
             <div class="header">
               <div class="lists">
                 <div class="list">微前台收款</div>
