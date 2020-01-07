@@ -615,6 +615,13 @@
                   item.loadingTongbu = false;
                   item.loadingBanli = false;
                 });
+                body.data.data.list.forEach(item => {
+                   if (item.updateTime) {
+
+                   }else {
+                       item.updateTime = item.createTime;
+                   }
+                });
                 this.orderLists = body.data.data.list;
                 this.total = body.data.data.total;
               }
