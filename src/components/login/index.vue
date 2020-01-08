@@ -288,7 +288,7 @@
     },
 
     beforeMount () {
-//      jsObj.getBrowserFinish()
+      jsObj.getBrowserFinish()
     },
 
     mounted () {
