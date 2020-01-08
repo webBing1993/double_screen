@@ -18,7 +18,7 @@
         <div class="header_fr">
           <div class="newTig" @click="goto('/doSth')" v-if="speakShow">
             <img src="../../assets/xiaoxi.png" alt="">
-            <span>您有待办事项未处理，点击查看</span>
+            <span>您有待办事项点击查看</span>
             <img src="../../assets/gengduo.png" alt="">
           </div>
           <div class="myInfo">
@@ -556,6 +556,10 @@
           span {
             color: #4A4A4A;
             font-size: 18px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 80px;
           }
         }
         .tuichu {
