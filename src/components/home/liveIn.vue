@@ -392,11 +392,13 @@
           },
           onsuccess: body => {
             this.loadingShow = false;
-            if (body.data.code == 0 && body.data.data.list) {
-              body.data.data.list.forEach(item => {
+            if (body.data.code == 0) {
+              if (body.data.data.list) {
+                body.data.data.list.forEach(item => {
                   item.quitLoading = false;
                   item.tongbuLoading = false;
-              });
+                });
+              }
               this.orderLists = body.data.data.list;
               this.total = body.data.data.total;
               this.showList = true;
@@ -428,6 +430,7 @@
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = true;
+        this.page = val;
         this.getPreOrder(val);
       },
 
