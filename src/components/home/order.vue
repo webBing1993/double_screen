@@ -323,6 +323,7 @@
 //          this.loadingText = '加载中...';
 //          this.loadingShow = true;
 //          this.showList = false;
+          this.tabToDay = false;
           this.page = 1;
           this.getPreOrder(1);
         }else {
@@ -333,6 +334,7 @@
 //              this.loadingShow = true;
 //              this.showList = false;
               this.searchString = this.searchString2;
+              this.tabToDay = false;
               this.page = 1;
               this.getPreOrder(1);
             }
