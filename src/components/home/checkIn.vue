@@ -482,7 +482,7 @@
       this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
-        this.getCode();
+//        this.getCode();
       }else {
         this.getOrderFreeList();
       }
