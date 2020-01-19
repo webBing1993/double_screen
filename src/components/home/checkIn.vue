@@ -9,6 +9,7 @@
               <img src="../../assets/fanhui1.png" alt="">
               <span>返回</span>
             </div>
+            <el-button type="success"  @click="doPrint()" class="doPrint" v-if="changeItem.type == 0">打印房间二维码</el-button>
           </div>
           <div class="checkInChange">
             <div class="checkIn_header">
@@ -89,7 +90,7 @@
               <div class="lists">
                 <div class="list">
                   <div class="title"><span>应付房费：</span><span>{{(needPayRoomFeeShow/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem"  v-if="needPayRoomFeeShow != 0">
+                  <div class="changeItem" >
                     <div class="item_tab" @click="payModeChange(2)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
@@ -157,6 +158,35 @@
         </div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
+
+      <!-- 团队二维码-->
+      <div class="bodyContent" ref="print">
+        <div class="li" v-for="(item, index) in dataCode.subOrderVos" >
+          <p class="page">#{{index+1}}</p>
+          <div class="pageTitle">入住码</div>
+          <div class="content">
+            <div class="lists">
+              <div class="list">
+                <span>团队名称：</span>
+                <span>{{dataCode.owner}}</span>
+              </div>
+              <div class="list">
+                <span>入住房型：</span>
+                <span>{{item.roomTypeName}}</span>
+              </div>
+              <div class="list">
+                <span>入住时间：</span>
+                <span style="font-size: 16px">{{ datetimeparse(item.inTime, 'yy/MM/dd')}}</span>
+              </div>
+            </div>
+            <div :id="'qrcode'+index" class="qrcode"></div>
+            <div class="tig">
+              <p>温馨提示</p>
+              <p>本二维码请在自助设备办理入住时使用，需入住日期当日使用，过期无效</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -164,6 +194,7 @@
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
+  import QRCode from 'qrcodejs2'
   export default {
     components: {ElCol, loadingList},
     name: 'checkIn',
@@ -188,12 +219,17 @@
         cardShow: false,  // 发卡dab权限
         rcShow: false,    // rc单dab权限
         rooms: [],  // 房间号列表
+        dataCode: [],   // 二维码列表
       }
     },
     methods: {
       ...mapActions([
-         'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule', 'getRooms'
+         'getcodeList', 'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule', 'getRooms'
       ]),
+
+      doPrint() {
+        this.$print(this.$refs.print);
+      },
 
       // 返回上一页
       gobanck() {
@@ -411,6 +447,26 @@
         })
       },
 
+      // 打印二维码获取列表
+      getCode() {
+        this.getcodeList({
+          orderId: this.$route.params.id,
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.dataCode = body.data.data;
+              if(this.dataCode.subOrderVos) {
+                this.$nextTick(() => {
+                  this.dataCode.subOrderVos.forEach((item, index) => {
+                    let qrcode = new QRCode("qrcode"+index+"");
+                    qrcode.makeCode('td;'+item.orderId+';'+item.id);
+                  });
+                })
+              }
+            }
+          }
+        })
+      },
+
     },
 
     mounted () {
@@ -426,6 +482,7 @@
       this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
+        this.getCode();
       }else {
         this.getOrderFreeList();
       }
@@ -461,6 +518,7 @@
         .goback {
           padding-left: 60px;
           text-align: left;
+          position: relative;
           div {
             padding: 24px 0;
             display: inline-flex;
@@ -475,6 +533,17 @@
               color: #1AAD19;
               font-size: 30px;
             }
+          }
+          .doPrint {
+            background: none;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 26px;
+            color: #1AAD19;
+            border: none;
+            cursor: pointer;
           }
         }
         .checkInChange {
@@ -709,6 +778,77 @@
     .check_fr::-webkit-scrollbar {
       display: none; // 隐藏滚动条
     }
+    .bodyContent {
+      display: none;
+
+    }
+  }
+
+  @media print {
+    .bodyContent {
+      border-bottom: 1px solid #eee;
+      /*display: none;*/
+      width: 200vw;
+    }
+    .li {
+      page-break-after: always;
+      width: 200vw;
+    }
+    .page {
+      text-align: left;
+      padding: 15px 30px;
+      font-size: 20px;
+      color: #000;
+    }
+    .pageTitle {
+      margin-top: 10px;
+      margin-bottom: 40px;
+      text-align: left;
+      font-size: 20px;
+      color: #000;
+      border-bottom: 1px solid #eee;
+    }
+    .content {
+      padding: 40px 0;
+    }
+    .lists .list {
+      margin-bottom: 15px;
+      color: #000;
+      font-size: 16px;
+      display: block;
+    }
+    .qrcode {
+      margin: 30px 10px;
+      text-align: center;
+    }
+    img {
+      width: 200px;
+      height: 200px;
+      display: block;
+      margin: 30px 0;
+    }
+    .tig {
+      margin: 10px;
+      width: 100vw;
+      display: block;
+    }
+    .tig p:first-of-type {
+      font-size: 16px;
+      color: #000;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .tig:last-of-type {
+      font-size: 18px;
+      color: #000;
+      page-break-after: always
+    }
+  }
+
+  @page {
+    size: auto;
+    margin: 0;
+    padding: 0;
   }
 
 </style>

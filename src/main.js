@@ -22,6 +22,9 @@ Vue.use(ElementUI);
 
 Vue.use(Mint);
 
+import Print from '../static/js/print'
+Vue.use(Print); // 注册
+
 Vue.config.productionTip = false;
 
 var root = process.env.API_ROOT;
@@ -68,8 +71,8 @@ Axios.interceptors.response.use(response => {
   return Promise.resolve(response)
 },error => {
   console.log("error", error);
-  if (axios.isCancel(err)) {
-    console.log('Rquest canceled', err.message); //请求如果被取消，这里是返回取消的message
+  if (axios.isCancel(error)) {
+    console.log('Rquest canceled', error.msg); //请求如果被取消，这里是返回取消的message
   }else if (error.response) {
     let url = window.location.href.split('#')[0];
     switch (error.response.status) {

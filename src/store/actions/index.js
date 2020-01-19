@@ -415,6 +415,23 @@ const actions = {
     })
   },
 
+  // 获取团队二维码列表
+  getcodeList(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   // 判断是否为今日的订单
   sendCheck(ctx, param) {
     ctx.dispatch('resource', {
