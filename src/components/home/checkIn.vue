@@ -150,7 +150,20 @@
               </div>
               <div class="content"  v-if="item.roomList">
                 <div class="lis">
-                  <span class="li" v-for="i in item.roomNo">{{i}}</span>  <!-- <i>脏</i>-->
+                  <div class="li"  v-for="i in item.rooms">
+                    <div class="li_title">
+                      <span v-if="i.roomNo">{{i.roomNo}}</span>
+                      <span v-else>待排房</span>
+                      <i v-if="i.dirtyRoom">脏</i>
+                      <span>{{i.breakfast == 0 ? '' : i.breakfast + '早'}}</span>
+                    </div>
+                    <div class="lis_time">
+                      <span>
+                        {{datetimeparse(i.inTime, "MMDD") | timeChange}}-{{datetimeparse(i.outTime, "MMDD") | timeChange}}
+                      </span>
+                      <span>共{{i.totalDays}}晚</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -220,6 +233,11 @@
         rcShow: false,    // rc单dab权限
         rooms: [],  // 房间号列表
         dataCode: [],   // 二维码列表
+      }
+    },
+    filters: {
+      timeChange: function(value) {
+        return value.split('/')[0] + '月' + value.split('/')[1] + '日'
       }
     },
     methods: {
@@ -725,13 +743,13 @@
           .title {
             position: relative;
             border-bottom: 1px solid #D8D8D8;
-            padding: 16px 0 16px 40px;
+            padding: 16px 0 16px 20px;
             font-size: 26px;
             color: #1AAD19;
             text-align: left;
             img {
               position: absolute;
-              right: 40px;
+              right: 20px;
               top: 50%;
               transform: translateY(-50%);
               width: 24px;
@@ -741,33 +759,51 @@
           .content {
             padding-bottom: 30px;
             .lis {
-              padding: 0 40px;
+              padding: 0 22px;
               text-align: left;
               .li {
+                background: #F8F8F8;
                 display: inline-block;
-                width: 116px;
-                height: 64px;
-                line-height: 64px;
-                text-align: center;
+                padding: 18px 10px;
+                text-align: left;
                 font-size: 24px;
                 border: 1px solid #D8D8D8;
-                margin: 30px 25px 0 0;
+                margin: 30px 15px 0 0;
                 position: relative;
-                i {
-                  font-style: normal;
-                  background-color: #F5222D;
-                  font-size: 18px;
-                  color: #fff;
-                  width: 22px;
-                  height: 22px;
-                  text-align: center;
-                  line-height: 22px;
-                  position: absolute;
-                  right: 0;
-                  top: 0;
+                .li_title {
+                  align-items: center;
+                  display: flex;
+                  justify-content: space-between;
+                  span:first-of-type {
+                    color: #303133;
+                    font-size: 28px;
+                    font-weight: bold;
+                    margin-left: 0;
+                  }
+                  span:last-of-type {
+                    color: #909399;
+                    font-size: 20px;
+                    margin-right: 40px;
+                  }
+                  i {
+                    display: inline-block;
+                    font-style: normal;
+                    background-color: #FF8395;
+                    font-size: 18px;
+                    color: #fff;
+                    padding: 3px 6px;
+                    border-radius: 50%;
+                  }
+                }
+                .lis_time {
+                  color: #909399;
+                  font-size: 16px;
+                  span:last-of-type {
+                    margin-left: 4px;
+                  }
                 }
               }
-              .li:nth-of-type(3n) {
+              .li:nth-of-type(2n) {
                 margin-right: 0;
               }
             }

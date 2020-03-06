@@ -20,10 +20,10 @@
         <div class="content">
           <div class="order_lists" v-if="showList">
             <div class="list" v-for="item in orderLists">
-              <!--<div class="list_header">-->
-                <!--<div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>-->
-                <!--<div class="list_time"></div>-->
-              <!--</div>-->
+              <div class="list_header">
+                <div class="list_origin">预订人：{{item.orderOwner ? item.orderOwner : '-'}}</div>
+                <div class="list_time"></div>
+              </div>
               <div class="list_content">
                 <div class="list_cell">
                   <div class="img"><img src="../../assets/fangjian.png" alt=""></div>
@@ -42,7 +42,8 @@
                 <div class="list_cell">
                   <div class="img"><img src="../../assets/renyuan.png" alt=""></div>
                   <div class="listCell">
-                    <p class="name"><span v-for="(i, index) in item.guestList">{{i.name ? i.name + ((index+1) < item.guestList.length ? '/' : '') : '-'}}</span>
+                    <p class="name">
+                      <span v-for="(i, index) in item.guestList">{{i.name}}/{{i.gender}}/{{i.idCardNo | idCard}}</span>
                     </p>
                     <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 "  @click="add(item)">添加同住人</el-button>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
@@ -190,6 +191,9 @@
         }else{
           return '';
         }
+      },
+      idCard: function (value) {
+        return value.substr(-4)
       }
     },
     methods: {
@@ -324,6 +328,7 @@
               this.getPreOrder(1);
               this.initRefreshTime();
             }else {
+              this.orderLists = [];
               this.loadingShow = false;
             }
             this.$message({
@@ -708,6 +713,9 @@
                   }
                   .name {
                     width: 42%;
+                    span {
+                      display: block;
+                    }
                   }
                 }
               }

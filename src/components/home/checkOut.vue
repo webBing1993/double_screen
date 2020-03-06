@@ -11,8 +11,11 @@
           <div class="roomNo">
             <span>当前房间：{{orderDetail.subOrderVos[0].roomNo}}</span>
           </div>
-          <div class="replayList" @click="replayList">
-            <span>刷新</span>
+          <div :class="(!pmsFlag || !showRC) ? 'replayList replayList_' : 'replayList'">
+            <el-button type="primary" :loading="makeLoading" @click="makeKa()">制卡</el-button>
+          </div>
+          <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
+            <span>打印RC单</span>
           </div>
           <div class="replayList quitCurrent" @click="quit=true;">
             <span>退房</span>
@@ -328,15 +331,33 @@
         </div>
       </div>
 
+      <!-- rc单预览弹框-->
+      <div class="rcTip" v-if="rcTip">
+        <div class="shadow"></div>
+        <div class="rcContent">
+          <!--<div class="rc_title">明细账单/BILLING</div>-->
+          <div class="rc_content">
+            <pdf :src="src"></pdf>
+          </div>
+          <div class="rc_footer">
+            <el-button type="primary" class="rc_cancle" @click="rcCancle()">取消</el-button>
+            <el-button type="primary" :loading="rcPrintLoading" class="rc_sure" @click="rcPrintClick()">打印</el-button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
 <script>
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
+  import pdf from 'vue-pdf'
+  import axios from 'axios'
+  import httpTool from '../../tool/httpTool.js'
   import loadingList from './loading.vue'
   export default {
-    components: {ElCol, loadingList},
+    components: {ElCol, loadingList, pdf},
     name: 'checkOut',
     data () {
       return {
@@ -366,18 +387,118 @@
         tradeManager: false, // 退款是否退房费的权限，默认关闭
         countinuedQuit: false,  // 退款的二次确认
         countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
+        pmsFlag: true,  // 判断是否对接了pms
+        showRC: false,  // rc单入口开关
+        src: '',
+        rcIframeHtml:'',
+        result: '',
+        rcPrintLoading: false,    // rc单打印loading
+        rcTip: false,    // rc单弹框显示隐藏
+        makeLoading: false,   // 制卡loading
+        makeKaTimer: null,    // 获取发卡循环timerOut
       }
     },
     methods: {
       ...mapActions([
-          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountRefund'
+          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountRefund', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard'
       ]),
 
       // 返回上一页
       gobanck() {
 //        this.$router.go(-1);
+        clearTimeout(this.makeKaTimer);
         this.$emit('checkOutLoading', 0);
         this.$router.replace({name:'liveIn'})
+      },
+
+      // 制卡
+      makeKa() {
+        this.makeLoading = true;
+        if (sessionStorage.getItem('deviceId')) {
+
+        }else {
+          this.$toast({
+            message: '网页端不支持该功能',
+            iconClass: 'icon ',
+          });
+          this.makeLoading = false;
+          return;
+        }
+        this.sendRealCard({
+          subOrderId: this.changeItem.subOrderId,
+          onsuccess: body => {
+            if (body.code == 0 && bady.data) {
+              this.makeKaTimer = setTimeout(() => {
+                this.makeResult(bady.data);
+              }, 2000)
+            }else {
+              this.$toast({
+                message: body.msg,
+                iconClass: 'icon ',
+              });
+              this.makeLoading = false;
+            }
+          },
+          onfail: body => {
+            this.makeLoading = false;
+          },
+          onerror: body => {
+            this.makeLoading = false;
+          }
+        })
+      },
+
+      // 获取发卡结果
+      makeResult(id) {
+        clearTimeout(this.makeKaTimer);
+        this.roomCard({
+          id: id,
+          onsuccess: body => {
+            if (body.code == 0 && body.data) {
+              if (body.data.status == 0) {
+                this.$toast({
+                  message: '正在创建发卡...',
+                  iconClass: 'icon ',
+                });
+                this.makeKaTimer = setTimeout(() => {
+                  this.makeResult(id);
+                }, 2000);
+              }else if (body.data.status == 1) {
+                this.$toast({
+                  message: '已发卡',
+                  iconClass: 'icon ',
+                });
+                this.makeLoading = false;
+              }else if (body.data.status == 2) {
+                this.$toast({
+                  message: 'pms记录添加',
+                  iconClass: 'icon ',
+                });
+                this.makeLoading = false;
+              }else if (body.data.status == 3) {
+                this.$toast({
+                  message: 'pms记录撤销',
+                  iconClass: 'icon ',
+                });
+                this.makeLoading = false;
+              }else if (body.data.status == 4) {
+                this.$toast({
+                  message: '发卡未拔卡回收',
+                  iconClass: 'icon ',
+                });
+                this.makeLoading = false;
+              }else {
+                this.makeLoading = false;
+              }
+            }
+          },
+          onfail: body => {
+            this.makeLoading = false;
+          },
+          onerror: body => {
+            this.makeLoading = false;
+          }
+        })
       },
 
       // 预授权pms入账异常
@@ -693,6 +814,116 @@
         this.getDetail();
       },
 
+      // 初始化获取pdf文件
+      getPdfCode () {
+        let that = this;
+        axios({
+          method: 'get',
+          url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl')+'double-screen/ecard/orders/rcUrl/'+this.changeItem.subOrderId,
+          headers: {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            Session: sessionStorage.session_id,
+            token: sessionStorage.session_id
+          },
+          responseType: 'blob'  //设置响应的数据类型为一个包含二进制数据的 Blob 对象，必须设置！！！
+        }).then(response => {
+          if (response.data.size != 14) {
+            that.result = response.data;
+            that.src = that.getObjectURL(response.data);
+            this.rcTip = true;
+            console.log('that.src', that.src);
+          }else {
+            this.$toast({
+              message: '暂无RC单',
+              iconClass: 'icon ',
+            });
+          }
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+
+      // 将返回的流数据转换为url
+      getObjectURL(file) {
+        let url = null;
+        if (window.createObjectURL != undefined) { // basic
+          url = window.createObjectURL(file);
+        } else if (window.webkitURL != undefined) { // webkit or chrome
+          try {
+            url = window.webkitURL.createObjectURL(file);
+          } catch (error) {
+
+          }
+        } else if (window.URL != undefined) { // mozilla(firefox)
+          try {
+            url = window.URL.createObjectURL(file);
+          } catch (error) {
+
+          }
+        }
+        return url;
+      },
+
+      // rc单打印
+      rcPrintClick(){
+        let list = this.changeItem.guestList;
+        let nameList = [];
+        nameList.push(list[0].name);
+        console.log('nameList', nameList);
+        this.rcPrintLoading = true;
+        this.rcPrint({
+          data:{
+            subOrderId: this.changeItem.subOrderId,//子订单号
+            hotelId: sessionStorage.getItem('hotel_id'),//酒店ID
+            name: nameList //入住人姓名
+          },
+          onsuccess:body => {
+            if (body.data.code == 0) {
+              this.$toast({
+                message: 'RC单打印成功',
+                iconClass: 'icon ',
+              });
+              this.rcTip = false;
+            }
+            this.rcPrintLoading = false;
+          },
+          onfail: body => {
+            this.rcPrintLoading = false;
+          },
+          onerror: body => {
+            this.rcPrintLoading = false;
+          }
+        });
+      },
+
+      // rc单弹框取消
+      rcCancle() {
+        this.rcTip = false;
+      },
+
+
+      //是否配置RC单打印
+      initRCConfig(){
+        this.getRcConfig({
+          onsuccess: body => {
+            if(body.code==0){
+              this.showRC = body.data;
+              console.log('this.showRC', this.showRC);
+            }
+            this.getDetail();
+          },
+          onfail: body => {
+            this.$emit('checkOutLoading', 1);
+            this.loadingShow = false;
+            this.checkOutShow = true;
+          },
+          onerror:body => {
+            this.$emit('checkOutLoading', 1);
+            this.loadingShow = false;
+            this.checkOutShow = true;
+          }
+        })
+      },
     },
     beforeMount () {
       this.loadingShow = false;
@@ -703,13 +934,13 @@
       this.loadingShow = true;
       this.checkOutShow = false;
       let list = JSON.parse(sessionStorage.getItem('subPermissions'));
-      this.windowUrl = window.location.href.split('#')[0];
       list.forEach(item => {
         if (item.tag == 'sp_trade_manager') {
           this.tradeManager = true;
         }
       });
-      this.getDetail();
+      this.pmsFlag = sessionStorage.getItem('pmsFlag') == 'true' ? true : false;
+      this.initRCConfig();
     },
   }
 </script>
@@ -759,18 +990,36 @@
         .replayList {
           position: absolute;
           top: 50%;
-          right: 280px;
+          right: 530px;
           transform: translateY(-50%);
           font-size: 24px;
           color: #fff;
           background-image: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);
           box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
           border-radius: 32px;
-          padding: 8px 50px;
+
+          .el-button--primary {
+            width: 100%;
+            height: 100%;
+            display: block;
+            font-size: 24px;
+            background: transparent;
+            border: none;
+            padding: 14px 50px;
+          }
         }
         .quitCurrent {
           background: #1AAD19;
           right: 80px;
+          padding: 8px 50px;
+        }
+        .rcBtn {
+          right: 280px;
+          padding: 8px 50px;
+          background: linear-gradient(-51deg, #D59640 4%, #F3CA8A 92%);
+        }
+        .replayList_ {
+          right: 280px;
         }
       }
       .roomInfo {
@@ -1339,6 +1588,70 @@
             display: block;
             margin: 0 auto;
           }
+        }
+      }
+    }
+    .rcTip {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .rcContent {
+        background: #FFFFFF;
+        border-radius: 20px;
+        width: 1020px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 60px 0;
+        .rc_content {
+          max-height: 68vh;
+          overflow-y: scroll;
+        }
+        .rc_content::-webkit-scrollbar {
+          display: none;
+        }
+        /deep/ canvas {
+          display: block;
+          width: 620px !important;
+        }
+      }
+      .rc_title {
+        color: #000;
+        font-size: 36px;
+      }
+      .rc_content {
+        padding: 0 200px;
+      }
+      .rc_footer {
+        margin-top: 47px;
+        padding: 0 120px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .rc_cancle {
+          background-color: transparent;
+          border: 2px solid #F5222D;
+          color: #F5222D;
+          border-radius: 44px;
+          font-size: 24px;
+          width: 360px;
+          height: 88px;
+        }
+        .rc_sure {
+          width: 360px;
+          height: 88px;
+          color: #fff;
+          background: #1AAD19;
+          border-radius: 44px;
+          font-size: 24px;
         }
       }
     }
