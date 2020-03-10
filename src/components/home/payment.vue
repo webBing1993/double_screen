@@ -150,7 +150,8 @@
                 <span v-if="detailVal.payFlag == 1">微信</span>
                 <span v-else-if="detailVal.payFlag == 2">支付宝</span>
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
-                <span v-else>翼支付</span>
+                <span v-else-if="detailVal.payFlag == 3">翼支付</span>
+                <span v-else>银联</span>
               </div>
               <div class="list">
                 <span>授权时间</span>
@@ -214,7 +215,7 @@
                 <span class="list_content">{{detailVal.refundModel.timeEnd}}</span>
               </div>
             </div>
-            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 4">
+            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 8">
               <span @click="accountCancelSure">取消授权</span>
               <span @click="accounts">结算</span>
             </div>
@@ -243,10 +244,10 @@
                 <span>支付通道</span>
                 <span v-if="detailVal.payFlag == 1">微信</span>
                 <span v-else-if="detailVal.payFlag == 2">支付宝</span>
-                <span v-else-if="detailVal.payFlag == 2">支付宝</span>
                 <span v-else-if="detailVal.payFlag == 5">PMS微信</span>
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
-                <span v-else>翼支付</span>
+                <span v-else-if="detailVal.payFlag == 3">翼支付</span>
+                <span v-else>银联</span>
               </div>
               <div class="list">
                 <span>交易状态</span>
@@ -280,7 +281,7 @@
                 <span>{{detailVal.refundModel.outTradeNo}}</span>
               </div>
             </div>
-            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 4">
+            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 8">
               <span class="refund" @click="refund">退款</span>
             </div>
           </div>

@@ -1108,7 +1108,7 @@ const actions = {
   // 制卡
   sendRealCard(ctx, param) {
     ctx.dispatch('resource', {
-      url: '/sendRealCardIotMsg/'+param.subOrderId+'/'+(sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : 'null'),
+      url: '/ecard/orders/sendRealCardIotMsg/'+param.subOrderId+'/'+(sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : 'null'),
       method: 'GET',
       onSuccess: (response) => {
         param.onsuccess ? param.onsuccess(response.data, response.headers) : null
