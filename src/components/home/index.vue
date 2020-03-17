@@ -22,7 +22,7 @@
             <img src="../../assets/gengduo.png" alt="">
           </div>
           <div class="myInfo">
-            <img :src="myInfo.img" alt="">
+            <img :src="myInfo.img" alt="" onerror="this.myInfo.src='../../assets/morentouxiang.png'">
             <span>{{myInfo.name}}</span>
           </div>
           <div class="tuichu" @click="quit=true;">

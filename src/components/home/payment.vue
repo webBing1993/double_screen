@@ -26,48 +26,51 @@
         <span class="change_item sweeping" @click="sweepingClick">扫码结算</span>
       </div>
       <div class="paymentAll">
-        <div class="paymentLists" v-if="showList">
-          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType, item.payFlowId, item.source)">
-            <div class="list_header">
+        <div class="paymentLists">  <!-- v-if="showList"-->
+          <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit" class="scrollView">
+            <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType, item.payFlowId, item.source)">
+              <div class="list_header">
               <span>
                 <span>交易时间：{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
                 <span>{{item.source == 3 ? 'Easypos' : '值房通'}}单号：{{item.orderId}}</span>
               </span>
-              <span>
+                <span>
                 <el-button type="primary" @click.stop="payPrint(item.outTradeNo, item.payFlowId)">
                   <img src="../../assets/budaxiaopiao.png" alt="">
                   <span>打印小票</span>
                 </el-button>
               </span>
-            </div>
-            <div class="list_content">
-              <div class="list_fl">
-                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : '翼支付'}}<sapn v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</sapn></p>
-                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '暂无房号'}}</div>
-                <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '暂无入住人'}}</div>
               </div>
-              <div class="list_fr">
-                <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
-                <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} {{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
-                <span v-if="item.channel == 6" class="red">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已撤销</span>
-                <span v-if="item.channel == 4" class="blue">快速结算</span>
-                <span v-if="item.channel == 5" class="grey">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已结算</span>
-                <img src="../../assets/gengduo.png" alt="">
+              <div class="list_content">
+                <div class="list_fl">
+                  <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : '翼支付'}}<span v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</span></p>
+                  <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '暂无房号'}}</div>
+                  <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '暂无入住人'}}</div>
+                </div>
+                <div class="list_fr">
+                  <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
+                  <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} {{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
+                  <span v-if="item.channel == 6" class="red">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已撤销</span>
+                  <span v-if="item.channel == 4" class="blue">快速结算</span>
+                  <span v-if="item.channel == 5" class="grey">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已结算</span>
+                  <img src="../../assets/gengduo.png" alt="">
+                </div>
               </div>
             </div>
-          </div>
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="page"
-            :page-size="10"
-            layout="total, prev, pager, next"
-            :total="total" v-if="paymentLists.length != 0">
-          </el-pagination>
-          <div class="noMsg" v-else>
-            <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
-            <p>暂无内容</p>
-          </div>
+          </mescroll-vue>
+
+          <!--<el-pagination-->
+            <!--@size-change="handleSizeChange"-->
+            <!--@current-change="handleCurrentChange"-->
+            <!--:current-page.sync="page"-->
+            <!--:page-size="10"-->
+            <!--layout="total, prev, pager, next"-->
+            <!--:total="total" v-if="paymentLists.length != 0">-->
+          <!--</el-pagination>-->
+          <!--<div class="noMsg" v-else>-->
+            <!--<div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>-->
+            <!--<p>暂无内容</p>-->
+          <!--</div>-->
         </div>
 
         <div class="order_fr">
@@ -375,10 +378,11 @@
   import ElCol from "element-ui/packages/col/src/col";
   import loadingList from './loading.vue'
   import {DatePicker} from 'iview'
+  import MescrollVue from 'mescroll.js/mescroll.vue'
 
   export default {
     name: 'payment',
-    components: {ElCol, loadingList, DatePicker},
+    components: {ElCol, loadingList, DatePicker, MescrollVue},
     props: ['pmsOrderIdChange'],
     data () {
       return {
@@ -438,6 +442,32 @@
         noTime: false,   // 为了搜索不显示日期
         countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
         source: '',   // 详情区分是否是easypos还是值房通
+
+        mescroll: null, // mescroll实例对象
+        mescrollDown:{}, //下拉刷新的配置. (如果下拉刷新和上拉加载处理的逻辑是一样的,则mescrollDown可不用写了)
+        mescrollUp: { // 上拉加载的配置.
+          callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }
+          //以下是一些常用的配置,当然不写也可以的.
+          page: {
+            num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+            size: 10 //每页数据条数,默认10
+          },
+          noMoreSize: 10, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看
+          toTop: {
+            //回到顶部按钮
+            src: require("../../assets/zanwuneirong.png"), //图片路径,默认null,支持网络图
+            offset: 1000 //列表滚动1000px才显示回到顶部按钮
+          },
+          htmlContent: '<p class="downwarp-progress"></p><p class="downwarp-tip">下拉刷新 </p>', //布局内容
+          htmlLoading: '<p class="upwarp-progress mescroll-rotate"></p><p class="upwarp-tip">加载中..</p>', //上拉加载中的布局
+          htmlNodata: '<p class="upwarp-nodata">到底啦...</p>', //无数据的布局
+          empty: {
+            //列表第一页无任何数据时,显示的空提示布局; 需配置warpId才显示
+            warpId: null, //父布局的id (1.3.5版本支持传入dom元素)
+            icon: require("../../assets/zanwuneirong.png"), //图标,默认null,支持网络图
+            tip: "暂无相关数据~" //提示
+          }
+        },
       }
     },
     filters: {
@@ -468,7 +498,8 @@
           this.timeVal = new Date(this.timeVal.getTime() + 24 * 60 * 60 * 1000);
           this.loadingShow = true;
           this.showList = false;
-          this.paymentList(1);
+          this.mescrollUp.page.num = 0;
+          this.upCallback(this.mescrollUp.page);
         }
       },
 
@@ -486,19 +517,20 @@
         this.searchString1 = this.searchString2 = this.searchString = '';
         this.timeVal = new Date(val);
         this.showList = false;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       // 键盘事件
       changeKeyBords () {
         if (this.changeTabString == 1) {
           this.searchString = this.searchString1;
-          this.page = 1;
-          this.paymentList(1);
+          this.mescrollUp.page.num = 0;
+          this.upCallback(this.mescrollUp.page);
         }else {
           this.searchString = this.searchString2;
-          this.page = 1;
-          this.paymentList(1);
+          this.mescrollUp.page.num = 0;
+          this.upCallback(this.mescrollUp.page);
         }
       },
 
@@ -511,8 +543,8 @@
           this.searchString1 = '';
         }
         this.searchString = '';
-        this.page = 1;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       keyCancel (event, type) {
@@ -521,15 +553,15 @@
           if (this.searchString1.length > 0) {
             this.searchString1 = this.searchString1.substr(0, this.searchString1.length - 1);
             this.searchString = this.searchString1;
-            this.page = 1;
-            this.paymentList(1);
+            this.mescrollUp.page.num = 0;
+            this.upCallback(this.mescrollUp.page);
           }
         }else {
           if (this.searchString2.length > 0) {
             this.searchString2 = this.searchString2.substr(0, this.searchString2.length - 1);
             this.searchString = this.searchString2;
-            this.page = 1;
-            this.paymentList(1);
+            this.mescrollUp.page.num = 0;
+            this.upCallback(this.mescrollUp.page);
           }
         }
       },
@@ -539,8 +571,8 @@
         event.preventDefault();
         this.searchString2 = '';
         this.searchString = '';
-        this.page = 1;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       // 字母键盘事件
@@ -549,13 +581,13 @@
         if (type == 1) {
           this.searchString1 += item;
           this.searchString = this.searchString1;
-          this.page = 1;
-          this.paymentList(1);
+          this.mescrollUp.page.num = 0;
+          this.upCallback(this.mescrollUp.page);
         }else {
           this.searchString2 += item;
           this.searchString = this.searchString2;
-          this.page = 1;
-          this.paymentList(1);
+          this.mescrollUp.page.num = 1;
+          this.upCallback(this.mescrollUp.page);
         }
       },
 
@@ -563,14 +595,14 @@
       clearSearch() {
         this.searchString1 = '';
         this.searchString = this.searchString1;
-        this.page = 1;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
       clearSearch1() {
         this.searchString2 = '';
         this.searchString = this.searchString2;
-        this.page = 1;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       // 补打小票
@@ -604,8 +636,8 @@
         this.loadingShow = true;
         this.filterObj.payFlag = index;
         this.showList = false;
-        this.page = 1;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       // 选择预授权冻结
@@ -613,8 +645,8 @@
         this.loadingShow = true;
         this.isPreauthorize = !this.isPreauthorize;
         this.showList = false;
-        this.page = 1;
-        this.paymentList(1);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       // 分页
@@ -628,6 +660,14 @@
         this.loadingShow = true;
         this.showList = false;
         this.paymentList(val);
+      },
+
+      mescrollInit(mescroll) {
+        this.mescroll = mescroll;
+      },
+      upCallback(page) {
+        console.log('page',page);
+        this.paymentList(page.num)
       },
 
       // 获取数据列表
@@ -644,9 +684,14 @@
           },
           onsuccess: body => {
               console.log('body.data',body.data.data);
+//            this.loading = false;
             this.loadingShow = false;
             if (body.data.code == 0) {
-              this.paymentLists = body.data.data.data;
+              if (page == 1) {
+                this.paymentLists = body.data.data.data;
+              }else {
+                this.paymentLists = [...this.paymentLists, ...body.data.data.data];
+              }
               if (this.paymentLists.length == 0 && this.searchString != '') {
                 this.noTime = true;
               }else {
@@ -654,6 +699,14 @@
               }
               this.payMoney = '';
               this.total = body.data.data.total;
+              // 数据渲染成功后,隐藏下拉刷新的状态
+              this.$nextTick(() => {
+                  if (this.paymentLists.length < 10) {
+                    this.mescroll.endSuccess(this.paymentLists.length, false);
+                  }else {
+                    this.mescroll.endSuccess(this.paymentLists.length, true);
+                  }
+              });
             }
             this.showList = true;
           },
@@ -671,7 +724,8 @@
         this.showPmsAbnormal_= false;
         this.payTig = false;
         this.channelDetail = false;
-        this.paymentList(this.page);
+        this.mescrollUp.page.num = 0;
+        this.upCallback(this.mescrollUp.page);
       },
 
       // 獲取詳情
@@ -740,7 +794,8 @@
               this.loadingShow = false;
               if (body.data.code == 0) {
                 this.channelDetail = false;
-                this.paymentList(this.page);
+                this.mescrollUp.page.num = 0;
+                this.upCallback(this.mescrollUp.page);
               }else if (body.data.code == 20003) {
                 this.showPmsAbnormal_ = true;
               }else {
@@ -771,7 +826,8 @@
                 });
                 this.loadingShow = false;
                 this.channelDetail = false;
-                this.paymentList(this.page);
+                this.mescrollUp.page.num = 0;
+                this.upCallback(this.mescrollUp.page);
               }else {
                 this.$toast({
                   message: body.data.msg,
@@ -872,8 +928,8 @@
                 this.payTig = false;
                 this.isScreen = true;
                 this.loadingShow = true;
-                this.page = 1;
-                this.paymentList(1)
+                this.mescrollUp.page.num = 0;
+                this.upCallback(this.mescrollUp.page);
               }else if(body.data.code == 20003){
                 this.showPmsAbnormal = true;
               }else if (body.data.code == 10006) {
@@ -919,8 +975,8 @@
                 this.payTig = false;
                 this.isScreen = true;
                 this.loadingShow = true;
-                this.page = 1;
-                this.paymentList(1)
+                this.mescrollUp.page.num = 0;
+                this.upCallback(this.mescrollUp.page);
               }else {
                 this.$toast({
                   message: body.data.msg,
@@ -993,8 +1049,8 @@
                   this.payTig = false;
                   this.isScreen = true;
                   this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
+                  this.mescrollUp.page.num = 0;
+                  this.upCallback(this.mescrollUp.page);
                 }else if(body.data.code == 20003){
                   this.showPmsAbnormal_ = true;
                 }else if (body.data.code == 100049 || body.data.code == 100036) {
@@ -1007,8 +1063,8 @@
                   });
                   this.isScreen = true;
                   this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
+                  this.mescrollUp.page.num = 0;
+                  this.upCallback(this.mescrollUp.page);
                 }
               },
               onfail: (body, headers) => {
@@ -1032,8 +1088,8 @@
                   this.payTig = false;
                   this.isScreen = true;
                   this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
+                  this.mescrollUp.page.num = 0;
+                  this.upCallback(this.mescrollUp.page);
                   this.infoLoading = false;
                   this.isScreen = false;
                 }else {
@@ -1186,14 +1242,20 @@
           this.tradeManager = true;
         }
       });
-      this.paymentList(1);
+//      this.paymentList(1);
       window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
       if (sessionStorage.getItem('pmsPayDetail')) {
         this.getSweepingSettlementOrderId(sessionStorage.getItem('pmsPayDetail'));
       }
       window.getDeviceId = this.getDeviceId;
     },
+    beforeRouteEnter (to, from, next) { // 如果没有配置回到顶部按钮或isBounce,则beforeRouteEnter不用写
+      next(vm => {
+        vm.$refs.mescroll.beforeRouteEnter() // 进入路由时,滚动到原来的列表位置,恢复回到顶部按钮和isBounce的配置
+      })
+    },
     beforeRouteLeave (to, from, next) {
+      this.$refs.mescroll.beforeRouteLeave(); // 退出路由时,记录列表滚动的位置,隐藏回到顶部按钮和isBounce的配置
       this.loadingShow = false;
       next();
     }
@@ -1209,7 +1271,11 @@
     .changeItem {
       padding: 22px 40px;
       text-align: left;
-      position: relative;
+      /*position: relative;*/
+      position: fixed;
+      z-index: 2;
+      top: 100px;
+      width: 100%;
       span {
         color: #303133;
         font-size: 20px;
@@ -1348,7 +1414,23 @@
       width: -moz-calc(100% - 480px);
       width: -webkit-calc(100% - 480px);
       width: calc(100% - 480px);
-      padding: 0 40px 115px;
+      padding: 0 40px 10px;
+      .mescroll {
+        position: fixed;
+        padding-bottom: 1rem;
+        top: 205px;
+        bottom: 0;
+        width: -moz-calc(100% - 560px);
+        width: -webkit-calc(100% - 560px);
+        width: calc(100% - 560px);
+        height: auto;
+        .upwarp-nodata {
+          font-size: 26px;
+        }
+        .upwarp-tip {
+          font-size: 26px;
+        }
+      }
       .list {
         padding: 0 40px;
         background: #FFFFFF;
