@@ -26,8 +26,8 @@
         <span class="change_item sweeping" @click="sweepingClick">扫码结算</span>
       </div>
       <div class="paymentAll">
-        <div class="paymentLists">  <!-- v-if="showList"-->
-          <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit" class="scrollView">
+        <div class="paymentLists" id="mescrollVue" v-if="showList">  <!-- v-if="showList"-->
+          <!--<mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit" class="scrollView">-->
             <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType, item.payFlowId, item.source)">
               <div class="list_header">
               <span>
@@ -57,20 +57,20 @@
                 </div>
               </div>
             </div>
-          </mescroll-vue>
+          <!--</mescroll-vue>-->
 
-          <!--<el-pagination-->
-            <!--@size-change="handleSizeChange"-->
-            <!--@current-change="handleCurrentChange"-->
-            <!--:current-page.sync="page"-->
-            <!--:page-size="10"-->
-            <!--layout="total, prev, pager, next"-->
-            <!--:total="total" v-if="paymentLists.length != 0">-->
-          <!--</el-pagination>-->
-          <!--<div class="noMsg" v-else>-->
-            <!--<div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>-->
-            <!--<p>暂无内容</p>-->
-          <!--</div>-->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="page"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="total" v-if="paymentLists.length != 0">
+          </el-pagination>
+          <div class="noMsg" v-else>
+            <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
+            <p>暂无内容</p>
+          </div>
         </div>
 
         <div class="order_fr">
@@ -463,7 +463,7 @@
           htmlNodata: '<p class="upwarp-nodata">到底啦...</p>', //无数据的布局
           empty: {
             //列表第一页无任何数据时,显示的空提示布局; 需配置warpId才显示
-            warpId: null, //父布局的id (1.3.5版本支持传入dom元素)
+            warpId: 'mescrollVue', //父布局的id (1.3.5版本支持传入dom元素)
             icon: require("../../assets/zanwuneirong.png"), //图标,默认null,支持网络图
             tip: "暂无相关数据~" //提示
           }
@@ -1424,12 +1424,24 @@
         width: -webkit-calc(100% - 560px);
         width: calc(100% - 560px);
         height: auto;
-        .upwarp-nodata {
-          font-size: 26px;
+      }
+      .mescroll-empty {
+        margin-top: 250px;
+        img {
+          display: block;
+          width: 180px;
+          margin: 0 auto;
         }
-        .upwarp-tip {
+        p {
           font-size: 26px;
+          margin-top: 20px;
         }
+      }
+      .upwarp-nodata {
+        font-size: 26px;
+      }
+      .upwarp-tip {
+        font-size: 26px;
       }
       .list {
         padding: 0 40px;
