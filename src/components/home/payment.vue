@@ -27,14 +27,22 @@
       </div>
       <div class="paymentAll">
         <div class="paymentLists" v-if="showList">
-          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType, item.payFlowId)">
+          <div class="list" v-for="item in paymentLists" @click="detailTig(item.orderId, item.tradeType, item.payFlowId, item.source)">
             <div class="list_header">
-              <span>交易时间：{{datetimeparse(item.timeEnd,"yy/MM/dd hh:mm")}}</span>
-              <span>交易单号：{{item.orderId}}</span>
+              <span>
+                <span>交易时间：{{datetimeparse(item.createTime,"yy/MM/dd hh:mm")}}</span>
+                <span>{{item.source == 3 ? 'Easypos' : '值房通'}}单号：{{item.orderId}}</span>
+              </span>
+              <span>
+                <el-button type="primary" @click.stop="payPrint(item.outTradeNo, item.payFlowId)">
+                  <img src="../../assets/budaxiaopiao.png" alt="">
+                  <span>打印小票</span>
+                </el-button>
+              </span>
             </div>
             <div class="list_content">
               <div class="list_fl">
-                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : '翼支付'}}<sapn v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</sapn></p>
+                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : '翼支付'}}<span v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</span></p>
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '暂无房号'}}</div>
                 <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '暂无入住人'}}</div>
               </div>
@@ -142,7 +150,8 @@
                 <span v-if="detailVal.payFlag == 1">微信</span>
                 <span v-else-if="detailVal.payFlag == 2">支付宝</span>
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
-                <span v-else>翼支付</span>
+                <span v-else-if="detailVal.payFlag == 3">翼支付</span>
+                <span v-else>银联</span>
               </div>
               <div class="list">
                 <span>授权时间</span>
@@ -206,7 +215,7 @@
                 <span class="list_content">{{detailVal.refundModel.timeEnd}}</span>
               </div>
             </div>
-            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 4">
+            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 8">
               <span @click="accountCancelSure">取消授权</span>
               <span @click="accounts">结算</span>
             </div>
@@ -235,10 +244,10 @@
                 <span>支付通道</span>
                 <span v-if="detailVal.payFlag == 1">微信</span>
                 <span v-else-if="detailVal.payFlag == 2">支付宝</span>
-                <span v-else-if="detailVal.payFlag == 2">支付宝</span>
                 <span v-else-if="detailVal.payFlag == 5">PMS微信</span>
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
-                <span v-else>翼支付</span>
+                <span v-else-if="detailVal.payFlag == 3">翼支付</span>
+                <span v-else>银联</span>
               </div>
               <div class="list">
                 <span>交易状态</span>
@@ -272,7 +281,7 @@
                 <span>{{detailVal.refundModel.outTradeNo}}</span>
               </div>
             </div>
-            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 4">
+            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 8">
               <span class="refund" @click="refund">退款</span>
             </div>
           </div>
@@ -428,6 +437,7 @@
         countinuedQuit: false,  // 退款的二次确认
         noTime: false,   // 为了搜索不显示日期
         countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
+        source: '',   // 详情区分是否是easypos还是值房通
       }
     },
     filters: {
@@ -435,7 +445,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish'
+        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList'
       ]),
 
       // 前一天
@@ -563,6 +573,32 @@
         this.paymentList(1);
       },
 
+      // 补打小票
+      payPrint(orderId, payflowId) {
+        this.loadingShow = true;
+        this.printPay({
+          data: {
+            orderId: orderId,
+            payFlowId: payflowId
+          },
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.$toast({
+                message: '小票补打成功',
+                iconClass: 'icon ',
+              });
+            }
+            this.loadingShow = false;
+          },
+          onfail: body => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
+          }
+        })
+      },
+
       // 支付选择
       payStatusChange (index) {
         this.loadingShow = true;
@@ -639,9 +675,13 @@
       },
 
       // 獲取詳情
-      detailTig(id,tradeType,payFlowId) {
+      detailTig(id,tradeType,payFlowId,source) {
         this.loadingShow = true;
         this.payMoney = '';
+        this.source = source;
+        if (source == 3) {
+          this.getConfigList();
+        }
         let data = {};
         if (tradeType) {
           data = {
@@ -689,28 +729,66 @@
       accountCancelSure() {
         this.isScreen = true;
         this.loadingShow = true;
-        this.canclePreAuthorizedDeposit({
-          data: {
-            orderId: this.detailVal.outTradeNo || '',
-            remark: '',
-            payFlowId: this.detailVal.payFlowId
-          },
-          onsuccess: body => {
-            this.loadingShow = false;
-            if (body.data.code == 0) {
-              this.channelDetail = false;
-              this.paymentList(this.page);
-            }else if (body.data.code == 20003) {
-              this.showPmsAbnormal_ = true;
+        if (this.source != 3) {
+          this.canclePreAuthorizedDeposit({
+            data: {
+              orderId: this.detailVal.outTradeNo || '',
+              remark: '',
+              payFlowId: this.detailVal.payFlowId
+            },
+            onsuccess: body => {
+              this.loadingShow = false;
+              if (body.data.code == 0) {
+                this.channelDetail = false;
+                this.paymentList(this.page);
+              }else if (body.data.code == 20003) {
+                this.showPmsAbnormal_ = true;
+              }else {
+                this.$toast({
+                  iconClass: 'icon ',
+                  message: body.data.msg,
+                });
+              }
+            },
+            onfail: (body, headers) => {
+              this.loadingShow = false;
+            },
+            onerror: body => {
+              this.loadingShow = false;
             }
-          },
-          onfail: (body, headers) => {
-            this.loadingShow = false;
-          },
-          onerror: body => {
-            this.loadingShow = false;
-          }
-        });
+          });
+        }else {
+          this.resciendCancel({
+            data: {
+              flowId: this.detailVal.payFlowId,
+              pmsRecord : true
+            },
+            onsuccess: body => {
+              if (body.data.code == 0 ||body.data.errcode == 0) {
+                this.$toast({
+                  message: '撤销成功',
+                  iconClass: 'icon ',
+                });
+                this.loadingShow = false;
+                this.channelDetail = false;
+                this.paymentList(this.page);
+              }else {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
+              }
+              this.rescindTip = false;
+              this.rescindLoading_ = false;
+            },
+            onfail: body => {
+              this.loadingShow = false;
+            },
+            onerror: body => {
+              this.loadingShow = false;
+            }
+          })
+        }
       },
 
       // 结算
@@ -753,11 +831,11 @@
             message: '注意：不能大于总金额',
             iconClass: 'icon ',
           });
-        }else if (((this.payMoney * 100) <= this.detailVal.totalFee) && ((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && this.tradeManager) {
+        }else if (((this.payMoney * 100) <= this.detailVal.totalFee) && ((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && this.tradeManager && this.source != 3) {
           this.infoLoading = false;
           this.payTig = false;
           this.countinuedQuit = true;
-        }else if (((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && !this.tradeManager) {
+        }else if (((this.payMoney * 100) > parseFloat(this.detailVal.refundFeeStr*100)) && !this.tradeManager && this.source != 3) {
           this.infoLoading = false;
           this.$toast({
             message: '注意：不能大于押金金额',
@@ -776,54 +854,103 @@
 
       // 退款接口
       quitTig() {
-        this.reimburse({
-          data:{
-            orderId: this.detailVal.outTradeNo,
-            refundfee: this.payMoney,
-            checked: this.checked,
-            ischeckOut: false,
-            payFlowId: this.detailVal.payFlowId
-          },
-          onsuccess: (body) => {
-            this.infoLoading = false;
-            this.isScreen = false;
-            this.countinuedQuit = false;
-            this.countinuedQuitSureLoading = false;
-            if(body.data.code == 0){
+        if (this.source != 3) {
+          this.reimburse({
+            data:{
+              orderId: this.detailVal.outTradeNo,
+              refundfee: this.payMoney,
+              checked: this.checked,
+              ischeckOut: false,
+              payFlowId: this.detailVal.payFlowId
+            },
+            onsuccess: (body) => {
+              this.infoLoading = false;
+              this.isScreen = false;
+              this.countinuedQuit = false;
+              this.countinuedQuitSureLoading = false;
+              if(body.data.code == 0){
+                this.payTig = false;
+                this.isScreen = true;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1)
+              }else if(body.data.code == 20003){
+                this.showPmsAbnormal = true;
+              }else if (body.data.code == 10006) {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
+              }else if (body.data.code == 100049 || body.data.code == 100036) {
+                this.showBalance = true;
+              }
+              this.checked = '';
               this.payTig = false;
-              this.isScreen = true;
-              this.loadingShow = true;
-              this.page = 1;
-              this.paymentList(1)
-            }else if(body.data.code == 20003){
-              this.showPmsAbnormal = true;
-            }else if (body.data.code == 10006) {
-              this.$toast({
-                message: body.data.msg,
-                iconClass: 'icon ',
-              });
-            }else if (body.data.code == 100049 || body.data.code == 100036) {
-              this.showBalance = true;
+              this.showPmsAbnormalLoading = false;
+            },
+            onfail: (body, headers) => {
+              this.infoLoading = false;
+              this.countinuedQuit = false;
+              this.isScreen = false;
+              this.showPmsAbnormalLoading = false;
+              this.countinuedQuitSureLoading = false;
+            },
+            onerror: error => {
+              this.infoLoading = false;
+              this.countinuedQuit = false;
+              this.isScreen = false;
+              this.showPmsAbnormalLoading = false;
+              this.countinuedQuitSureLoading = false;
             }
-            this.checked = '';
-            this.payTig = false;
-            this.showPmsAbnormalLoading = false;
-          },
-          onfail: (body, headers) => {
-            this.infoLoading = false;
-            this.countinuedQuit = false;
-            this.isScreen = false;
-            this.showPmsAbnormalLoading = false;
-            this.countinuedQuitSureLoading = false;
-          },
-          onerror: error => {
-            this.infoLoading = false;
-            this.countinuedQuit = false;
-            this.isScreen = false;
-            this.showPmsAbnormalLoading = false;
-            this.countinuedQuitSureLoading = false;
-          }
-        });
+          });
+        }else {
+          this.refundpos({
+            data: {
+              amount: parseFloat(this.payMoney)*100,
+              flowId: this.detailVal.payFlowId,
+              pmsRecord : true
+            },
+            onsuccess: body => {
+              if (body.data.code == 0 || body.data.errcode == 0) {
+                this.$toast({
+                  message: '退款成功',
+                  iconClass: 'icon ',
+                });
+                this.payTig = false;
+                this.isScreen = true;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1)
+              }else {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
+              }
+              this.checked = '';
+              this.payTig = false;
+              this.showPmsAbnormalLoading = false;
+              this.infoLoading = false;
+              this.isScreen = false;
+              this.countinuedQuit = false;
+              this.countinuedQuitSureLoading = false;
+            },
+            onfail: body => {
+              this.infoLoading = false;
+              this.countinuedQuit = false;
+              this.isScreen = false;
+              this.showPmsAbnormalLoading = false;
+              this.countinuedQuitSureLoading = false;
+            },
+            onerror: body => {
+              this.infoLoading = false;
+              this.countinuedQuit = false;
+              this.isScreen = false;
+              this.showPmsAbnormalLoading = false;
+              this.countinuedQuitSureLoading = false;
+            }
+          })
+        }
       },
 
       // 结算接口
@@ -851,47 +978,85 @@
             iconClass: 'icon ',
           });
         }else {
-          this.depositConsume({
-            data: {
-              orderId: this.detailVal.outTradeNo || '',
-              amount: this.payMoney,
-              remark: '',
-              payFlowId: this.detailVal.payFlowId
-            },
-            onsuccess: body => {
-              this.infoLoading = false;
-              this.isScreen = false;
-              if (body.data.code == 0) {
-                this.payTig = false;
-                this.isScreen = true;
-                this.loadingShow = true;
-                this.page = 1;
-                this.paymentList(1);
-              }else if(body.data.code == 20003){
-                this.showPmsAbnormal_ = true;
-              }else if (body.data.code == 100049 || body.data.code == 100036) {
-                this.showBalance = true;
-              }else if (body.data.code == 10006) {
-                this.payTig = false;
-                this.$toast({
-                  message: body.data.msg,
-                  iconClass: 'icon ',
-                });
-                this.isScreen = true;
-                this.loadingShow = true;
-                this.page = 1;
-                this.paymentList(1);
+          if (this.source != 3) {
+            this.depositConsume({
+              data: {
+                orderId: this.detailVal.outTradeNo || '',
+                amount: this.payMoney,
+                remark: '',
+                payFlowId: this.detailVal.payFlowId
+              },
+              onsuccess: body => {
+                this.infoLoading = false;
+                this.isScreen = false;
+                if (body.data.code == 0) {
+                  this.payTig = false;
+                  this.isScreen = true;
+                  this.loadingShow = true;
+                  this.page = 1;
+                  this.paymentList(1);
+                }else if(body.data.code == 20003){
+                  this.showPmsAbnormal_ = true;
+                }else if (body.data.code == 100049 || body.data.code == 100036) {
+                  this.showBalance = true;
+                }else if (body.data.code == 10006) {
+                  this.payTig = false;
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
+                  });
+                  this.isScreen = true;
+                  this.loadingShow = true;
+                  this.page = 1;
+                  this.paymentList(1);
+                }
+              },
+              onfail: (body, headers) => {
+                this.infoLoading = false;
+                this.isScreen = false;
+              },
+              onerror: error => {
+                this.infoLoading = false;
+                this.isScreen = false;
               }
-            },
-            onfail: (body, headers) => {
-              this.infoLoading = false;
-              this.isScreen = false;
-            },
-            onerror: error => {
-              this.infoLoading = false;
-              this.isScreen = false;
-            }
-          });
+            });
+          }else {
+            this.consume({
+              data: {
+                amount: parseFloat(this.payMoney)*100,
+                flowId: this.detailVal.payFlowId,
+                pmsRecord : true
+              },
+              onsuccess: body => {
+                if (body.data.code == 0 ||body.data.errcode == 0) {
+                  this.payTig = false;
+                  this.isScreen = true;
+                  this.loadingShow = true;
+                  this.page = 1;
+                  this.paymentList(1);
+                  this.infoLoading = false;
+                  this.isScreen = false;
+                }else {
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
+                  });
+                }
+                this.sureTip = false;
+                this.sureVal = '';
+                this.changeInput(this.sureVal);
+                this.inquiryLoading = false;
+              },
+              onfail: body => {
+                this.infoLoading = false;
+                this.isScreen = false;
+              },
+              onerror: body => {
+                this.infoLoading = false;
+                this.isScreen = false;
+              }
+            })
+          }
         }
       },
 
@@ -945,6 +1110,46 @@
         }
       },
 
+      // 获取权限
+      getConfigList() {
+        this.configList({
+          onsuccess: body => {
+            console.log('1111', body);
+            if (body.data.errcode == 0 || body.data.code == 0) {
+              let noConfig = false; // 判断是否有权限
+              if (body.data.data.authorities.length != 0) {
+                body.data.data.authorities.forEach(item =>{
+                  if (item.authority == 'independent_trade_receipt') {
+                    noConfig = true;
+                  }
+                  if (item.authority == 'independent_trade_deposit') {
+                    this.configList_.trandeDeposit = true;
+                    noConfig = true;
+                  }
+                  if (item.authority == 'independent_trade_trading_record') {
+                    this.configList_.trandeRecord = true;
+                    noConfig = true;
+                  }
+                });
+              }
+              if (!noConfig) {
+                this.$toast({
+                  message: '当前账号无easypos权限',
+                  iconClass: 'icon ',
+                });
+              }
+            }
+            this.loadingShow = false;
+          },
+          onfail: body => {
+            this.loadingShow = false;
+          },
+          onerror: body => {
+            this.loadingShow = false;
+          }
+        })
+      },
+
       // 关闭扫码弹框
       closeSweeping () {
         this.sweepingTig = false;
@@ -986,6 +1191,7 @@
       if (sessionStorage.getItem('pmsPayDetail')) {
         this.getSweepingSettlementOrderId(sessionStorage.getItem('pmsPayDetail'));
       }
+      window.getDeviceId = this.getDeviceId;
     },
     beforeRouteLeave (to, from, next) {
       this.loadingShow = false;
@@ -1159,6 +1365,25 @@
           span {
             color: #909399;
             font-size: 20px;
+            span:first-of-type {
+              margin-right: 30px;
+            }
+            /deep/ .el-button--primary {
+              background-color: transparent;
+              border: none;
+              padding: 0;
+              span {
+                margin-right: 0;
+                font-size: 20px;
+                color: #1AAD19;
+                display: flex;
+                align-items: center;
+              }
+              img {
+                width: 40px;
+                margin-right: 10px;
+              }
+            }
           }
         }
         .list_content {

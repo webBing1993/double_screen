@@ -53,7 +53,8 @@
                     </p>
                   </div>
                   <el-button type="primary" class="tongbu_status" :loading="item.loadingTongbu"  @click="getRefresh(item)"  v-if="pmsFlag">同步</el-button>
-                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli"  @click="checkGoIn(item)" >办理入住</el-button>
+                  <el-button type="primary" class="daiSure_status" :loading="item.loadingdaiSure" v-if="item.payMode == 0 && item.type == 1"  @click="changeStatus(item)" >待确认</el-button>
+                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli" v-else  @click="checkGoIn(item)" >办理入住</el-button>
                 </div>
               </div>
               <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
@@ -150,6 +151,57 @@
           </div>
         </div>
       </div>
+
+      <!-- 修改状态-->
+      <div class="checkIn_tip" v-if="checkInTip">
+        <div class="shadow" @click="checkInTip = false;"></div>
+        <div class="checkIn_content">
+          <div class="checkIn_title">
+            <span>请确认订单支付状态</span>
+            <div class="checkIn_close" @click="checkInTip = false;">关闭</div>
+          </div>
+          <div class="lists">
+            <div class="list">
+              <div class="title"><span>应付房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
+              <div class="changeItem" >
+                <div class="item_tab" @click="payModeChange(2)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>已预付</span>
+                </div>
+                <div class="item_tab" @click="payModeChange(3)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>挂账</span>
+                </div>
+                <div class="item_tab" @click="payModeChange(1)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>在线收款</span>
+                </div>
+              </div>
+            </div>
+            <div class="list">
+              <div class="title"><span>应付押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
+              <div class="changeItem" v-if="cashFee != 0">
+                <div class="item_tab" @click="freeDepositChange(1)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || isFreeDeposit == 1">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>不收押金</span>
+                </div>
+                <div class="item_tab" @click="freeDepositChange(2)"  v-if="!cashFeeTrue">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="isFreeDeposit == 2">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>收押金</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="btns">
+            <el-button type="primary" :class="payMode != 0 ? 'btn_button_primary' : 'btn_button_disabled'" :disabled="payMode == 0" round :loading="loadingCheckInSure" @click="checkInSure()">完成</el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -203,6 +255,9 @@
         startTime: '',  // 开始时间
         endTime: '',  // 结束时间
         tigOrderShow: false, // 判断A屏是否有订单在操作
+        isFreeDeposit: 1,
+        loadingCheckInSure: false,    // 修改订单状态loading
+        checkInTip: false,      // 修改支付状态弹框
       }
     },
     filters: {
@@ -216,7 +271,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag', 'refreshOne'
+        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag', 'refreshOne', 'getOrderFree', 'updatePaidMode'
       ]),
 
       // tab切换
@@ -364,13 +419,109 @@
         this.getPreOrder(1);
       },
 
+      // 选择框完成事件
+      checkInSure() {
+        this.loadingCheckInSure = true;
+        this.updatePaidMode({
+          orderId: this.changeItem.id,
+          isFreeDeposit: this.isFreeDeposit == 1 ? true : false,
+          modeId: this.payMode,
+          onsuccess: body => {
+            this.loadingCheckInSure = false;
+            if (body.data.code == 0) {
+              this.checkInTip = false;
+              this.getPreOrder(this.page);
+            }
+          },
+          onfail: (body, headers) => {
+            this.loadingCheckInSure = false;
+          },
+          onerror: body => {
+            item.loadingCheckInSure = false;
+          }
+        });
+      },
+
+      // 房费更改
+      payModeChange(index) {
+        this.payMode = index;
+      },
+
+      // 选择是否免押金
+      freeDepositChange(num) {
+        if (num == 1) {
+          this.changeItem.isFreeDeposit = true;
+        }else {
+          this.changeItem.isFreeDeposit = false;
+        }
+        this.isFreeDeposit = num;
+      },
+
+      // 待确认选择
+      changeStatus(item) {
+        item.loadingdaiSure = true;
+        this.changeItem = item;
+        this.getOrderFree({
+          data: {
+            orderId: item.id
+          },
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.loadingShow = false;
+              if (this.changeItem.isFreeDeposit) {
+                this.isFreeDeposit = 1;
+              }else {
+                this.isFreeDeposit = 2;
+              }
+              if (body.data.data.cashFeeShow == '免押') {
+                this.cashFee = 0;
+                this.cashFeeTrue = true;
+              }else {
+                this.cashFeeTrue = false;
+                this.cashFee = body.data.data.cashFeeShow;
+              }
+              if (body.data.data.roomFeeShow == '预付房费') {
+                if (body.data.data.cashFeeShow == '免押') {
+                  this.roomFeeShow = body.data.data.totalFeeShow;
+                }else {
+                  this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                }
+              }else {
+                this.roomFeeShow = body.data.data.roomFeeShow;
+              }
+              this.paidFeeShow = body.data.data.paidFeeShow;
+              this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
+              if (this.needPayRoomFeeShow < 0) {
+                this.needPayRoomFeeShow = 0;
+              }
+              this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
+              item.loadingdaiSure = false;
+              this.checkInTip = true;
+            }else {
+              item.loadingdaiSure = false;
+            }
+          },
+          onfail: (body, headers) => {
+            item.loadingdaiSure = false;
+          },
+          onerror: body => {
+            item.loadingdaiSure = false;
+          }
+        });
+      },
+
       //办理入住
       checkGoIn(item) {
         item.loadingBanli = true;
         this.changeItem = item;
         // 先判断A屏正在办理ing
         this.getOrderProcess();
-//        this.showOrderInfo(true)
+//        this.showOrderInfo(true);
+        this.$nextTick(() => {
+          setTimeout(() => {
+            item.loadingBanli = false;
+          },5000)
+        })
       },
 
       getOrderProcess() {
@@ -543,6 +694,7 @@
               this.getPreOrder(1);
               this.initRefreshTime();
             }else {
+              this.orderLists = [];
               this.loadingShow = false;
             }
             this.$message({
@@ -624,6 +776,7 @@
                 body.data.data.list.forEach(item => {
                   item.loadingTongbu = false;
                   item.loadingBanli = false;
+                  item.loadingdaiSure = false;
                 });
                 body.data.data.list.forEach(item => {
                    if (item.updateTime) {
@@ -675,20 +828,6 @@
         this.getPreOrder(val);
       },
 
-      // 房费更改
-      payModeChange(index) {
-        this.payMode = index;
-      },
-
-      // 选择是否免押金
-      changeFreeDeposit(num) {
-        if (num == 1) {
-          this.changeItem.isFreeDeposit = true;
-        }else {
-          this.changeItem.isFreeDeposit = false;
-        }
-      },
-
       // 判断是否是对接pms
       initPmsFlag(){
         this.getPmsFlag({
@@ -738,6 +877,7 @@
       this.getPreOrder(this.page);
       this.$route.meta.isBack = false;
       window.showOrderInfo = this.showOrderInfo;
+      window.startUpDevice = this.startUpDevice;
     },
     beforeRouteEnter(to,from,next){
       if(from.name == 'checkIn'){
@@ -923,6 +1063,22 @@
               background: #1AAD19;
               box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
               border-radius: 29.63px;
+              width: 146px;
+              padding: 17px 0;
+              text-align: center;
+              font-size: 20px;
+              color: #fff;
+              cursor: pointer;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+            .daiSure_status {
+              position: absolute;
+              right: 0;
+              top: 0;
+              background: #F5222D;
+              box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
+              border-radius: 29.63px;
+              border-color: #F5222D;
               width: 146px;
               padding: 17px 0;
               text-align: center;
@@ -1241,6 +1397,118 @@
             text-align: center;
             color: #1AAD19;
             cursor: pointer;
+          }
+        }
+      }
+    }
+    .checkIn_tip {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .checkIn_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 0 60px 50px;
+        .checkIn_title {
+          text-align: center;
+          position: relative;
+          padding: 40px 0;
+          border-bottom: 1px solid #D8D8D8;
+          color: #303133;
+          font-size: 40px;
+          font-family: PingFangSC-Semibold;
+          .checkIn_close {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: #1AAD19;
+          }
+        }
+        .lists {
+          margin-bottom: 40px;
+          padding: 40px 0;
+          .list {
+            margin-bottom: 40px;
+            .title {
+              color: #303133;
+              font-weight: bold;
+              font-size: 26px;
+              text-shadow: 0 2px 3px rgba(0,0,0,0.04);
+              width: 358px;
+              text-align: left;
+              margin-bottom: 40px;
+              span:first-of-type {
+                width: 150px;
+                display: inline-block;
+              }
+              span:last-of-type {
+                color: #F55825;
+              }
+            }
+            .changeItem {
+              display: inline-flex;
+              justify-content: flex-start;
+              width: 100%;
+              .item_tab {
+                position: relative;
+                font-size: 22px;
+                color: #000;
+                line-height: 64px;
+                height: 64px;
+                width: 172px;
+                text-align: center;
+                margin-right: 44px;
+                img {
+                  position: absolute;
+                  z-index: 1;
+                  width: 172px;
+                  height: 64px;
+                  left: 0;
+                  top: 0;
+                }
+                span {
+                  position: absolute;
+                  left: 50%;
+                  top: 50%;
+                  z-index: 2;
+                  transform: translate(-50%, -50%);
+                  width: 100%;
+                  display: block;
+                }
+              }
+            }
+          }
+        }
+        .btns {
+          text-align: center;
+          .el-button {
+            width: 390px;
+            height: 80px;
+            border-radius: 50px;
+            font-size: 28px;
+            color: #fff;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          }
+          .btn_button_primary {
+            background-color: #1AAD19;
+            border-color: #1AAD19;
+          }
+          .btn_button_disabled {
+            background-color: #d7d7d7;
+            border-color: #d7d7d7
           }
         }
       }

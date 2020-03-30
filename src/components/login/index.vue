@@ -288,7 +288,8 @@
     },
 
     beforeMount () {
-      jsObj.getBrowserFinish()
+      jsObj.getBrowserFinish();
+      jsObj.GetDeviceId();      // 获取deviceId
     },
 
     mounted () {
