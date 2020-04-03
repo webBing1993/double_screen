@@ -403,9 +403,18 @@
                   item.quitLoading = false;
                   item.tongbuLoading = false;
                 });
+                this.orderLists = body.data.data.list;
+                this.total = body.data.data.total;
+              }else {
+                  if (page > 1) {
+                    this.page--;
+                    this.getPreOrder(this.page);
+                  }
+                  else {
+                    this.orderLists = body.data.data.list;
+                    this.total = body.data.data.total;
+                  }
               }
-              this.orderLists = body.data.data.list;
-              this.total = body.data.data.total;
               this.showList = true;
               this.showList_ = true;
             }

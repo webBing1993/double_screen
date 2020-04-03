@@ -468,22 +468,52 @@
           limit: 5,
           offset: (page-1)*5,
           onsuccess: (body, headers) => {
-            if (body.errcode == 0 && body.data.content) {
-              body.data.content.forEach(item => {
-                  item.unhandleLoading = false;
-              });
-              if (type == 1) {
-                this.total = parseFloat(headers['x-total-count']);
-                this.unhandleList = [ ...body.data.content];
-                this.hotelConfig = body.data.config;
-                this.$emit('unhandleNumFun', this.total);
-              }else if (type == 2) {
-                this.total2 = parseFloat(headers['x-total-count']);
-                this.handleingList = [ ...body.data.content];
-              }else {
-                this.total1 = parseFloat(headers['x-total-count']);
-                this.handleList = [ ...body.data.content];
-              }
+            if (body.errcode == 0) {
+                if (body.data.content) {
+                  body.data.content.forEach(item => {
+                    item.unhandleLoading = false;
+                  });
+                  if (type == 1) {
+                    this.total = parseFloat(headers['x-total-count']);
+                    this.unhandleList = [ ...body.data.content];
+                    this.hotelConfig = body.data.config;
+                    this.$emit('unhandleNumFun', this.total);
+                  }else if (type == 2) {
+                    this.total2 = parseFloat(headers['x-total-count']);
+                    this.handleingList = [ ...body.data.content];
+                  }else {
+                    this.total1 = parseFloat(headers['x-total-count']);
+                    this.handleList = [ ...body.data.content];
+                  }
+                }else {
+                  if (type == 1) {
+                      if (page > 1) {
+                        this.page--;
+                        this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+                      }else {
+                        this.total = parseFloat(headers['x-total-count']);
+                        this.unhandleList = [ ...body.data.content];
+                        this.hotelConfig = body.data.config;
+                        this.$emit('unhandleNumFun', this.total);
+                      }
+                  }else if (type == 2) {
+                    if (page > 1) {
+                      this.page2--;
+                      this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
+                    }else {
+                      this.total2 = parseFloat(headers['x-total-count']);
+                      this.handleingList = [...body.data.content];
+                    }
+                  }else {
+                    if (page > 1) {
+                      this.page1--;
+                      this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+                    }else {
+                      this.total1 = parseFloat(headers['x-total-count']);
+                      this.handleList = [...body.data.content];
+                    }
+                  }
+                }
             }
             this.loadingShow = false;
             this.showList = true;
