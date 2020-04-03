@@ -398,7 +398,7 @@
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0) {
-              if (body.data.data.list) {
+              if (body.data.data.list.length != 0) {
                 body.data.data.list.forEach(item => {
                   item.quitLoading = false;
                   item.tongbuLoading = false;
