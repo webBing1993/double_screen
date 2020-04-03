@@ -90,7 +90,7 @@
               <div class="lists">
                 <div class="list">
                   <div class="title"><span>应付房费：</span><span>{{(needPayRoomFeeShow/100).toFixed(2)}}元</span></div>
-                  <div class="changeItem" >
+                  <div class="changeItem"  v-if="needPayRoomFeeShow != 0">
                     <div class="item_tab" @click="payModeChange(2)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
                       <img src="../../assets/weixuan.png" alt="" v-else>
