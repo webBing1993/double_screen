@@ -469,7 +469,7 @@
           offset: (page-1)*5,
           onsuccess: (body, headers) => {
             if (body.errcode == 0) {
-                if (body.data.content) {
+                if (body.data.content.length != 0) {
                   body.data.content.forEach(item => {
                     item.unhandleLoading = false;
                   });
