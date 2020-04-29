@@ -558,6 +558,7 @@
               this.payTig = false;
               sessionStorage.setItem('quitSe', 1);
               this.quit = true;
+              this.payMoney = '';
             }else if(body.data.code == 20003){
               this.showPmsAbnormal = true;
             }else if (body.data.code == 20006) {
@@ -671,6 +672,7 @@
               },
               onsuccess: body => {
                 if (body.data.code == 0) {
+                  this.payMoney = '';
                   this.payTig = false;
                   this.quit = true;
                 }else if (body.data.code == 20003) {
