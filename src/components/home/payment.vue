@@ -55,6 +55,7 @@
                 <img src="../../assets/gengduo.png" alt="">
               </div>
             </div>
+            <div class="tip" v-if="item.settleScheduleRoom">将于{{datetimeparse(item.settleScheduleRoom.scheduledSettleTime,"hh:mm:ss")}}操作退款{{ ((item.settleScheduleRoom.paidFee - item.settleScheduleRoom.consumeFee)/100).toFixed(2) }}元（如退款金额有误，请至PMS进行反结账）</div>
           </div>
           <el-pagination
             @size-change="handleSizeChange"
@@ -1442,6 +1443,16 @@
               width: 10px;
             }
           }
+        }
+        .tip {
+          font-size: 20px;
+          color: #6F5F2D;
+          background-image: linear-gradient(90deg, #FBECC3 1%, #EDD59D 100%);
+          box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
+          padding: 25px 40px;
+          width: calc(100% + 80px);
+          margin-left: -40px;
+          border-radius: 0 0 6px 6px;
         }
       }
     }
