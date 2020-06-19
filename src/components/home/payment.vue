@@ -217,8 +217,8 @@
               </div>
             </div>
             <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 8">
-              <span @click="accountCancelSure">取消授权</span>
-              <span @click="accounts">结算</span>
+              <span @click="accountCancelSure1(detailVal)">取消授权</span>
+              <span @click="accounts()">结算</span>
             </div>
           </div>
           </div>
@@ -367,6 +367,75 @@
         </div>
       </div>
 
+      <!-- 撤销弹框-->
+      <div class="payCancle" v-if="payCancle">
+        <div class="shadow" @click="payCancle = false;accountItem = {};cancleLoading = false;"></div>
+        <div class="content">
+          <div class="pay_title">
+            撤销预授权
+            <img src="../../assets/guanbi.png" alt="" @click="payCancle = false;accountItem = {};cancleLoading = false;">
+          </div>
+          <div class="pay_cantiner">
+            <p>撤销预授权后，该笔订单金额 <span> ¥{{(accountItem.totalFee/100).toFixed(2)}}</span>将会原路返回至用户账户，请再次确认后操作！</p>
+          </div>
+          <el-button type="danger" :loading="cancleLoading" class="btn" @click="accountCancelSure()">撤销预授权</el-button>
+        </div>
+      </div>
+
+      <!-- 完成预授权二次确认-->
+      <div class="secoundTip" v-if="secoundTip">
+        <div class="shadow"></div>
+        <div class="secoundTip_content">
+          <div class="title">
+            完成预授权
+            <img src="../../assets/guanbi.png" alt="" @click="secoundTip = false;payMoney = ''">
+          </div>
+          <div class="lists">
+            <div class="list">
+              <span>预授权金额</span>
+              <span>¥{{ (detailVal.totalFee/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span>消费金额</span>
+              <span class="primaryColor">¥{{ payMoney }}</span>
+            </div>
+            <div class="list">
+              <span>退还金额</span>
+              <span class="dangerColor">¥{{ ((detailVal.totalFee - payMoney*100)/100).toFixed(2) }}</span>
+            </div>
+          </div>
+          <div class="tip">请确认消费金额与实际消费金额一致，点击【完成预授权】退还金额将原路返回</div>
+          <el-button type="primary" :loading="countinuedSureLoading" class="btn" @click="syqContentFun()">完成预授权</el-button>
+        </div>
+      </div>
+
+      <!-- 退款输入二次确认-->
+      <div class="secoundTip" v-if="secoundTip1">
+        <div class="shadow"></div>
+        <div class="secoundTip_content">
+          <div class="title">
+            退款
+            <img src="../../assets/guanbi.png" alt="" @click="secoundTip1 = false;payMoney = ''">
+          </div>
+          <div class="lists">
+            <div class="list">
+              <span>收款金额</span>
+              <span>¥{{ (detailVal.totalFee/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span>消费金额</span>
+              <span class="primaryColor">¥{{ ((detailVal.totalFee - payMoney*100)/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span>退还金额</span>
+              <span class="dangerColor">¥{{ payMoney }}</span>
+            </div>
+          </div>
+          <div class="tip">请确认消费金额与实际消费金额一致，点击【完成】退还金额将原路返回</div>
+          <el-button type="primary" :loading="countinuedSureLoading1" class="btn" @click="quitTig()">完成</el-button>
+        </div>
+      </div>
+
       <loadingList v-if="loadingShow" :loadingText="loadingText" :style="isScreen ? 'width: 100vw' : 'width: calc(100vw - 480px)'"></loadingList>
     </div>
   </div>
@@ -439,6 +508,13 @@
         noTime: false,   // 为了搜索不显示日期
         countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
         source: '',   // 详情区分是否是easypos还是值房通
+        payCancle: false,     // 撤销tip
+        countinuedSureLoading: false,     // 完成预授权二次确认loading
+        countinuedSureLoading1: false,     // 完成二次确认loading
+        cancleLoading: false,     // 撤销二次loading
+        secoundTip: false,     // 完成预授权二次tip
+        secoundTip1: false,     // 完成二次tip
+        accountItem: {},
       }
     },
     filters: {
@@ -446,7 +522,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList'
+        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList', 'accountFeeInfo'
       ]),
 
       // 前一天
@@ -726,10 +802,11 @@
         });
       },
 
-      // 撤销预授权
+      // 撤销确认
       accountCancelSure() {
         this.isScreen = true;
         this.loadingShow = true;
+        this.cancleLoading = true;
         if (this.source != 3) {
           this.canclePreAuthorizedDeposit({
             data: {
@@ -741,6 +818,7 @@
               this.loadingShow = false;
               if (body.data.code == 0) {
                 this.channelDetail = false;
+                this.payCancle = false;
                 this.paymentList(this.page);
               }else if (body.data.code == 20003) {
                 this.showPmsAbnormal_ = true;
@@ -792,19 +870,47 @@
         }
       },
 
+      // 撤销预授权
+      accountCancelSure1(item) {
+        this.channelDetail = false;
+        this.accountItem = item;
+        this.payCancle = true;
+      },
+
       // 结算
       refund() {
-        this.channelDetail1 = false;
-        this.payTig = true;
-        this.payTigStatus = 1;
+        this.accountFeeInfo({
+          orderId: this.detailVal.outTradeNo || '',
+          payFlowId: this.detailVal.payFlowId,
+          onsuccess: body => {
+            if (body.data.code == 0 && body.data.data) {
+              this.chargeRecordObj = body.data.data
+            }
+            this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
+            this.payTig = true;
+            this.channelDetail1 = false;
+            this.payTigStatus = 1;
+          }
+        })
       },
 
       // 快速结算
       accounts() {
-        this.channelDetail = false;
-        this.payTig = true;
-        this.infoLoading = false;
-        this.payTigStatus = 2;
+        this.accountFeeInfo({
+          orderId: this.detailVal.outTradeNo || '',
+          payFlowId: this.detailVal.payFlowId,
+          onsuccess: body => {
+            if (body.data.code == 0 && body.data.data) {
+              this.chargeRecordObj = body.data.data
+            }
+            this.payMoney = body.data.data.consumeFee ? (body.data.data.consumeFee/100).toFixed(2) : 0;
+            this.channelDetail = false;
+            this.payTig = true;
+            this.infoLoading = false;
+            this.payTigStatus = 2;
+          }
+        });
+
       },
 
       //继续退房
@@ -843,14 +949,18 @@
             iconClass: 'icon ',
           });
         }else {
-          this.quitTig();
+          this.secoundTip1 = true;
+          this.infoLoading = false;
+          this.countinuedQuitSureLoading = false;
+          this.countinuedQuit = false;
+          this.payTig = false;
         }
       },
 
       // 二次确认
       countinuedQuitSure() {
         this.countinuedQuitSureLoading = true;
-        this.quitTig();
+        this.refundMoney();
       },
 
       // 退款接口
@@ -979,85 +1089,103 @@
             iconClass: 'icon ',
           });
         }else {
-          if (this.source != 3) {
-            this.depositConsume({
-              data: {
-                orderId: this.detailVal.outTradeNo || '',
-                amount: this.payMoney,
-                remark: '',
-                payFlowId: this.detailVal.payFlowId
-              },
-              onsuccess: body => {
-                this.infoLoading = false;
-                this.isScreen = false;
-                if (body.data.code == 0) {
-                  this.payTig = false;
-                  this.isScreen = true;
-                  this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
-                }else if(body.data.code == 20003){
-                  this.showPmsAbnormal_ = true;
-                }else if (body.data.code == 100049 || body.data.code == 100036) {
-                  this.showBalance = true;
-                }else if (body.data.code == 10006) {
-                  this.payTig = false;
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
-                  this.isScreen = true;
-                  this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
-                }
-              },
-              onfail: (body, headers) => {
-                this.infoLoading = false;
-                this.isScreen = false;
-              },
-              onerror: error => {
-                this.infoLoading = false;
-                this.isScreen = false;
+          this.payTig = false;
+          this.secoundTip = true;
+          this.infoLoading = false;
+        }
+      },
+
+      syqContentFun() {
+        this.countinuedSureLoading = true;
+        if (this.source != 3) {
+          this.depositConsume({
+            data: {
+              orderId: this.detailVal.outTradeNo || '',
+              amount: this.payMoney,
+              remark: '',
+              payFlowId: this.detailVal.payFlowId
+            },
+            onsuccess: body => {
+              this.infoLoading = false;
+              this.isScreen = false;
+              if (body.data.code == 0) {
+                this.payTig = false;
+                this.countinuedSureLoading = false;
+                this.secoundTip = false;
+                this.isScreen = true;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1);
+              }else if(body.data.code == 20003){
+                this.showPmsAbnormal_ = true;
+              }else if (body.data.code == 100049 || body.data.code == 100036) {
+                this.showBalance = true;
+              }else if (body.data.code == 10006) {
+                this.payTig = false;
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
+                this.isScreen = true;
+                this.countinuedSureLoading = false;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1);
               }
-            });
-          }else {
-            this.consume({
-              data: {
-                amount: parseFloat(this.payMoney)*100,
-                flowId: this.detailVal.payFlowId,
-                pmsRecord : true
-              },
-              onsuccess: body => {
-                if (body.data.code == 0 ||body.data.errcode == 0) {
-                  this.payTig = false;
-                  this.isScreen = true;
-                  this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
-                  this.infoLoading = false;
-                  this.isScreen = false;
-                }else {
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
-                }
-                this.sureTip = false;
-                this.sureVal = '';
-                this.changeInput(this.sureVal);
-                this.inquiryLoading = false;
-              },
-              onfail: body => {
+            },
+            onfail: (body, headers) => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            },
+            onerror: error => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            }
+          });
+        }else {
+          this.consume({
+            data: {
+              amount: parseFloat(this.payMoney)*100,
+              flowId: this.detailVal.payFlowId,
+              pmsRecord : true
+            },
+            onsuccess: body => {
+              if (body.data.code == 0 ||body.data.errcode == 0) {
+                this.payTig = false;
+                this.countinuedSureLoading = false;
+                this.secoundTip = false;
+                this.isScreen = true;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1);
                 this.infoLoading = false;
                 this.isScreen = false;
-              },
-              onerror: body => {
-                this.infoLoading = false;
-                this.isScreen = false;
+              }else {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
               }
-            })
-          }
+              this.sureTip = false;
+              this.countinuedSureLoading = false;
+              this.secoundTip = false;
+              this.sureVal = '';
+              this.changeInput(this.sureVal);
+              this.inquiryLoading = false;
+            },
+            onfail: body => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            },
+            onerror: body => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            }
+          })
         }
       },
 
@@ -1911,7 +2039,7 @@
         }
       }
     }
-    .countinuedQuit {
+    .countinuedQuit, .payCancle ,.secoundTip {
       .shadow {
         position: fixed;
         z-index: 10;
@@ -1971,6 +2099,122 @@
             top: 50%;
             transform: translateY(-50%);
           }
+        }
+      }
+    }
+    .payCancle {
+      .content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .pay_title {
+          color: #303133;
+          font-size: 30px;
+          position: relative;
+          padding: 30px 40px;
+          border-bottom: 1px solid #D8D8D8;
+          img {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+          }
+        }
+        .pay_cantiner {
+          width: 680px;
+          margin: 0 auto;
+          padding: 20px 0 60px;
+          p {
+            color: #000;
+            font-size: 30px;
+            padding: 0 40px;
+            text-align: left;
+            span {
+              color: #1AAD19;
+            }
+          }
+        }
+        .btn {
+          margin: 30px 0 40px;
+          background: #F5222D;
+          border-radius: 44px;
+          text-align: center;
+          height: 78px;
+          cursor: pointer;
+          width: 50%;
+          font-size: 26px;
+          color: #fff;
+        }
+      }
+    }
+    .secoundTip {
+      .secoundTip_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        width: 960px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .title {
+          color: #303133;
+          font-size: 30px;
+          position: relative;
+          padding: 30px 40px;
+          border-bottom: 1px solid #D8D8D8;
+          img {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+          }
+        }
+        .lists {
+          padding: 30px 40px;
+          .list {
+            padding: 30px 0 0;
+            font-size: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #000;
+            .primaryColor {
+              color: #1AAD19;
+            }
+            .dangerColor {
+              color: #F5222D;
+            }
+          }
+        }
+        .tip {
+          padding: 0 35px;
+          text-align: left;
+          font-size: 26px;
+          color: #303133;
+        }
+        .btn {
+          margin: 30px 0 40px;
+          background: #1AAD19;
+          border-radius: 44px;
+          text-align: center;
+          height: 78px;
+          cursor: pointer;
+          width: 50%;
+          font-size: 26px;
+          color: #fff;
         }
       }
     }

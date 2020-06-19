@@ -384,7 +384,7 @@
             </div>
             <div class="list">
               <span>退还金额</span>
-              <span class="dangerColor">¥{{ (accountItem.totalFee - payMoney*100).toFixed(2) }}</span>
+              <span class="dangerColor">¥{{ ((accountItem.totalFee - payMoney*100)/100).toFixed(2) }}</span>
             </div>
           </div>
           <div class="tip">请确认消费金额与实际消费金额一致，点击【完成预授权】退还金额将原路返回</div>
@@ -407,11 +407,11 @@
             </div>
             <div class="list">
               <span>消费金额</span>
-              <span class="primaryColor">¥{{ payMoney }}</span>
+              <span class="primaryColor">¥{{ ((accountItem.totalFee - payMoney*100)/100).toFixed(2) }}</span>
             </div>
             <div class="list">
               <span>退还金额</span>
-              <span class="dangerColor">¥{{ (accountItem.totalFee - payMoney*100).toFixed(2) }}</span>
+              <span class="dangerColor">¥{{ payMoney }}</span>
             </div>
           </div>
           <div class="tip">请确认消费金额与实际消费金额一致，点击【完成】退还金额将原路返回</div>
@@ -641,7 +641,7 @@
               if (body.data.code == 0 && body.data.data) {
                 this.chargeRecordObj = body.data.data
               }
-              this.payMoney = '';
+              this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
               this.payTig = true;
             }
           })
@@ -662,7 +662,7 @@
       // 二次确认退房费
       countinuedQuitSure() {
         this.countinuedQuitSureLoading = true;
-        this.quitTig();
+        this.paySure();
       },
 
       // 退款接口
@@ -768,6 +768,8 @@
 //            this.quitTig();
             this.secoundTip1 = true;
             this.infoLoading = false;
+            this.countinuedQuitSureLoading = false;
+            this.countinuedQuit = false;
             this.payTig = false;
           }
         }else {
@@ -821,6 +823,8 @@
               this.quit = true;
             }else if (body.data.code == 20003) {
               this.showPmsAbnormal_ = true;
+              this.countinuedSureLoading = false;
+              this.secoundTip = false;
             }else {
               this.gobanck();
             }

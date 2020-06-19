@@ -753,6 +753,24 @@ const actions = {
     })
   },
 
+  // 退款和预授权结算初始金额
+  accountFeeInfo(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/getRoomFeeInfo?orderId='+param.orderId+'&payFlowId='+param.payFlowId,
+      method: 'GET',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //获取支付纪录
   getChargeRecard(ctx, param){
     ctx.dispatch('resource', {
