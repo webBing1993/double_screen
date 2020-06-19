@@ -85,7 +85,7 @@
                   <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0])" v-if="(!orderDetail.deposits[0].refund)">退款</el-button>
+                  <el-button type="primary" :loading="false" class="btn green"  @click="payInfoClick(orderDetail.deposits[0], 1)" v-if="(!orderDetail.deposits[0].refund)">退款</el-button>
                 </div>
               </div>
             </div>
@@ -109,7 +109,7 @@
                   <span class="red">{{(item.totalFee/100).toFixed(2)}}元</span>
                 </div>
                 <div class="list">
-                  <el-button type="primary" :loading="false" class="btn primaryColor" @click="payInfoClick(item)" v-if="item.channel == 4">结算</el-button>
+                  <el-button type="primary" :loading="false" class="btn primaryColor" @click="payInfoClick(item, 2)" v-if="item.channel == 4">结算</el-button>
                   <el-button type="danger" :loading="false" class="btn dangerColor" @click="payInfoCancle(item)" v-if="item.channel == 4">撤销</el-button>
                 </div>
               </div>
@@ -479,7 +479,7 @@
     },
     methods: {
       ...mapActions([
-          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountRefund', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit'
+          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit'
       ]),
 
       // 返回上一页
@@ -630,25 +630,23 @@
       },
 
       // 结账
-      payInfoClick(item) {
+      payInfoClick(item, type) {
         this.accountItem = item;
-        if (this.orderDetail.refundVO) {
-          this.accountRefund({
-            data: {
-              orderId: this.orderDetail.id
-            },
-            onsuccess: body => {
-              if (body.data.code == 0 && body.data.data) {
-                this.chargeRecordObj = body.data.data
-              }
-              this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
-              this.payTig = true;
+        this.accountFeeInfo({
+          orderId: this.orderDetail.id,
+          payFlowId: this.orderDetail.payFlowId,
+          onsuccess: body => {
+            if (body.data.code == 0 && body.data.data) {
+              this.chargeRecordObj = body.data.data
             }
-          })
-        }else {
-          this.payMoney = '';
-          this.payTig = true;
-        }
+            if (type == 1) {
+              this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
+            }else {
+              this.payMoney = body.data.data.consumeFee ? (body.data.data.consumeFee/100).toFixed(2) : 0;
+            }
+            this.payTig = true;
+          }
+        })
       },
 
       //继续退房
