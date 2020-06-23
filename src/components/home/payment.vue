@@ -981,12 +981,14 @@
               this.countinuedQuitSureLoading = false;
               if(body.data.code == 0){
                 this.payTig = false;
+                this.secoundTip1 = false;
                 this.isScreen = true;
                 this.loadingShow = true;
                 this.page = 1;
                 this.paymentList(1)
               }else if(body.data.code == 20003){
                 this.showPmsAbnormal = true;
+                this.secoundTip1 = true;
               }else if (body.data.code == 10006) {
                 this.$toast({
                   message: body.data.msg,
@@ -994,9 +996,11 @@
                 });
               }else if (body.data.code == 100049 || body.data.code == 100036) {
                 this.showBalance = true;
+                this.secoundTip1 = true;
               }
               this.checked = '';
               this.payTig = false;
+              this.secoundTip1 = false;
               this.showPmsAbnormalLoading = false;
             },
             onfail: (body, headers) => {
@@ -1028,6 +1032,7 @@
                   iconClass: 'icon ',
                 });
                 this.payTig = false;
+                this.secoundTip1 = false;
                 this.isScreen = true;
                 this.loadingShow = true;
                 this.page = 1;
@@ -1040,6 +1045,7 @@
               }
               this.checked = '';
               this.payTig = false;
+              this.secoundTip1 = false;
               this.showPmsAbnormalLoading = false;
               this.infoLoading = false;
               this.isScreen = false;
