@@ -58,7 +58,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="5"
+            :page-size="4"
             layout="total, prev, pager, next"
             :total="total" v-if="orderLists.length != 0 && showList_">
           </el-pagination>
@@ -383,12 +383,15 @@
 
       // 订单列表
       getPreOrder (page) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.getNoPmsQueryCheckInList({
           data: {
             start:"",
             end:"",
             page: page,
-            pageSize: 5,
+            pageSize: 4,
             statusList:'4',
             orderByClause: this.orderByFiled||'',
             checkInStatus:'CHECKIN',
@@ -473,6 +476,9 @@
                   if (body.data.data.orderGuestVos.length < body.data.data.maxCheckinCount && body.data.data.orderGuestVos.length < 4) {
                     if (this.cardShow) {
                       this.fakaTig = true;
+                      document.body.addEventListener('touchmove',this.bodyScroll,false);
+                      document.body.style.position = 'fixed';
+                      document.body.style.width = '100%';
                     }else {
                       this.goAdd(0);
                     }
@@ -504,6 +510,9 @@
           });
         }else {
           this.tigOrderShow = true;
+          document.body.addEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
         }
       },
 

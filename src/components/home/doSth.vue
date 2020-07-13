@@ -93,6 +93,24 @@
                 <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
               </div>
             </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='自动挂账失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn">请至PMS处理挂账</div>
+              </div>
+              <div class="list_fr">
+                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='退款计划失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>失败原因：</span><span>{{ item.remark }}</span></div>
+              </div>
+              <div class="list_fr">
+                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+              </div>
+            </div>
           </div>
           <div class="noMsg" v-if="doSthLists.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
@@ -170,13 +188,17 @@
               let checkoutapply = [];  // 退房申请
               let lvyeCheckout = [];   // 旅业退房
               let lvyeChangeRoom = [];  // 旅业换房
+              let autoSettleAccount = [];   // 自动挂账失败
+              let autoSettlePay = [];   // 退款计划失败
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
               checkoutapply = body.data.data.checkoutapply != null ? body.data.data.checkoutapply : [];
               lvyeCheckout = body.data.data.lvyeCheckout;
-              lvyeChangeRoom = body.data.data.lvyeChangeRoom;
+              lvyeChangeRoom = body.data.data.LVYECHANGEROOM ? body.data.data.LVYECHANGEROOM : [];
+              autoSettleAccount = body.data.data.AUTO_CREDIT_ACCOUNT ? body.data.data.AUTO_CREDIT_ACCOUNT : [];
+              autoSettlePay = body.data.data.AUTO_SETTLE_PAY ? body.data.data.AUTO_SETTLE_PAY : [];
               checkoutapply.forEach(item => {
                 item.doSthTitle = '退房申请';
                 item.createTime = item.applyTime;
@@ -199,7 +221,13 @@
               lvyeChangeRoom.forEach(item => {
                 item.doSthTitle = '旅业换房失败';
               });
-              this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom);
+              autoSettleAccount.forEach(item => {
+                item.doSthTitle = '自动挂账失败';
+              });
+              autoSettlePay.forEach(item => {
+                item.doSthTitle = '退款计划失败';
+              });
+              this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay);
               this.doSthLists.sort(this.compare('createTime'));
               console.log('this.doSthLists',this.doSthLists);
             }

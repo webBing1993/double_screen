@@ -18,11 +18,35 @@
           <span class="noTime" @click="datePickerChange" v-if="noTime">请选择日期</span>
           <i @click="nextDay"><img src="../../assets/xiayige.png" alt=""></i>
         </span>
-        <span class="items">
-          <span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)" :style="filterObj.payFlag == 1 ? tabImg[1] : tabImg[0]">微信支付</span>
-          <span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)" :style="filterObj.payFlag == 2 ? tabImg[1] : tabImg[0]">支付宝</span>
-        </span>
-        <span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange" :style="isPreauthorize ? tabImg[1] : tabImg[0]">预授权</span>
+
+        <div class="selectTab">
+          <el-select v-model="tabIndex" placeholder="支付方式" @change="tabStatusChange">
+            <el-option
+              v-for="item in payList"
+              :key="item"
+              :label="item"
+              :value="item">
+              <span>{{ item }}</span>
+            </el-option>
+          </el-select>
+
+          <el-select v-model="statusCurrent" placeholder="交易状态" @change="handleCommand">
+            <el-option
+              v-for="item in statusLists"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key">
+              <span>{{ item.value }}</span>
+            </el-option>
+          </el-select>
+
+        </div>
+
+        <!--<span class="items">-->
+          <!--<span :class="filterObj.payFlag == 1 ? 'change_item active' : 'change_item'" @click="payStatusChange(1)" :style="filterObj.payFlag == 1 ? tabImg[1] : tabImg[0]">微信支付</span>-->
+          <!--<span :class="filterObj.payFlag == 2 ? 'change_item active' : 'change_item'" @click="payStatusChange(2)" :style="filterObj.payFlag == 2 ? tabImg[1] : tabImg[0]">支付宝</span>-->
+        <!--</span>-->
+        <!--<span :class="isPreauthorize ? 'change_item active' : 'change_item'" @click="preLicensingChange" :style="isPreauthorize ? tabImg[1] : tabImg[0]">预授权</span>-->
         <span class="change_item sweeping" @click="sweepingClick">扫码结算</span>
       </div>
       <div class="paymentAll">
@@ -55,12 +79,16 @@
                 <img src="../../assets/gengduo.png" alt="">
               </div>
             </div>
+            <div class="tip" v-if="item.settleScheduleRoom">
+              <span>将于{{datetimeparse(item.settleScheduleRoom.scheduledSettleTime,"hh:mm:ss")}}操作{{ item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6) ? '结算'+((item.settleScheduleRoom.consumeFee)/100).toFixed(2) : '退款' +   ((item.settleScheduleRoom.paidFee - item.settleScheduleRoom.consumeFee)/100).toFixed(2) }}元（如{{ item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6) ? '结算' : '退款' }}金额有误，请至PMS进行反结账后点击“更新”按钮）</span>
+              <button round class="blueColor" @click.stop="resetItem(item.payFlowId)" >更新</button>
+            </div>
           </div>
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="10"
+            :page-size="3"
             layout="total, prev, pager, next"
             :total="total" v-if="paymentLists.length != 0">
           </el-pagination>
@@ -112,11 +140,11 @@
 
       <!-- 结算、退款弹框-->
       <div class="payTig" v-if="payTig">
-        <div class="shadow" @click="payTig = false;payMoney = ''"></div>
+        <div class="shadow" @click="closeTip(3)"></div>
         <div class="payTigContent">
           <div class="payTig_title">
             请确认{{payTigStatus == 1 ? '退款' : '消费'}}金额
-            <img src="../../assets/guanbi.png" alt="" @click="payTig = false;payMoney = ''">
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(3)">
           </div>
           <div class="payTig_content">
             <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="payTigStatus == 1 ? '请输入退款金额' : '请输入消费金额'"></div>
@@ -131,11 +159,11 @@
 
       <!-- 預授權詳情-->
       <div class="channelDetail" v-if="channelDetail">
-        <div class="shadow" @click="channelDetail=false;payMoney = ''"></div>
+        <div class="shadow"  @click="closeTip(1)"></div>
         <div class="detail">
           <div class="detail_content">
-            <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
-            <div class="title1 title" v-if="detailVal.refundModel && detailVal.refundModel.channel != 4"> 授权信息<img src="../../assets/guanbi.png" alt="" @click="channelDetailCancle"></div>
+            <div class="title" v-if="!detailVal.refundModel || detailVal.refundModel.channel == 4">授权信息<img src="../../assets/guanbi.png" alt="" @click="closeTip(1)"></div>
+            <div class="title1 title" v-if="detailVal.refundModel && detailVal.refundModel.channel != 4"> 授权信息<img src="../../assets/guanbi.png" alt="" @click="closeTip(1)"></div>
             <div class="lists">
               <div class="list">
                 <span>冻结金额</span>
@@ -216,8 +244,8 @@
               </div>
             </div>
             <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 8">
-              <span @click="accountCancelSure">取消授权</span>
-              <span @click="accounts">结算</span>
+              <span @click="accountCancelSure1(detailVal)">取消授权</span>
+              <span @click="accounts()">结算</span>
             </div>
           </div>
           </div>
@@ -225,11 +253,11 @@
 
       <!-- 订单详情-->
       <div class="channelDetail" v-if="channelDetail1">
-        <div class="shadow" @click="channelDetail1=false"></div>
+        <div class="shadow" @click="closeTip(2)"></div>
         <div class="detail">
           <div class="detail_content">
-            <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">支付信息<img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;"></div>
-            <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">支付信息<img src="../../assets/guanbi.png" alt="" @click="channelDetail1 = false;">
+            <div class="title"  v-if="!detailVal.refundModel || detailVal.refundModel == null">支付信息<img src="../../assets/guanbi.png" alt="" @click="closeTip(2)"></div>
+            <div class="title1 title"  v-if="detailVal.refundModel || detailVal.refundModel != null">支付信息<img src="../../assets/guanbi.png" alt="" @click="closeTip(2)">
             </div>
             <div class="lists">
               <div class="list">
@@ -303,7 +331,7 @@
             注意：系统无法自动入账PMS，请手工至PMS入账。
          </p>
           <div class="btns">
-            <el-button type="primary" :loading="false" class="btn1" @click="showPmsAbnormal=false;payMoney=''">暂不退款</el-button>
+            <el-button type="primary" :loading="false" class="btn1" @click="closeTip(4)">暂不退款</el-button>
             <el-button type="primary" :loading="showPmsAbnormalLoading" class="btn" @click="continuedCheckOutRoom()">继续退款</el-button>
           </div>
         </div>
@@ -350,7 +378,7 @@
           <div class="title_img"><img src="../../assets/querenshanchu.png" alt=""></div>
           <div class="title">账户余额不足</div>
           <div class="content">微信支付宝账户余额不足，请处理后重试</div>
-          <div class="know_btn"><img src="../../assets/Group.png" alt="" @click="showBalance=false"></div>
+          <div class="know_btn"><img src="../../assets/Group.png" alt="" @click="closeTip(5)"></div>
         </div>
       </div>
 
@@ -360,9 +388,78 @@
         <div class="quit_content">
           <div class="quit_title">退款金额包含房费，请确认是否退款？</div>
           <div class="quit_tabs">
-            <span class="cancel" @click="countinuedQuit=false;payTig=true;">取消</span>
+            <span class="cancel" @click="closeTip(6)">取消</span>
             <el-button type="primary" :loading="countinuedQuitSureLoading" class="sure" @click="countinuedQuitSure()">确认退款</el-button>
           </div>
+        </div>
+      </div>
+
+      <!-- 撤销弹框-->
+      <div class="payCancle" v-if="payCancle">
+        <div class="shadow" @click="closeTip(7)"></div>
+        <div class="content">
+          <div class="pay_title">
+            撤销预授权
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(7)">
+          </div>
+          <div class="pay_cantiner">
+            <p>撤销预授权后，该笔订单金额 <span> ¥{{(accountItem.totalFee/100).toFixed(2)}}</span>将会原路返回至用户账户，请再次确认后操作！</p>
+          </div>
+          <el-button type="danger" :loading="cancleLoading" class="btn" @click="accountCancelSure()">撤销预授权</el-button>
+        </div>
+      </div>
+
+      <!-- 完成预授权二次确认-->
+      <div class="secoundTip" v-if="secoundTip">
+        <div class="shadow"></div>
+        <div class="secoundTip_content">
+          <div class="title">
+            完成预授权
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(8)">
+          </div>
+          <div class="lists">
+            <div class="list">
+              <span>预授权金额</span>
+              <span>¥{{ (detailVal.totalFee/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span>消费金额</span>
+              <span class="primaryColor">¥{{ payMoney }}</span>
+            </div>
+            <div class="list">
+              <span>退还金额</span>
+              <span class="dangerColor">¥{{ ((detailVal.totalFee - payMoney*100)/100).toFixed(2) }}</span>
+            </div>
+          </div>
+          <div class="tip">请确认消费金额与实际消费金额一致，点击【完成预授权】退还金额将原路返回</div>
+          <el-button type="primary" :loading="countinuedSureLoading" class="btn" @click="syqContentFun()">完成预授权</el-button>
+        </div>
+      </div>
+
+      <!-- 退款输入二次确认-->
+      <div class="secoundTip" v-if="secoundTip1">
+        <div class="shadow"></div>
+        <div class="secoundTip_content">
+          <div class="title">
+            退款
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(9)">
+          </div>
+          <div class="lists">
+            <div class="list">
+              <span>收款金额</span>
+              <span>¥{{ (detailVal.totalFee/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span>消费金额</span>
+              <span class="primaryColor">¥{{ ((detailVal.totalFee - payMoney*100)/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span>退还金额</span>
+              <span class="dangerColor">¥{{ payMoney }}</span>
+            </div>
+          </div>
+          <div class="tip">请确认消费金额与实际消费金额一致，点击【完成】退还金额将原路返回</div>
+          <el-button type="primary" :loading="countinuedSureLoading1" class="btn" @click="quitTig()">完成</el-button>
         </div>
       </div>
 
@@ -399,6 +496,35 @@
           }
         ],    // tab bg
         isPreauthorize: false, // 预授权冻结选中状态
+        payList: ['全部', '微信支付', '支付宝'],    // 支付方式列表
+        tabIndex: null,   // 支付方式tab选中
+        statusCurrent: null,   // 交易状态选中
+        statusLists: [
+          {
+            key: '',
+            value: '全部'
+          },
+          {
+            key: '1',
+            value: '支付成功'
+          },
+          {
+            key: '10',
+            value: '退款成功'
+          },
+          {
+            key: '4',
+            value: '预授权冻结'
+          },
+          {
+            key: '5',
+            value: '预授权完成'
+          },
+          {
+            key: '6',
+            value: '预授权取消'
+          }
+        ],    // 交易状态
         paymentLists: [],  // 数据列表
         page: 1,  // 当前页数
         total: 0, // 总条数
@@ -438,6 +564,13 @@
         noTime: false,   // 为了搜索不显示日期
         countinuedQuitSureLoading: false,  // 房费二次确认按钮loading
         source: '',   // 详情区分是否是easypos还是值房通
+        payCancle: false,     // 撤销tip
+        countinuedSureLoading: false,     // 完成预授权二次确认loading
+        countinuedSureLoading1: false,     // 完成二次确认loading
+        cancleLoading: false,     // 撤销二次loading
+        secoundTip: false,     // 完成预授权二次tip
+        secoundTip1: false,     // 完成二次tip
+        accountItem: {},
       }
     },
     filters: {
@@ -445,8 +578,29 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList'
+        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList', 'accountFeeInfo', 'refreshItem'
       ]),
+
+      // 支付方式选中
+      handleCommand(command) {
+        this.statusCurrent = command;
+        this.page = 1;
+        this.paymentList(1);
+      },
+
+      // 交易状态选中
+      tabStatusChange(command) {
+        this.tabIndex = command;
+        if (command == '支付宝') {
+          this.filterObj.payFlag = 2
+        }else if (command == '微信支付') {
+          this.filterObj.payFlag = 1;
+        }else {
+          this.filterObj.payFlag = '';
+        }
+        this.page = 1;
+        this.paymentList(1);
+      },
 
       // 前一天
       preDay() {
@@ -456,6 +610,7 @@
           this.timeVal = new Date(this.timeVal.getTime() - 24 * 60 * 60 * 1000);
           this.loadingShow = true;
           this.showList = false;
+          this.page = 1;
           this.paymentList(1);
         }
       },
@@ -468,6 +623,7 @@
           this.timeVal = new Date(this.timeVal.getTime() + 24 * 60 * 60 * 1000);
           this.loadingShow = true;
           this.showList = false;
+          this.page = 1;
           this.paymentList(1);
         }
       },
@@ -486,6 +642,7 @@
         this.searchString1 = this.searchString2 = this.searchString = '';
         this.timeVal = new Date(val);
         this.showList = false;
+        this.page = 1;
         this.paymentList(1);
       },
 
@@ -630,15 +787,46 @@
         this.paymentList(val);
       },
 
+      // 单条刷新事件
+      resetItem(flowId) {
+          this.refreshItem({
+            flowId: flowId,
+            onsuccess: body => {
+                if (body.data.code == 0) {
+                  this.paymentLists.forEach((item, index) => {
+                      if (item.payFlowId == body.data.data.data[0].payFlowId) {
+                        this.paymentLists.splice(index, 1, body.data.data.data[0]);
+                      }
+                  });
+                  this.$toast({
+                    message: '更新成功',
+                    iconClass: 'icon ',
+                  });
+                }
+            },
+            onfail: body => {
+
+            },
+            onerror: body => {
+
+            }
+          })
+      },
+
       // 获取数据列表
       paymentList(page) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.undisposed ({
           data: {
             page: page,  //页数
+            size: 3,
             roomNo: '',//房号 (房间名字：如303)
             founder: 'All',
             timeEnd:  this.datetimeparse(this.timeVal.getTime(), 'yy-MM-dd') + ' ' + 15 + ':' + 33 + ':' + 40,
             isPreauthorize: this.isPreauthorize ? 1 : '',
+            paidModeAndStatus: this.statusCurrent ? this.statusCurrent : '',
             keyWord: this.searchString,
             ...this.filterObj
           },
@@ -707,6 +895,9 @@
                 }else {
                   this.channelDetail1 = true;
                 }
+                document.body.addEventListener('touchmove',this.bodyScroll,false);
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
                 this.sweepingTig = false;
                 this.sweepingTig_ = false;
               }else {
@@ -725,10 +916,45 @@
         });
       },
 
-      // 撤销预授权
+      // 关闭弹框
+      closeTip(type) {
+          if (type == 1) {
+              this.channelDetail=false;
+              this.payMoney = '';
+          }else if (type == 2) {
+              this.channelDetail1 = false;
+          }else if (type == 3) {
+              this.payTig = false;
+              this.payMoney = '';
+          }else if (type == 4) {
+              this.showPmsAbnormal = false;
+              this.payMoney = '';
+          }else if (type == 5) {
+              this.showBalance = false;
+          }else if (type == 6) {
+              this.countinuedQuit = false;
+              this.payTig = true;
+          }else if (type == 7) {
+              this.payCancle = false;
+              this.accountItem = {};
+              this.cancleLoading = false;
+          }else if (type == 8) {
+              this.secoundTip = false;
+              this.payMoney = '';
+          }else if (type == 9) {
+              this.secoundTip1 = false;
+              this.payMoney = '';
+          }
+          document.body.removeEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'initial';
+          document.body.style.width = 'auto';
+      },
+
+      // 撤销确认
       accountCancelSure() {
         this.isScreen = true;
         this.loadingShow = true;
+        this.cancleLoading = true;
         if (this.source != 3) {
           this.canclePreAuthorizedDeposit({
             data: {
@@ -740,6 +966,7 @@
               this.loadingShow = false;
               if (body.data.code == 0) {
                 this.channelDetail = false;
+                this.payCancle = false;
                 this.paymentList(this.page);
               }else if (body.data.code == 20003) {
                 this.showPmsAbnormal_ = true;
@@ -791,19 +1018,48 @@
         }
       },
 
+      // 撤销预授权
+      accountCancelSure1(item) {
+        this.channelDetail = false;
+        this.accountItem = item;
+        this.payCancle = true;
+      },
+
+
       // 结算
       refund() {
-        this.channelDetail1 = false;
-        this.payTig = true;
-        this.payTigStatus = 1;
+        this.accountFeeInfo({
+          orderId: this.detailVal.outTradeNo || '',
+          payFlowId: this.detailVal.payFlowId,
+          onsuccess: body => {
+            if (body.data.code == 0 && body.data.data) {
+              this.chargeRecordObj = body.data.data
+            }
+            this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
+            this.payTig = true;
+            this.channelDetail1 = false;
+            this.payTigStatus = 1;
+          }
+        })
       },
 
       // 快速结算
       accounts() {
-        this.channelDetail = false;
-        this.payTig = true;
-        this.infoLoading = false;
-        this.payTigStatus = 2;
+        this.accountFeeInfo({
+          orderId: this.detailVal.outTradeNo || '',
+          payFlowId: this.detailVal.payFlowId,
+          onsuccess: body => {
+            if (body.data.code == 0 && body.data.data) {
+              this.chargeRecordObj = body.data.data
+            }
+            this.payMoney = body.data.data.consumeFee ? (body.data.data.consumeFee/100).toFixed(2) : 0;
+            this.channelDetail = false;
+            this.payTig = true;
+            this.infoLoading = false;
+            this.payTigStatus = 2;
+          }
+        });
+
       },
 
       //继续退房
@@ -842,18 +1098,27 @@
             iconClass: 'icon ',
           });
         }else {
-          this.quitTig();
+          this.secoundTip1 = true;
+          this.infoLoading = false;
+          this.countinuedQuitSureLoading = false;
+          this.countinuedQuit = false;
+          this.payTig = false;
         }
       },
 
       // 二次确认
       countinuedQuitSure() {
         this.countinuedQuitSureLoading = true;
-        this.quitTig();
+        this.secoundTip1 = true;
+        this.infoLoading = false;
+        this.countinuedQuitSureLoading = false;
+        this.countinuedQuit = false;
+        this.payTig = false;
       },
 
       // 退款接口
       quitTig() {
+        this.countinuedSureLoading1 = true;
         if (this.source != 3) {
           this.reimburse({
             data:{
@@ -868,14 +1133,17 @@
               this.isScreen = false;
               this.countinuedQuit = false;
               this.countinuedQuitSureLoading = false;
+              this.countinuedSureLoading1 = false;
               if(body.data.code == 0){
                 this.payTig = false;
+                this.secoundTip1 = false;
                 this.isScreen = true;
                 this.loadingShow = true;
                 this.page = 1;
-                this.paymentList(1)
+                this.paymentList(1);
               }else if(body.data.code == 20003){
                 this.showPmsAbnormal = true;
+                this.secoundTip1 = true;
               }else if (body.data.code == 10006) {
                 this.$toast({
                   message: body.data.msg,
@@ -883,9 +1151,11 @@
                 });
               }else if (body.data.code == 100049 || body.data.code == 100036) {
                 this.showBalance = true;
+                this.secoundTip1 = true;
               }
               this.checked = '';
               this.payTig = false;
+              this.secoundTip1 = false;
               this.showPmsAbnormalLoading = false;
             },
             onfail: (body, headers) => {
@@ -893,6 +1163,7 @@
               this.countinuedQuit = false;
               this.isScreen = false;
               this.showPmsAbnormalLoading = false;
+              this.countinuedSureLoading1 = false;
               this.countinuedQuitSureLoading = false;
             },
             onerror: error => {
@@ -900,6 +1171,7 @@
               this.countinuedQuit = false;
               this.isScreen = false;
               this.showPmsAbnormalLoading = false;
+              this.countinuedSureLoading1 = false;
               this.countinuedQuitSureLoading = false;
             }
           });
@@ -917,6 +1189,7 @@
                   iconClass: 'icon ',
                 });
                 this.payTig = false;
+                this.secoundTip1 = false;
                 this.isScreen = true;
                 this.loadingShow = true;
                 this.page = 1;
@@ -929,6 +1202,7 @@
               }
               this.checked = '';
               this.payTig = false;
+              this.secoundTip1 = false;
               this.showPmsAbnormalLoading = false;
               this.infoLoading = false;
               this.isScreen = false;
@@ -978,85 +1252,103 @@
             iconClass: 'icon ',
           });
         }else {
-          if (this.source != 3) {
-            this.depositConsume({
-              data: {
-                orderId: this.detailVal.outTradeNo || '',
-                amount: this.payMoney,
-                remark: '',
-                payFlowId: this.detailVal.payFlowId
-              },
-              onsuccess: body => {
-                this.infoLoading = false;
-                this.isScreen = false;
-                if (body.data.code == 0) {
-                  this.payTig = false;
-                  this.isScreen = true;
-                  this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
-                }else if(body.data.code == 20003){
-                  this.showPmsAbnormal_ = true;
-                }else if (body.data.code == 100049 || body.data.code == 100036) {
-                  this.showBalance = true;
-                }else if (body.data.code == 10006) {
-                  this.payTig = false;
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
-                  this.isScreen = true;
-                  this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
-                }
-              },
-              onfail: (body, headers) => {
-                this.infoLoading = false;
-                this.isScreen = false;
-              },
-              onerror: error => {
-                this.infoLoading = false;
-                this.isScreen = false;
+          this.payTig = false;
+          this.secoundTip = true;
+          this.infoLoading = false;
+        }
+      },
+
+      syqContentFun() {
+        this.countinuedSureLoading = true;
+        if (this.source != 3) {
+          this.depositConsume({
+            data: {
+              orderId: this.detailVal.outTradeNo || '',
+              amount: this.payMoney,
+              remark: '',
+              payFlowId: this.detailVal.payFlowId
+            },
+            onsuccess: body => {
+              this.infoLoading = false;
+              this.isScreen = false;
+              if (body.data.code == 0) {
+                this.payTig = false;
+                this.countinuedSureLoading = false;
+                this.secoundTip = false;
+                this.isScreen = true;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1);
+              }else if(body.data.code == 20003){
+                this.showPmsAbnormal_ = true;
+              }else if (body.data.code == 100049 || body.data.code == 100036) {
+                this.showBalance = true;
+              }else if (body.data.code == 10006) {
+                this.payTig = false;
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
+                this.isScreen = true;
+                this.countinuedSureLoading = false;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1);
               }
-            });
-          }else {
-            this.consume({
-              data: {
-                amount: parseFloat(this.payMoney)*100,
-                flowId: this.detailVal.payFlowId,
-                pmsRecord : true
-              },
-              onsuccess: body => {
-                if (body.data.code == 0 ||body.data.errcode == 0) {
-                  this.payTig = false;
-                  this.isScreen = true;
-                  this.loadingShow = true;
-                  this.page = 1;
-                  this.paymentList(1);
-                  this.infoLoading = false;
-                  this.isScreen = false;
-                }else {
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
-                }
-                this.sureTip = false;
-                this.sureVal = '';
-                this.changeInput(this.sureVal);
-                this.inquiryLoading = false;
-              },
-              onfail: body => {
+            },
+            onfail: (body, headers) => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            },
+            onerror: error => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            }
+          });
+        }else {
+          this.consume({
+            data: {
+              amount: parseFloat(this.payMoney)*100,
+              flowId: this.detailVal.payFlowId,
+              pmsRecord : true
+            },
+            onsuccess: body => {
+              if (body.data.code == 0 ||body.data.errcode == 0) {
+                this.payTig = false;
+                this.countinuedSureLoading = false;
+                this.secoundTip = false;
+                this.isScreen = true;
+                this.loadingShow = true;
+                this.page = 1;
+                this.paymentList(1);
                 this.infoLoading = false;
                 this.isScreen = false;
-              },
-              onerror: body => {
-                this.infoLoading = false;
-                this.isScreen = false;
+              }else {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
               }
-            })
-          }
+              this.sureTip = false;
+              this.countinuedSureLoading = false;
+              this.secoundTip = false;
+              this.sureVal = '';
+              this.changeInput(this.sureVal);
+              this.inquiryLoading = false;
+            },
+            onfail: body => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            },
+            onerror: body => {
+              this.infoLoading = false;
+              this.countinuedSureLoading = false;
+              this.isScreen = false;
+            }
+          })
         }
       },
 
@@ -1076,9 +1368,6 @@
         this.channelDetail = false;
       },
 
-      bodyScroll(event){
-        event.preventDefault();
-      },
 
       // 扫码结算
       sweepingClick() {
@@ -1152,6 +1441,9 @@
 
       // 关闭扫码弹框
       closeSweeping () {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.sweepingTig = false;
         this.testCloseBarCode();
       },
@@ -1207,6 +1499,8 @@
     padding-top: 100px;
     width: 100vw;
     .changeItem {
+      display: flex;
+      align-items: center;
       padding: 22px 40px;
       text-align: left;
       position: relative;
@@ -1314,6 +1608,50 @@
         }
         .ivu-btn-default {
           display: none;
+        }
+      }
+      .selectTab {
+        .el-select {
+          width: 35%;
+          margin-right: 30px;
+          .el-input__inner {
+            background: #FFFFFF;
+            box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
+            border-radius: 40px;
+            height: 56px;
+            line-height: 56px;
+            padding: 0 40px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 700;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          }
+          .el-input__inner:-moz-placeholder {
+            color: #606266;
+            font-weight: 700;
+            font-size: 20px;
+          }
+          .el-input__inner:-ms-input-placeholder {
+            color: #606266;
+            font-weight: 700;
+            font-size: 20px;
+          }
+          .el-input__inner::-moz-placeholder {
+            color: #606266;
+            font-weight: 700;
+            font-size: 20px;
+          }
+          .el-input__inner::-webkit-input-placeholder {
+            color: #606266;
+            font-weight: 700;
+            font-size: 20px;
+          }
+          .el-input__suffix {
+            padding-right: 15px;
+          }
+          .el-icon-arrow-up:before {
+            font-size: 30px;
+          }
         }
       }
       .change_item {
@@ -1441,6 +1779,29 @@
               display: inline-block;
               width: 10px;
             }
+          }
+        }
+        .tip {
+          font-size: 20px;
+          color: #6F5F2D;
+          background-image: linear-gradient(90deg, #FBECC3 1%, #EDD59D 100%);
+          box-shadow: 0 8px 16px 0 rgba(0,0,0,0.10);
+          padding: 10px 40px;
+          width: calc(100% + 80px);
+          margin-left: -40px;
+          border-radius: 0 0 6px 6px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .blueColor {
+            font-size: 20px;
+            color: #1AAD19;
+            padding: 10px 30px;
+            border-radius: 30px;
+            box-shadow: none;
+            background-color: #ffffff;
+            border: none;
+            outline: none;
           }
         }
       }
@@ -1900,7 +2261,7 @@
         }
       }
     }
-    .countinuedQuit {
+    .countinuedQuit, .payCancle ,.secoundTip {
       .shadow {
         position: fixed;
         z-index: 10;
@@ -1960,6 +2321,122 @@
             top: 50%;
             transform: translateY(-50%);
           }
+        }
+      }
+    }
+    .payCancle {
+      .content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .pay_title {
+          color: #303133;
+          font-size: 30px;
+          position: relative;
+          padding: 30px 40px;
+          border-bottom: 1px solid #D8D8D8;
+          img {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+          }
+        }
+        .pay_cantiner {
+          width: 680px;
+          margin: 0 auto;
+          padding: 20px 0 60px;
+          p {
+            color: #000;
+            font-size: 30px;
+            padding: 0 40px;
+            text-align: left;
+            span {
+              color: #1AAD19;
+            }
+          }
+        }
+        .btn {
+          margin: 30px 0 40px;
+          background: #F5222D;
+          border-radius: 44px;
+          text-align: center;
+          height: 78px;
+          cursor: pointer;
+          width: 50%;
+          font-size: 26px;
+          color: #fff;
+        }
+      }
+    }
+    .secoundTip {
+      .secoundTip_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        width: 960px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .title {
+          color: #303133;
+          font-size: 30px;
+          position: relative;
+          padding: 30px 40px;
+          border-bottom: 1px solid #D8D8D8;
+          img {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+          }
+        }
+        .lists {
+          padding: 30px 40px;
+          .list {
+            padding: 30px 0 0;
+            font-size: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #000;
+            .primaryColor {
+              color: #1AAD19;
+            }
+            .dangerColor {
+              color: #F5222D;
+            }
+          }
+        }
+        .tip {
+          padding: 0 35px;
+          text-align: left;
+          font-size: 26px;
+          color: #303133;
+        }
+        .btn {
+          margin: 30px 0 40px;
+          background: #1AAD19;
+          border-radius: 44px;
+          text-align: center;
+          height: 78px;
+          cursor: pointer;
+          width: 50%;
+          font-size: 26px;
+          color: #fff;
         }
       }
     }
@@ -2276,5 +2753,19 @@
     display: none;
   }
 
+  .el-scrollbar {
+    .el-select-dropdown__wrap {
+      max-height: 350px;
+      .el-select-dropdown__list {
+        .el-select-dropdown__item {
+          display: block;
+          font-size: 20px;
+          padding: 15px 20px;
+          height: auto;
+          line-height: inherit;
+        }
+      }
+    }
+  }
 
 </style>

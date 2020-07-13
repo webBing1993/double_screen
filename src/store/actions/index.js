@@ -753,12 +753,47 @@ const actions = {
     })
   },
 
+  // 退款和预授权结算初始金额
+  accountFeeInfo(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/getRoomFeeInfo?orderId='+param.orderId+'&payFlowId='+param.payFlowId,
+      method: 'GET',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //获取支付纪录
   getChargeRecard(ctx, param){
     ctx.dispatch('resource', {
       url: '/ecard/workWechat/room/checkOut',
       method: 'POST',
       body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 交易管理item 刷新
+  refreshItem(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/wechatPay/refresh/auto/settle/'+param.flowId,
+      method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },
@@ -848,6 +883,23 @@ const actions = {
     ctx.dispatch('resource', {
       url: '/ecard/hotel/getTodoLists',
       method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 退房成功待办 我知道了
+  creditDoSth(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/update/auto/credit/'+param.id,
+      method: 'PUT',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },
