@@ -64,7 +64,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="4"
+            :page-size="3"
             layout="total, prev, pager, next"
             :total="total" v-if="orderLists.length != 0 && showList_">
           </el-pagination>
@@ -158,7 +158,7 @@
         <div class="checkIn_content">
           <div class="checkIn_title">
             <span>请确认订单支付状态</span>
-            <div class="checkIn_close" @click="checkInTip = false;">关闭</div>
+            <div class="checkIn_close" @click="closeTip">关闭</div>
           </div>
           <div class="lists">
             <div class="list">
@@ -419,6 +419,14 @@
         this.getPreOrder(1);
       },
 
+      // 关闭
+      closeTip() {
+        this.checkInTip = false;
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
+      },
+
       // 选择框完成事件
       checkInSure() {
         this.loadingCheckInSure = true;
@@ -497,6 +505,9 @@
               this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
               item.loadingdaiSure = false;
               this.checkInTip = true;
+              document.body.addEventListener('touchmove',this.bodyScroll,false);
+              document.body.style.position = 'fixed';
+              document.body.style.width = '100%';
             }else {
               item.loadingdaiSure = false;
             }
@@ -605,6 +616,9 @@
                 this.loadingShow = false;
                 this.changeItem.loadingBanli = false;
                 this.tigTeamShow = true;
+                document.body.addEventListener('touchmove',this.bodyScroll,false);
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
               }else {
                 this.changeItem.loadingBanli = false;
                 this.loadingShow = false;
@@ -647,6 +661,9 @@
 
       // 请先将团队主单入住后才能操作 我知道了
       tigTeamKnow() {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.tigTeamShow = false;
         sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
         sessionStorage.setItem('currentChange', this.page);
@@ -749,6 +766,9 @@
 
       // 订单列表
       getPreOrder (page) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         if (this.tabToDay) {
           let today=new Date().getTime();
           this.startTime = this.datetimeparse(today,'YYYY-MM-DD')+' 00:00:00';
@@ -762,7 +782,7 @@
             start: this.startTime,
             end: this.endTime,
             page: page,
-            pageSize: 4,
+            pageSize: 3,
             payMode: '',
             precheckinStatus: '',
             status: "1",

@@ -211,10 +211,10 @@
 
       <!-- 明细-->
       <div class="channelDetail" v-if="channelDetail">
-        <div class="shadow" @click="channelDetail=false"></div>
+        <div class="shadow" @click="closeTip(1)"></div>
         <div class="detail">
           <div class="detail_content">
-            <div class="title">{{payInfoType == 1 ? 'PMS收款' : 'PMS消费'}}<img src="../../assets/guanbi.png" alt="" @click="channelDetail=false"></div>
+            <div class="title">{{payInfoType == 1 ? 'PMS收款' : 'PMS消费'}}<img src="../../assets/guanbi.png" alt="" @click="closeTip(1)"></div>
             <div class="lists">
               <div class="list" v-if="payInfoType == 1" v-for="item in payInfoGetList">
                 <p>
@@ -246,7 +246,7 @@
         <div class="payTigContent">
           <div :class="(!orderDetail.refundVO && orderDetail.roomNos.length > 1) ? 'payTig_title titleBg' : 'payTig_title'">
             <span>{{!orderDetail.refundVO && orderDetail.roomNos.length > 1 ? '该笔交易关联多个房间，请再次确认消费金额' : ''}}</span>
-            <img src="../../assets/guanbi.png" alt="" @click="payTig = false;payMoney = '';infoLoading = false;">
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(2)">
           </div>
           <div class="payTig_content">
             <div class="content_title">
@@ -371,7 +371,7 @@
         <div class="secoundTip_content">
           <div class="title">
             完成预授权
-            <img src="../../assets/guanbi.png" alt="" @click="secoundTip = false;payMoney = ''">
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(3)">
           </div>
           <div class="lists">
             <div class="list">
@@ -398,7 +398,7 @@
         <div class="secoundTip_content">
           <div class="title">
             退款
-            <img src="../../assets/guanbi.png" alt="" @click="secoundTip1 = false;payMoney = ''">
+            <img src="../../assets/guanbi.png" alt="" @click="closeTip(4)">
           </div>
           <div class="lists">
             <div class="list">
@@ -586,10 +586,33 @@
         this.gobanck();
       },
 
+      // 弹框关闭
+      closeTip(type) {
+          if (type == 1) {
+              this.channelDetail = false;
+          }else if (type == 2) {
+              this.payTig = false;
+              this.payMoney = '';
+              this.infoLoading = false;
+          }else if (type == 3) {
+              this.secoundTip = false;
+              this.payMoney = '';
+          }else if (type == 4) {
+              this.secoundTip1 = false;
+              this.payMoney = '';
+          }
+          document.body.removeEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'initial';
+          document.body.style.width = 'auto';
+      },
+
       // 撤销
       payInfoCancle(item) {
         this.accountItem = item;
         this.payCancle = true;
+        document.body.addEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
       },
 
       // 撤销确认
@@ -644,6 +667,9 @@
             }else {
               this.payMoney = body.data.data.consumeFee ? (body.data.data.consumeFee/100).toFixed(2) : 0;
             }
+            document.body.addEventListener('touchmove',this.bodyScroll,false);
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
             this.payTig = true;
           }
         })
@@ -660,7 +686,11 @@
       // 二次确认退房费
       countinuedQuitSure() {
         this.countinuedQuitSureLoading = true;
-        this.paySure();
+        this.secoundTip1 = true;
+        this.infoLoading = false;
+        this.countinuedQuitSureLoading = false;
+        this.countinuedQuit = false;
+        this.payTig = false;
       },
 
       // 退款接口
@@ -676,6 +706,7 @@
             payFlowId: this.accountItem.payFlowId
           },
           onsuccess:(body)=>{
+            this.closeTip();
             if(body.data.code == 0){
               this.payTig = false;
               this.secoundTip1 = false;
@@ -813,6 +844,7 @@
             payFlowId: this.accountItem.payFlowId
           },
           onsuccess: body => {
+            this.closeTip();
             if (body.data.code == 0) {
               this.payMoney = '';
               this.payTig = false;
@@ -845,10 +877,14 @@
       lookInfoList(index) {
         this.payInfoType = index;
         this.channelDetail = true;
+        document.body.addEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
       },
 
       cancel() {
         this.quit = false;
+        this.closeTip();
         if (sessionStorage.getItem('quitSe') == 1) {
           sessionStorage.removeItem('quitSe');
           this.replayList();
@@ -866,6 +902,7 @@
           },
           onsuccess: body => {
             this.payMoney  = '';
+            this.closeTip();
             if (body.data.code == 0) {
               this.$message({
                 message: '退房成功',

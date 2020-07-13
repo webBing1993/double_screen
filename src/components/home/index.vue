@@ -25,7 +25,7 @@
             <img :src="myInfo.img" alt="" onerror="this.myInfo.src='../../assets/morentouxiang.png'">
             <span>{{myInfo.name}}</span>
           </div>
-          <div class="tuichu" @click="quit=true;">
+          <div class="tuichu" @click="quitTipShow">
             <img src="../../assets/tuichu.png" alt="">
           </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="quit_content">
           <div class="quit_title">是否确认退出？</div>
           <div class="quit_tabs">
-            <span class="cancel" @click="quit=false">取消</span>
+            <span class="cancel" @click="quitTipClose">取消</span>
             <span class="sure" @click="sure">确认</span>
           </div>
         </div>
@@ -60,9 +60,18 @@
         <div class="content" v-if="pmsPay">
           收款成功！收款金额{{onlyItem.totalFeeStr}}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
         </div>
-        <div class="btns">
-          <span class="knowBtn" @click="checkOut">我知道了</span>
+        <div class="content" v-if="quitSuccessHouse">
+          房号【{{onlyItem.roomNo}}】客人插卡退房成功，房卡已回收，房态已改为脏房请及时打扫
+        </div>
+        <div class="content" v-if="quitMoney">
+          房号【{{onlyItem.roomNo}}】退款计划失败，{{ onlyItem.remark }}
+        </div>
+        <div class="btns" v-if="!quitSuccessHouse">
+          <span class="knowBtn" @click="checkOut()">我知道了</span>
           <span class="lookDetail" @click="lookDetail">查看详情</span>
+        </div>
+        <div class="btns" v-if="quitSuccessHouse">
+          <span class="lookDetail" @click="checkOut(onlyItem.id)">我知道了</span>
         </div>
       </div>
 
@@ -105,17 +114,22 @@
         wuka: false,        // 无卡提示
         manka: false,       // 卡槽满
         pmsPay: false,       // pms入账失败
+        quitSuccessHouse: false,       // 插卡退房成功
+        quitMoney: false,       // 退款计划失败
         pmsOrderIdChange: 0,
         onlyItem: {},    // 临时退房数据
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList', 'newIdentityList'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'creditDoSth'
       ]),
 
       // tab切换
       tabClick (index) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.tabIndex = index;
         this.loadingShow = false;
         if (index == 1) {
@@ -148,11 +162,30 @@
         n = null;
       },
 
+      // 退出弹框
+      quitTipShow() {
+          document.body.addEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          this.quit = true;
+      },
+
       // 退出事件
       sure() {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.quit = false;
 //        window.location.href = this.windowUrl;
         this.logOut();
+      },
+
+      // 退出弹框消失
+      quitTipClose() {
+          document.body.removeEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'initial';
+          document.body.style.width = 'auto';
+          this.quit = false;
       },
 
       logOut() {
@@ -164,7 +197,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.LVYECHANGEROOM && body.data.data.LVYECHANGEROOM.length == 0) {
+              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.creditcheckout.length == 0) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
@@ -173,6 +206,10 @@
                       this.findItem(body.data.data, 1);
                   }else if (body.data.data.pmspay.length != 0) {
                     this.findItem(body.data.data, 4);
+                  }else if (body.data.data.creditcheckout && body.data.data.creditcheckout.length != 0) {
+                    this.findItem(body.data.data, 5);
+                  }else if (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length != 0) {
+                    this.findItem(body.data.data, 6);
                   }
               }
             }
@@ -196,8 +233,12 @@
           checkOutList = data.wuka;
         }else if (type == 3) {
           checkOutList = data.manka;
-        }else {
+        }else if (type == 4) {
           checkOutList = data.pmspay;
+        }else if (type == 5) {
+          checkOutList = data.creditcheckout
+        }else {
+          checkOutList = data.AUTO_SETTLE_PAY;
         }
         let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
         if (arr_.length == 0) {
@@ -208,23 +249,47 @@
             this.manka = false;
             this.quithouse_ = true;
             this.pmsPay = false;
+            this.quitSuccessHouse = false;
+            this.quitMoney = false;
           }else if (type == 2) {
             this.wuka = true;
             this.quithouse_ = false;
             this.manka = false;
             this.quithouse = true;
             this.pmsPay = false;
+            this.quitSuccessHouse = false;
+            this.quitMoney = false;
           }else if (type == 3){
             this.manka = true;
             this.quithouse_ = false;
             this.wuka = false;
             this.quithouse = true;
             this.pmsPay = false;
-          }else {
+            this.quitSuccessHouse = false;
+            this.quitMoney = false;
+          }else if (type == 4) {
             this.pmsPay = true;
             this.manka = false;
             this.quithouse_ = false;
             this.wuka = false;
+            this.quitSuccessHouse = false;
+            this.quitMoney = false;
+            this.quithouse = true;
+          }else if (type == 5) {
+            this.quitSuccessHouse = true;
+            this.pmsPay = false;
+            this.manka = false;
+            this.quithouse_ = false;
+            this.wuka = false;
+            this.quitMoney = false;
+            this.quithouse = true;
+          }else if (type == 6) {
+            this.quitSuccessHouse = false;
+            this.pmsPay = false;
+            this.manka = false;
+            this.quithouse_ = false;
+            this.wuka = false;
+            this.quitMoney = true;
             this.quithouse = true;
           }
         }else {
@@ -253,23 +318,47 @@
               this.manka = false;
               this.quithouse_ = true;
               this.pmsPay = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
             }else if (type == 2) {
               this.wuka = true;
               this.quithouse_ = false;
               this.manka = false;
               this.quithouse = true;
               this.pmsPay = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
             }else if (type == 3){
               this.manka = true;
               this.quithouse_ = false;
               this.wuka = false;
               this.quithouse = true;
               this.pmsPay = false;
-            }else {
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
+            }else if (type == 4) {
               this.pmsPay = true;
               this.manka = false;
               this.quithouse_ = false;
               this.wuka = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
+              this.quithouse = true;
+            }else if (type == 5) {
+              this.quitSuccessHouse = true;
+              this.pmsPay = false;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quitMoney = false;
+              this.quithouse = true;
+            }else if (type == 6) {
+              this.quitSuccessHouse = false;
+              this.pmsPay = false;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quitMoney = true;
               this.quithouse = true;
             }
           }
@@ -277,12 +366,30 @@
       },
 
       // 我知道了
-      checkOut() {
-        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-        this.quithouse = false;
-        arr.push(this.onlyItem);
-        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
-        this.doSthList();
+      checkOut(id) {
+          if (id) {
+              this.creditDoSth({
+                id: id,
+                onsuccess: body => {
+                    if (body.data.code == 0) {
+                      this.quithouse = false;
+                      this.doSthList();
+                    }
+                },
+                onfail: body => {
+
+                },
+                onerror: body => {
+
+                }
+              })
+          }else {
+            let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+            this.quithouse = false;
+            arr.push(this.onlyItem);
+            sessionStorage.setItem('checkOutList', JSON.stringify(arr));
+            this.doSthList();
+          }
       },
 
       // 查看详情

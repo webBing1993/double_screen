@@ -84,6 +84,11 @@ Vue.mixin({
         console.log ('23:59：' + todayEleven.getTime ());
         return today = {todayStart: todayZero.getTime (), todayEnd: todayEleven.getTime ()}
       },
+
+      bodyScroll(event){
+        event.preventDefault();
+      },
+
   },
   mounted () {
     let httpUrl = apiTool.httpUrlEnv();

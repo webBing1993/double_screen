@@ -96,16 +96,16 @@
             <div class="list_content" v-else-if="item.doSthTitle=='自动挂账失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn"><span>住客姓名：</span><span v-for="(i, index) in item.guestList">{{index < (item.guestList.length - 1) ? i.name + '/' : i.name}}</span></div>
+                <div class="roomIn">请至PMS处理挂账</div>
               </div>
               <div class="list_fr">
                 <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
               </div>
             </div>
-            <div class="list_content" v-else-if="item.doSthTitle=='自动结算失败'">
+            <div class="list_content" v-else-if="item.doSthTitle=='退款计划失败'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn"><span>住客姓名：</span><span v-for="(i, index) in item.guestList">{{index < (item.guestList.length - 1) ? i.name + '/' : i.name}}</span></div>
+                <div class="roomIn"><span>失败原因：</span><span>{{ item.remark }}</span></div>
               </div>
               <div class="list_fr">
                 <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
@@ -189,7 +189,7 @@
               let lvyeCheckout = [];   // 旅业退房
               let lvyeChangeRoom = [];  // 旅业换房
               let autoSettleAccount = [];   // 自动挂账失败
-              let autoSettlePay = [];   // 自动结算失败
+              let autoSettlePay = [];   // 退款计划失败
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
@@ -225,7 +225,7 @@
                 item.doSthTitle = '自动挂账失败';
               });
               autoSettlePay.forEach(item => {
-                item.doSthTitle = '自动结算失败';
+                item.doSthTitle = '退款计划失败';
               });
               this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay);
               this.doSthLists.sort(this.compare('createTime'));

@@ -764,7 +764,7 @@
               .li {
                 background: #F8F8F8;
                 display: inline-block;
-                padding: 18px 10px;
+                padding: 18px 9px;
                 text-align: left;
                 font-size: 24px;
                 border: 1px solid #D8D8D8;
