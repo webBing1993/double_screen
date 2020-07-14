@@ -300,11 +300,11 @@
           let result = [];
           for(var i = 0; i < checkOutList.length; i++){
             let obj = checkOutList[i];
-            let num = obj.orderId;
+            let num = obj.id;
             let isExist = false;
             for(var j = 0; j < arr_.length; j++){
               let aj = arr_[j];
-              let n = aj.orderId;
+              let n = aj.id;
               if(n == num){
                 isExist = true;
                 break;
