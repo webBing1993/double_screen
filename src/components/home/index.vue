@@ -204,11 +204,14 @@
 //                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
                       this.findItem(body.data.data, 1);
-                  }else if (body.data.data.pmspay.length != 0) {
+                  }
+                  if (body.data.data.pmspay.length != 0) {
                     this.findItem(body.data.data, 4);
-                  }else if (body.data.data.creditcheckout && body.data.data.creditcheckout.length != 0) {
+                  }
+                  if (body.data.data.creditcheckout && body.data.data.creditcheckout.length != 0) {
                     this.findItem(body.data.data, 5);
-                  }else if (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length != 0) {
+                  }
+                  if (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length != 0) {
                     this.findItem(body.data.data, 6);
                   }
               }
@@ -226,6 +229,7 @@
 
       // 过滤
       findItem(data, type) {
+          console.log('type', type);
         let checkOutList = '';
         if (type == 1) {
           checkOutList = data.checkoutapply;
