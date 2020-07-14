@@ -9,7 +9,7 @@
               <img src="../../assets/fanhui1.png" alt="">
               <span>返回</span>
             </div>
-            <!--<el-button type="success"  @click="doPrint()" class="doPrint" v-if="changeItem.type == 0">打印房间二维码</el-button>-->
+            <el-button type="success"  @click="doPrint()" class="doPrint" v-if="changeItem.type == 0">打印房间二维码</el-button>
           </div>
           <div class="checkInChange">
             <div class="checkIn_header">
@@ -500,7 +500,7 @@
       this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
-//        this.getCode();
+        this.getCode();
       }else {
         this.getOrderFreeList();
       }
