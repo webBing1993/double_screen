@@ -1035,7 +1035,7 @@
             if (body.data.code == 0 && body.data.data) {
               this.chargeRecordObj = body.data.data
             }
-            this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
+            this.payMoney = body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0;
             this.payTig = true;
             this.channelDetail1 = false;
             this.payTigStatus = 1;
@@ -1052,7 +1052,7 @@
             if (body.data.code == 0 && body.data.data) {
               this.chargeRecordObj = body.data.data
             }
-            this.payMoney = body.data.data.consumeFee ? (body.data.data.consumeFee/100).toFixed(2) : 0;
+            this.payMoney = body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0;
             this.channelDetail = false;
             this.payTig = true;
             this.infoLoading = false;

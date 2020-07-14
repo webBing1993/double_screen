@@ -663,9 +663,9 @@
               this.chargeRecordObj = body.data.data
             }
             if (type == 1) {
-              this.payMoney = body.data.data.refundFee ? (body.data.data.refundFee/100).toFixed(2) : 0;
+              this.payMoney = body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0;
             }else {
-              this.payMoney = body.data.data.consumeFee ? (body.data.data.consumeFee/100).toFixed(2) : 0;
+              this.payMoney = body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0;
             }
             document.body.addEventListener('touchmove',this.bodyScroll,false);
             document.body.style.position = 'fixed';
