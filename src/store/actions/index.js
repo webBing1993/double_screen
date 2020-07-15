@@ -771,6 +771,23 @@ const actions = {
     })
   },
 
+  // 判断是多房关联支付情况
+  unionPayInfo(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/unionPayInfo/'+param.payFlowId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //获取支付纪录
   getChargeRecard(ctx, param){
     ctx.dispatch('resource', {

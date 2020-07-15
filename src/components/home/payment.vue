@@ -142,11 +142,14 @@
       <div class="payTig" v-if="payTig">
         <div class="shadow" @click="closeTip(3)"></div>
         <div class="payTigContent">
-          <div class="payTig_title">
-            请确认{{payTigStatus == 1 ? '退款' : '消费'}}金额
+          <div :class="payType ? 'payTig_title titleBg' : 'payTig_title'">
+            <span>{{ payType ? '该笔交易关联多个房间，请再次确认消费金额' : ''}}</span>
             <img src="../../assets/guanbi.png" alt="" @click="closeTip(3)">
           </div>
           <div class="payTig_content">
+            <div class="content_title">
+              请确认{{payTigStatus == 1 ? '退款' : '消费'}}金额
+            </div>
             <div class="payTig_input"><input type="text" v-model="payMoney" :placeholder="payTigStatus == 1 ? '请输入退款金额' : '请输入消费金额'"></div>
             <div class="payTig_keyBoard">
               <span v-for="item in keyBoard" @click="keyEntry_(item)">{{item}}</span>
@@ -529,6 +532,7 @@
         page: 1,  // 当前页数
         total: 0, // 总条数
         payTig: false,   // 结算/退款弹框
+        payType: false,       // true为关联多房 一起付
         infoLoading: false, // 结算loading
         payTigStatus: '',  // 判断是否为退款还是结算
         payMoney: '',   // 退款，结算金额
@@ -578,7 +582,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList', 'accountFeeInfo', 'refreshItem'
+        'goto', 'reimburse', 'depositConsume', 'undisposed', 'canclePreAuthorizedDeposit', 'paymentAndUnfinish', 'printPay', 'refundpos', 'consume', 'resciendCancel', 'configList', 'accountFeeInfo', 'refreshItem', 'unionPayInfo'
       ]),
 
       // 支付方式选中
@@ -1036,9 +1040,21 @@
               this.chargeRecordObj = body.data.data
             }
             this.payMoney = body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0;
-            this.payTig = true;
-            this.channelDetail1 = false;
-            this.payTigStatus = 1;
+            this.unionPayInfo({
+              payFlowId: this.detailVal.payFlowId,
+              onsuccess: body => {
+                if (body.data.code == 0) {
+                  if (body.data.data) {
+                    this.payType = true;
+                  }else {
+                    this.payType = false;
+                  }
+                }
+                this.payTig = true;
+                this.channelDetail1 = false;
+                this.payTigStatus = 1;
+              }
+            });
           }
         })
       },
@@ -2029,6 +2045,11 @@
             height: 24px;
             cursor: pointer;
           }
+        }
+        .titleBg {
+          background: #F5222D;
+          color: #fff;
+          border-radius: 20px 20px 0 0;
         }
         .payTig_content {
           width: 680px;

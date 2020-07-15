@@ -244,8 +244,8 @@
       <div class="payTig" v-if="payTig">
         <div class="shadow"></div>
         <div class="payTigContent">
-          <div :class="(!orderDetail.refundVO && orderDetail.roomNos.length > 1) ? 'payTig_title titleBg' : 'payTig_title'">
-            <span>{{!orderDetail.refundVO && orderDetail.roomNos.length > 1 ? '该笔交易关联多个房间，请再次确认消费金额' : ''}}</span>
+          <div :class="payType ? 'payTig_title titleBg' : 'payTig_title'">
+            <span>{{ payType ? '该笔交易关联多个房间，请再次确认消费金额' : ''}}</span>
             <img src="../../assets/guanbi.png" alt="" @click="closeTip(2)">
           </div>
           <div class="payTig_content">
@@ -475,11 +475,12 @@
         countinuedSureLoading1: false,     // 完成二次确认loading
         secoundTip: false,     // 完成预授权二次tip
         secoundTip1: false,     // 完成二次tip
+        payType: false,       // true为关联多房 一起付
       }
     },
     methods: {
       ...mapActions([
-          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit'
+          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit', 'unionPayInfo'
       ]),
 
       // 返回上一页
@@ -667,10 +668,22 @@
             }else {
               this.payMoney = body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0;
             }
-            document.body.addEventListener('touchmove',this.bodyScroll,false);
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-            this.payTig = true;
+            this.unionPayInfo({
+              payFlowId: this.orderDetail.payFlowId,
+              onsuccess: body => {
+                  if (body.data.code == 0) {
+                      if (body.data.data) {
+                          this.payType = true;
+                      }else {
+                          this.payType = false;
+                      }
+                  }
+                  document.body.addEventListener('touchmove',this.bodyScroll,false);
+                  document.body.style.position = 'fixed';
+                  document.body.style.width = '100%';
+                  this.payTig = true;
+              }
+            });
           }
         })
       },
