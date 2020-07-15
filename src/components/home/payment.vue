@@ -1069,10 +1069,22 @@
               this.chargeRecordObj = body.data.data
             }
             this.payMoney = body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0;
-            this.channelDetail = false;
-            this.payTig = true;
-            this.infoLoading = false;
-            this.payTigStatus = 2;
+            this.unionPayInfo({
+              payFlowId: this.detailVal.payFlowId,
+              onsuccess: body => {
+                if (body.data.code == 0) {
+                  if (body.data.data) {
+                    this.payType = true;
+                  }else {
+                    this.payType = false;
+                  }
+                }
+                this.channelDetail = false;
+                this.payTig = true;
+                this.infoLoading = false;
+                this.payTigStatus = 2;
+              }
+            });
           }
         });
 
@@ -2054,6 +2066,12 @@
         .payTig_content {
           width: 680px;
           margin: 0 auto;
+          .content_title {
+            color: #303133;
+            font-size: 30px;
+            position: relative;
+            padding: 30px 40px;
+          }
           .payTig_input {
             input {
               width: 678px;
