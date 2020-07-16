@@ -105,11 +105,11 @@
               快速筛选
             </div>
             <div class="changTabs">
-              <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">入住人</span>
-              <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">房间号</span>
+              <span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">房间号</span>
+              <span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">入住人</span>
             </div>
             <div class="change_tabs">
-              <div class="tab" v-if="changeTabString == 1">
+              <div class="tab" v-if="changeTabString == 2">
                 <div class="input">
                   <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1"  @input="changeKeyBords">
                   <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
