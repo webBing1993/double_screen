@@ -230,7 +230,7 @@
       // 过滤
       findItem(data, type) {
           console.log('type', type);
-        let checkOutList = '';
+        let checkOutList = [];
         if (type == 1) {
           checkOutList = data.checkoutapply;
         }else if (type == 2) {
@@ -244,11 +244,12 @@
         }else {
           checkOutList = data.AUTO_SETTLE_PAY;
         }
+        console.log('checkOutList', checkOutList);
         let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
+        console.log('arr_', arr_);
         if (arr_.length == 0) {
           this.onlyItem = checkOutList[0];
           if (type == 1) {
-            this.quithouse = true;
             this.wuka = false;
             this.manka = false;
             this.quithouse_ = true;
@@ -259,7 +260,6 @@
             this.wuka = true;
             this.quithouse_ = false;
             this.manka = false;
-            this.quithouse = true;
             this.pmsPay = false;
             this.quitSuccessHouse = false;
             this.quitMoney = false;
@@ -267,7 +267,6 @@
             this.manka = true;
             this.quithouse_ = false;
             this.wuka = false;
-            this.quithouse = true;
             this.pmsPay = false;
             this.quitSuccessHouse = false;
             this.quitMoney = false;
@@ -278,7 +277,6 @@
             this.wuka = false;
             this.quitSuccessHouse = false;
             this.quitMoney = false;
-            this.quithouse = true;
           }else if (type == 5) {
             this.quitSuccessHouse = true;
             this.pmsPay = false;
@@ -286,7 +284,6 @@
             this.quithouse_ = false;
             this.wuka = false;
             this.quitMoney = false;
-            this.quithouse = true;
           }else if (type == 6) {
             this.quitSuccessHouse = false;
             this.pmsPay = false;
@@ -294,8 +291,10 @@
             this.quithouse_ = false;
             this.wuka = false;
             this.quitMoney = true;
-            this.quithouse = true;
           }
+          setTimeout(() => {
+            this.quithouse = true;
+          }, 500)
         }else {
           let result = [];
           for(var i = 0; i < checkOutList.length; i++){
@@ -314,10 +313,11 @@
               result.push(obj);
             }
           }
+          console.log('result', result);
+          console.log('result', result.length);
           if (result.length != 0) {
             this.onlyItem = result[0];
             if (type == 1) {
-              this.quithouse = true;
               this.wuka = false;
               this.manka = false;
               this.quithouse_ = true;
@@ -328,7 +328,6 @@
               this.wuka = true;
               this.quithouse_ = false;
               this.manka = false;
-              this.quithouse = true;
               this.pmsPay = false;
               this.quitSuccessHouse = false;
               this.quitMoney = false;
@@ -336,7 +335,6 @@
               this.manka = true;
               this.quithouse_ = false;
               this.wuka = false;
-              this.quithouse = true;
               this.pmsPay = false;
               this.quitSuccessHouse = false;
               this.quitMoney = false;
@@ -347,7 +345,6 @@
               this.wuka = false;
               this.quitSuccessHouse = false;
               this.quitMoney = false;
-              this.quithouse = true;
             }else if (type == 5) {
               this.quitSuccessHouse = true;
               this.pmsPay = false;
@@ -355,7 +352,6 @@
               this.quithouse_ = false;
               this.wuka = false;
               this.quitMoney = false;
-              this.quithouse = true;
             }else if (type == 6) {
               this.quitSuccessHouse = false;
               this.pmsPay = false;
@@ -363,8 +359,10 @@
               this.quithouse_ = false;
               this.wuka = false;
               this.quitMoney = true;
-              this.quithouse = true;
             }
+            setTimeout(() => {
+              this.quithouse = true;
+            }, 500)
           }
         }
       },
