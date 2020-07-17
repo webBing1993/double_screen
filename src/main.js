@@ -71,7 +71,7 @@ Axios.interceptors.response.use(response => {
   return Promise.resolve(response)
 },error => {
   console.log("error", error);
-  if (axios.isCancel(error)) {
+  if (axios.isCancel && axios.isCancel(error)) {
     console.log('Rquest canceled', error.msg); //请求如果被取消，这里是返回取消的message
   }else if (error.response) {
     let url = window.location.href.split('#')[0];
@@ -102,9 +102,10 @@ Axios.interceptors.response.use(response => {
         break;
       case 504:
         Vue.prototype.$toast({
-          message: "请求超时或网络断开连接",
+          message: "网络断开连接",
           iconClass: 'icon ',
         });
+        router.replace('/wuwangluo');
         break;
       case 502:
         Vue.prototype.$toast({
