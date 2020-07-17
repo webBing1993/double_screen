@@ -968,11 +968,13 @@
             },
             onsuccess: body => {
               this.loadingShow = false;
+              this.cancleLoading = false;
               if (body.data.code == 0) {
                 this.channelDetail = false;
                 this.payCancle = false;
                 this.paymentList(this.page);
               }else if (body.data.code == 20003) {
+                this.payCancle = false;
                 this.showPmsAbnormal_ = true;
               }else {
                 this.$toast({
@@ -983,9 +985,11 @@
             },
             onfail: (body, headers) => {
               this.loadingShow = false;
+              this.cancleLoading = false;
             },
             onerror: body => {
               this.loadingShow = false;
+              this.cancleLoading = false;
             }
           });
         }else {
@@ -1010,13 +1014,16 @@
                 });
               }
               this.rescindTip = false;
+              this.cancleLoading = false;
               this.rescindLoading_ = false;
             },
             onfail: body => {
               this.loadingShow = false;
+              this.cancleLoading = false;
             },
             onerror: body => {
               this.loadingShow = false;
+              this.cancleLoading = false;
             }
           })
         }

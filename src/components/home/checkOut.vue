@@ -636,6 +636,7 @@
               this.payCancle = false;
               this.paymentList(this.page);
             }else if (body.data.code == 20003) {
+              this.payCancle = false;
               this.showPmsAbnormal_ = true;
             }else {
               this.$toast({
@@ -646,9 +647,11 @@
           },
           onfail: (body, headers) => {
             this.cancleLoading = false;
+            this.payCancle = false;
           },
           onerror: body => {
             this.cancleLoading = false;
+            this.payCancle = false;
           }
         });
       },
