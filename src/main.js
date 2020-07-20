@@ -124,7 +124,7 @@ Axios.interceptors.response.use(response => {
     // 返回接口返回的错误信息
     return Promise.reject(error.response.data);
   }else {
-    router.replace('/wuwangluo');
+    // router.replace('/wuwangluo');
   }
 });
 

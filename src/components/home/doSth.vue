@@ -43,7 +43,9 @@
                 <div class="roomIn" v-else><span>失败原因：</span>回收卡槽已满</div>
               </div>
               <div class="list_fr">
-                <span @click="faka(item.id)">处理完成</span>
+                <el-button @click="faka(item.id)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='PMS入住失败'">
@@ -52,7 +54,9 @@
                 <div class="roomIn"><span>住客信息：</span><span v-if="item.guestList" v-for="i in item.guestList">【{{i.name}}/{{i.idCard}}/{{i.address}} 】</span></div>
               </div>
               <div class="list_fr">
-                <span @click="pmsCheckIn(item.id)">处理完成</span>
+                <el-button @click="pmsCheckIn(item.id)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='PMS入账失败'">
@@ -61,8 +65,12 @@
                 <div class="rooms rooms_"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}  &nbsp;&nbsp;<span>房费：</span>{{item.roomFeeStr == '预付房费' ? '预付房费' : (item.roomFeeStr != null ? item.roomFeeStr + '元' : '无')}}  &nbsp;&nbsp;<span>押金：</span>{{item.depositFeeStr != '免押' ? (item.depositFeeStr != null ? item.depositFeeStr+'元' : '无') : item.depositFeeStr}}</div>
               </div>
               <div class="list_fr">
-                <span @click="pmsPayDetail(item.orderId, item.payFlowId)" class="lookDetail">查看详情</span>
-                <span @click="pmsPay(item.orderId, item.payFlowId)">处理完成</span>
+                <el-button @click="pmsPayDetail(item.orderId, item.payFlowId)" class="lookDetail" :disabled="loadingShow">
+                  查看详情
+                </el-button>
+                <el-button @click="pmsPay(item.orderId, item.payFlowId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle == '前台支付'">
@@ -71,7 +79,9 @@
                 <div class="roomIn"><span>订单金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
               </div>
               <div class="list_fr">
-                <span @click="nativepay(item.id)">处理完成</span>
+                <el-button @click="nativepay(item.id)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='旅业退房失败'">
@@ -80,7 +90,9 @@
                 <div class="roomIn"><span>住客姓名：</span><span v-for="(i, index) in item.guestList">{{index < (item.guestList.length - 1) ? i.name + '/' : i.name}}</span></div>
               </div>
               <div class="list_fr">
-                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='旅业换房失败'">
@@ -90,7 +102,9 @@
                 <div class="roomIn"><span>住客姓名：</span><span>{{item.checkInName}}</span></div>
               </div>
               <div class="list_fr">
-                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='自动挂账失败'">
@@ -99,7 +113,9 @@
                 <div class="roomIn">请至PMS处理挂账</div>
               </div>
               <div class="list_fr">
-                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='退款计划失败'">
@@ -108,7 +124,9 @@
                 <div class="roomIn"><span>失败原因：</span><span>{{ item.remark }}</span></div>
               </div>
               <div class="list_fr">
-                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
           </div>
@@ -511,10 +529,11 @@
               }
             }
             .list_fr {
-              span {
+              .el-button {
                 cursor: pointer;
                 width: 125px;
-                height: 44px;
+                padding: 0;
+                line-height: 44px;
                 line-height: 44px;
                 background-color: #1AAD19;
                 font-size: 20px;

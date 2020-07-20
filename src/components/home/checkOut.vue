@@ -634,7 +634,7 @@
               });
               this.channelDetail = false;
               this.payCancle = false;
-              this.paymentList(this.page);
+              this.getDetail();
             }else if (body.data.code == 20003) {
               this.payCancle = false;
               this.showPmsAbnormal_ = true;
@@ -730,6 +730,7 @@
               sessionStorage.setItem('quitSe', 1);
               this.quit = true;
               this.payMoney = '';
+              this.getDetail();
             }else if(body.data.code == 20003){
               this.showPmsAbnormal = true;
             }else if (body.data.code == 20006) {
@@ -867,6 +868,7 @@
               this.countinuedSureLoading = false;
               this.secoundTip = false;
               this.quit = true;
+              this.getDetail();
             }else if (body.data.code == 20003) {
               this.showPmsAbnormal_ = true;
               this.countinuedSureLoading = false;
