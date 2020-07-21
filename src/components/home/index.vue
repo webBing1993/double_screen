@@ -257,67 +257,74 @@
         let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
         console.log('arr_', arr_);
         if (arr_.length == 0) {
-          this.onlyItem = checkOutList[0];
-          if (type == 1) {
-            this.wuka = false;
-            this.manka = false;
-            this.quithouse_ = true;
-            this.pmsPay = false;
-            this.quitSuccessHouse = false;
-            this.quitMoney = false;
-            this.checkoutsuccess = false;
-          }else if (type == 2) {
-            this.wuka = true;
-            this.quithouse_ = false;
-            this.manka = false;
-            this.pmsPay = false;
-            this.quitSuccessHouse = false;
-            this.quitMoney = false;
-            this.checkoutsuccess = false;
-          }else if (type == 3){
-            this.manka = true;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.pmsPay = false;
-            this.quitSuccessHouse = false;
-            this.quitMoney = false;
-            this.checkoutsuccess = false;
-          }else if (type == 4) {
-            this.pmsPay = true;
-            this.manka = false;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.quitSuccessHouse = false;
-            this.quitMoney = false;
-            this.checkoutsuccess = false;
-          }else if (type == 5) {
-            this.quitSuccessHouse = true;
-            this.pmsPay = false;
-            this.manka = false;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.quitMoney = false;
-            this.checkoutsuccess = false;
-          }else if (type == 6) {
-            this.quitSuccessHouse = false;
-            this.pmsPay = false;
-            this.manka = false;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.checkoutsuccess = false;
-            this.quitMoney = true;
-          }else if (type == 7) {
-            this.quitSuccessHouse = false;
-            this.pmsPay = false;
-            this.manka = false;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.checkoutsuccess = true;
-            this.quitMoney = false;
-          }
-          setTimeout(() => {
-            this.quithouse = true;
-          }, 500)
+          this.$nextTick(() => {
+            this.onlyItem = checkOutList[0];
+            if (type == 1) {
+              this.wuka = false;
+              this.manka = false;
+              this.quithouse_ = true;
+              this.pmsPay = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
+              this.checkoutsuccess = false;
+            }
+            if (type == 2) {
+              this.wuka = true;
+              this.quithouse_ = false;
+              this.manka = false;
+              this.pmsPay = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
+              this.checkoutsuccess = false;
+            }
+            if (type == 3){
+              this.manka = true;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.pmsPay = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
+              this.checkoutsuccess = false;
+            }else if (type == 4) {
+              this.pmsPay = true;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quitSuccessHouse = false;
+              this.quitMoney = false;
+              this.checkoutsuccess = false;
+            }
+            if (type == 5) {
+              this.quitSuccessHouse = true;
+              this.pmsPay = false;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.quitMoney = false;
+              this.checkoutsuccess = false;
+            }
+            if (type == 6) {
+              this.quitSuccessHouse = false;
+              this.pmsPay = false;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.checkoutsuccess = false;
+              this.quitMoney = true;
+            }
+            if (type == 7) {
+              this.quitSuccessHouse = false;
+              this.pmsPay = false;
+              this.manka = false;
+              this.quithouse_ = false;
+              this.wuka = false;
+              this.checkoutsuccess = true;
+              this.quitMoney = false;
+            }
+            setTimeout(() => {
+              this.quithouse = true;
+            }, 500)
+          })
         }else {
           let result = [];
           for(var i = 0; i < checkOutList.length; i++){
@@ -338,68 +345,76 @@
           }
           console.log('result', result);
           console.log('result', result.length);
-          if (result.length != 0) {
-            this.onlyItem = result[0];
-            if (type == 1) {
-              this.wuka = false;
-              this.manka = false;
-              this.quithouse_ = true;
-              this.pmsPay = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }else if (type == 2) {
-              this.wuka = true;
-              this.quithouse_ = false;
-              this.manka = false;
-              this.pmsPay = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-            }else if (type == 3){
-              this.manka = true;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.pmsPay = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }else if (type == 4) {
-              this.pmsPay = true;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }else if (type == 5) {
-              this.quitSuccessHouse = true;
-              this.pmsPay = false;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }else if (type == 6) {
-              this.quitSuccessHouse = false;
-              this.pmsPay = false;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.checkoutsuccess = false;
-              this.quitMoney = true;
-            }else if (type == 7) {
-              this.quitSuccessHouse = false;
-              this.pmsPay = false;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.checkoutsuccess = true;
-              this.quitMoney = false;
+          this.$nextTick(() => {
+            if (result.length != 0) {
+              this.onlyItem = result[0];
+              if (type == 1) {
+                this.wuka = false;
+                this.manka = false;
+                this.quithouse_ = true;
+                this.pmsPay = false;
+                this.quitSuccessHouse = false;
+                this.quitMoney = false;
+                this.checkoutsuccess = false;
+              }
+              if (type == 2) {
+                this.wuka = true;
+                this.quithouse_ = false;
+                this.manka = false;
+                this.pmsPay = false;
+                this.quitSuccessHouse = false;
+                this.quitMoney = false;
+              }
+              if (type == 3){
+                this.manka = true;
+                this.quithouse_ = false;
+                this.wuka = false;
+                this.pmsPay = false;
+                this.quitSuccessHouse = false;
+                this.quitMoney = false;
+                this.checkoutsuccess = false;
+              }
+              if (type == 4) {
+                this.pmsPay = true;
+                this.manka = false;
+                this.quithouse_ = false;
+                this.wuka = false;
+                this.quitSuccessHouse = false;
+                this.quitMoney = false;
+                this.checkoutsuccess = false;
+              }
+              if (type == 5) {
+                this.quitSuccessHouse = true;
+                this.pmsPay = false;
+                this.manka = false;
+                this.quithouse_ = false;
+                this.wuka = false;
+                this.quitMoney = false;
+                this.checkoutsuccess = false;
+              }
+              if (type == 6) {
+                this.quitSuccessHouse = false;
+                this.pmsPay = false;
+                this.manka = false;
+                this.quithouse_ = false;
+                this.wuka = false;
+                this.checkoutsuccess = false;
+                this.quitMoney = true;
+              }
+              if (type == 7) {
+                this.quitSuccessHouse = false;
+                this.pmsPay = false;
+                this.manka = false;
+                this.quithouse_ = false;
+                this.wuka = false;
+                this.checkoutsuccess = true;
+                this.quitMoney = false;
+              }
+              setTimeout(() => {
+                this.quithouse = true;
+              }, 500)
             }
-            setTimeout(() => {
-              this.quithouse = true;
-            }, 500)
-          }
+          })
         }
       },
 
