@@ -867,6 +867,7 @@
               this.payTig = false;
               this.countinuedSureLoading = false;
               this.secoundTip = false;
+              sessionStorage.setItem('quitSe', 1);
               this.quit = true;
               this.getDetail();
             }else if (body.data.code == 20003) {
