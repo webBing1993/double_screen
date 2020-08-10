@@ -65,6 +65,11 @@ const router = new Router({
           name: 'independent',
           component: resolve => require(['../components/home/independent.vue'],resolve),
         },
+        {
+          path: '/statistics',
+          name: 'statistics',
+          component: resolve => require(['../components/home/statistics.vue'],resolve),
+        },
       ],
     },
     {

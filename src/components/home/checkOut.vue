@@ -634,7 +634,9 @@
               });
               this.channelDetail = false;
               this.payCancle = false;
-              this.getDetail();
+              setTimeout(() => {
+                this.replayList();
+              }, 1000)
             }else if (body.data.code == 20003) {
               this.payCancle = false;
               this.showPmsAbnormal_ = true;

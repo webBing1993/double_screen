@@ -1528,7 +1528,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 
   .paymentIndex {
     padding-top: 100px;
@@ -1551,7 +1551,7 @@
         width: 354px;
         height: 56px;
         margin: 0 30px;
-        padding: 0 40px;
+        /*padding: 0 40px;*/
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
@@ -1569,10 +1569,21 @@
           background-color: #fff;
         }
         i {
-          margin-top: 6px;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          display: inline-flex;
+          align-items: center;
+          z-index: 10;
           img {
             width: 15px;
           }
+        }
+        i:first-of-type {
+          left: 25px;
+        }
+        i:last-of-type {
+          right: 25px;
         }
         .ivu-icon-ios-close-circle {
           display: none;
@@ -1649,7 +1660,7 @@
         .el-select {
           width: 35%;
           margin-right: 30px;
-          .el-input__inner {
+          /deep/ .el-input__inner {
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
@@ -1661,30 +1672,30 @@
             font-weight: 700;
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
           }
-          .el-input__inner:-moz-placeholder {
+          /deep/ .el-input__inner:-moz-placeholder {
             color: #606266;
             font-weight: 700;
             font-size: 20px;
           }
-          .el-input__inner:-ms-input-placeholder {
+          /deep/ .el-input__inner:-ms-input-placeholder {
             color: #606266;
             font-weight: 700;
             font-size: 20px;
           }
-          .el-input__inner::-moz-placeholder {
+          /deep/ .el-input__inner::-moz-placeholder {
             color: #606266;
             font-weight: 700;
             font-size: 20px;
           }
-          .el-input__inner::-webkit-input-placeholder {
+          /deep/ .el-input__inner::-webkit-input-placeholder {
             color: #606266;
             font-weight: 700;
             font-size: 20px;
           }
-          .el-input__suffix {
+          /deep/ .el-input__suffix {
             padding-right: 15px;
           }
-          .el-icon-arrow-up:before {
+          /deep/ .el-icon-arrow-up:before {
             font-size: 30px;
           }
         }
@@ -2662,38 +2673,42 @@
     }
   }
 
-  .el-date-editor.el-input {
-    background-color: #FFFFFF;
+  /deep/ .el-date-editor.el-input {
+    /*background-color: #FFFFFF;*/
+    width: 100%;
+    padding: 0 40px;
+    border-radius: 40px;
     /*padding-left: 40px;*/
     /*width: 235px;*/
   }
 
-  .ivu-date-picker-focused input {
+  /deep/ .ivu-date-picker-focused input {
     box-shadow: none;
   }
 
-  .el-input__icon {
+  /deep/ .el-input__icon {
     font-size: 24px;
     line-height: 56px;
   }
 
-  .el-input__prefix {
+  /deep/ .el-input__prefix {
     left: 26px;
   }
 
-  .el-input--prefix .el-input__inner {
+  /deep/ .el-input--prefix .el-input__inner {
     line-height: 56px;
     height: 56px;
     border: none;
     font-size: 20px;
-    padding-left: 30px;
+    padding: 0;
     outline: none;
     text-align: center;
     box-shadow: none;
     font-weight: 700;
+    border-radius: 40px;
   }
 
-  .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
+  /deep/ .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
     font-size: 24px;
     font-family: '黑色';
   }
@@ -2743,22 +2758,22 @@
     height: 44px;
   }
 
-  .el-date-editor .el-icon-circle-close {
+  /deep/ .el-date-editor .el-icon-circle-close {
     display: none;
   }
 
-  .el-date-picker .el-picker-panel__content {
+  /deep/ .el-date-picker .el-picker-panel__content {
     width: 400px;
   }
 
-  .el-picker-panel {
+  /deep/ .el-picker-panel {
     left: 112px !important;
   }
-  .el-date-picker__header {
+  /deep/ .el-date-picker__header {
     height: 48px;
     line-height: 48px;
   }
-  .el-picker-panel__icon-btn {
+  /deep/ .el-picker-panel__icon-btn {
     width: 36px;
     height: 48px;
     color: #303133;
@@ -2766,20 +2781,20 @@
     font-weight: 700;
     margin-top: 0;
   }
-  .el-date-picker__header-label {
+  /deep/ .el-date-picker__header-label {
     color: #303133;
     font-size: 20px;
     font-weight: 700;
     line-height: 48px;
   }
-  .el-date-picker {
+  /deep/ .el-date-picker {
     width: 482px;
   }
-  .el-date-picker .el-picker-panel__content {
+  /deep/ .el-date-picker .el-picker-panel__content {
     width: 420px;
     margin: 28px;
   }
-  .el-date-table th , .el-date-table td{
+  /deep/ .el-date-table th , .el-date-table td{
     color: #303133;
     font-size: 20px;
     font-weight: 700;
@@ -2789,13 +2804,13 @@
     text-align: center;
     margin: 5px 2px 2px;
   }
-  .el-date-table td.next-month, .el-date-table td.prev-month {
+  /deep/ .el-date-table td.next-month, .el-date-table td.prev-month {
     color: #c5c8ce;
   }
-  .el-popper .popper__arrow, .el-popper .popper__arrow::after {
+  /deep/ .el-popper .popper__arrow, .el-popper .popper__arrow::after {
     display: none;
   }
-  .el-icon-date:before {
+  /deep/ .el-icon-date:before {
     display: none;
   }
 

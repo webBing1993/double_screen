@@ -84,7 +84,7 @@ const actions = {
       },
       params: qs.stringify(param.params) || null,
       data: qs.stringify(param.body) || null,
-      timeout: param.timeout || 120000,
+      timeout: param.timeout || 180000,
       credentials: false,
       emulateHTTP: false,
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
@@ -1218,6 +1218,25 @@ const actions = {
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 数据看板pie
+  payAnalysisPie(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/wechatPay/payAnalysis ',
+      body: param.data,
+      method: 'POST',
+      emulateJSON: false,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
       },
       onError:(body, headers) => {
         param.onerror ? param.onerror(body, headers) : null
