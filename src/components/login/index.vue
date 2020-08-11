@@ -249,6 +249,7 @@
                   sessionStorage.setItem('name',body.data.data.name);
                   sessionStorage.session_id = body.data.data.token;
                   sessionStorage.hotel_id = body.data.data.hotelId;
+                  sessionStorage.hotel_Name = body.data.data.hotelName;
                   this.getAllConfig({
                     onsuccess: body => {
                       this.loginLoading = false;

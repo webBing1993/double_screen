@@ -10,7 +10,7 @@
                 <span :class="dateIndex == 3 ? 'active' : ''" @click="dateTab(3)">按月</span>
                 <span :class="dateIndex == 4 ? 'active' : ''" @click="dateTab(4)">自定义</span>
               </div>
-              <div class="time_change" v-if="dateIndex == 1">
+              <div class="time_change" v-show="dateIndex == 1">
                 <i @click="preDay"><img src="../../assets/ic_chevron_left.png" alt=""></i>
                 <el-date-picker
                   ref="date1"
@@ -23,7 +23,7 @@
                 </el-date-picker>
                 <i @click="nextDay"><img src="../../assets/ic_chevron_right.png" alt=""></i>
               </div>
-              <div class="time_change" v-else-if="dateIndex == 2">
+              <div class="time_change" v-show="dateIndex == 2">
                 <i @click="preDay"><img src="../../assets/ic_chevron_left.png" alt=""></i>
                 <el-date-picker
                   ref="date2"
@@ -37,7 +37,7 @@
                 </el-date-picker>
                 <i @click="nextDay"><img src="../../assets/ic_chevron_right.png" alt=""></i>
               </div>
-              <div class="time_change" v-else-if="dateIndex == 3">
+              <div class="time_change" v-show="dateIndex == 3">
                 <i @click="preDay"><img src="../../assets/ic_chevron_left.png" alt=""></i>
                 <el-date-picker
                   ref="date3"
@@ -49,7 +49,7 @@
                 </el-date-picker>
                 <i @click="nextDay"><img src="../../assets/ic_chevron_right.png" alt=""></i>
               </div>
-              <div class="time_change" v-else>
+              <div class="time_change" v-show="dateIndex == 4">
                 <!--<i @click="preDay"><img src="../../assets/ic_chevron_left.png" alt=""></i>-->
                 <el-date-picker
                   ref="date4"
@@ -64,13 +64,13 @@
               </div>
             </div>
             <div class="ractangle">
-              <div class="title">自助入住与自助退房统计</div>
+              <div class="title">使用量统计</div>
               <div id="rectangle"></div>
             </div>
           </el-col>
           <el-col :span="7">
             <div class="liveInTable">
-              <div class="title">入住统计</div>
+              <div class="title">账号统计</div>
               <div class="tabs">
                 <span @click="liveBtn(0)" :class="liveIndex == 0 ? 'active' : ''">全部</span>
                 <span @click="liveBtn(1)" :class="liveIndex == 1 ? 'active' : ''">walkin</span>
@@ -88,12 +88,12 @@
                   <template slot-scope="scope" >
                     <div class="ownImg">
                       <img src="../../assets/ic_man.png" alt="">
-                      <span>{{ scope.row.name }}</span>
+                      <span>{{ scope.row.userName }}</span>
                     </div>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="roomNumber"
+                  prop="amount"
                   label="房间数">
                 </el-table-column>
                 <el-table-column
@@ -113,9 +113,9 @@
                     <div class="name">交易金额</div>
                     <div class="value">¥{{ pieData.totalFee ? parseFloat(pieData.totalFee/100).toFixed(2) : 0 }}</div>
                   </div>
-                  <div class="title_right">
-                    <el-button><img src="../../assets/ic_print.png" alt=""></el-button>
-                  </div>
+                  <!--<div class="title_right">-->
+                    <!--<el-button @click="printBtn"><img src="../../assets/ic_print.png" alt=""></el-button>-->
+                  <!--</div>-->
                 </div>
                 <div id="pie1"></div>
               </div>
@@ -131,6 +131,65 @@
             </div>
           </el-col>
         </el-row>
+
+        <!-- 打印-->
+        <div class="printTig" ref="printTig">
+          <div class="tig_title">值房通交易汇总</div>
+          <div class="lists">
+            <div class="list">
+              <span class="name">门店名称：</span>
+              <span class="value">{{ pieData.hotelName }}</span>
+            </div>
+            <div class="list">
+              <span class="name">打印人：</span>
+              <span class="value">{{ pieData.userName }}</span>
+            </div>
+            <div class="list">
+              <span class="name">打印时间：</span>
+              <span class="value">{{ datetimeparse(pieData.printTime, 'yy/MM/dd hh:mm') }}</span>
+            </div>
+            <div class="list">
+              <span class="name">交易时间：</span>
+              <span class="value">{{ dateIndex == 1 ? datetimeparse(pieData.inTime, 'yy/MM/dd') : datetimeparse(pieData.inTime, 'yy/MM/dd') + '-' + datetimeparse(pieData.outTime, 'yy/MM/dd') }}</span>
+            </div>
+          </div>
+          <div class="lists">
+            <div class="list">
+              <span class="name">总交易金额：</span>
+              <span class="value">¥{{ parseFloat(pieData.totalFee/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span class="name">总交易笔数：</span>
+              <span class="value">{{ pieData.weixinPayNum + pieData.aliPayNum }}笔</span>
+            </div>
+            <div class="list">
+              <span class="name">支付宝支付：</span>
+              <span class="value">¥{{ parseFloat(pieData.aliPayNum/100).toFixed(2)+'/'+pieData.aliPayNum }}笔</span>
+            </div>
+            <div class="list">
+              <span class="name">微信支付：</span>
+              <span class="value">¥{{ parseFloat(pieData.weixinPayFee/100).toFixed(2)+'/'+pieData.weixinPayNum }}笔</span>
+            </div>
+          </div>
+          <div class="lists">
+            <div class="list">
+              <span class="name">总预授权金额：</span>
+              <span class="value">¥{{ parseFloat(pieData.totalDepositFee/100).toFixed(2) }}</span>
+            </div>
+            <div class="list">
+              <span class="name">总预授权笔数：</span>
+              <span class="value">{{ pieData.weixinDepositNum + pieData.aliDepositNum }}笔</span>
+            </div>
+            <div class="list">
+              <span class="name">支付宝支付：</span>
+              <span class="value">¥{{ parseFloat(pieData.aliDepositFee/100).toFixed(2)+'/'+pieData.aliDepositNum }}笔</span>
+            </div>
+            <div class="list">
+              <span class="name">微信支付：</span>
+              <span class="value">¥{{ parseFloat(pieData.weixinDepositFee/100).toFixed(2)+'/'+pieData.weixinDepositNum }}笔</span>
+            </div>
+          </div>
+        </div>
     </div>
 </template>
 <script>
@@ -159,38 +218,7 @@
         monthTime: '',         // 月
         timeVal: [],          // 自定义
         liveIndex: 0,         // 入住tab 选择
-        dataList: [
-          {
-            name: '小郑',
-            roomNumber: 20,
-            percent: 20
-          },
-          {
-            name: '小郑',
-            roomNumber: 20,
-            percent: 20
-          },
-          {
-            name: '小郑',
-            roomNumber: 20,
-            percent: 20
-          },
-          {
-            name: '小郑',
-            roomNumber: 20,
-            percent: 20
-          },
-          {
-            name: '小郑',
-            roomNumber: 20,
-            percent: 20
-          },
-          {
-            name: '小郑',
-            roomNumber: 20,
-            percent: 20
-          }
-        ],         // 统计list
+        dataList: [],         // 统计list
         pieData: {
           totalFee: '',    // 总交易金额
           weixinPayNum: '',   // 交易微信数量
@@ -202,7 +230,16 @@
           weixinDepositFee: '',    // 微信预授权金额
           aliDepositNum: '',    // 支付宝预授权数量
           aliDepositFee: '',    // 支付宝预授权金额
+          hotelName: sessionStorage.hotel_Name,
+          userName: sessionStorage.getItem('name'),
+          printTime: new Date().getTime(),
+          inTime: '',
+          outTime: '',
         },    // pie data
+        checkinData: {
+          checkInCount: '',
+          checkOutCount: ''
+        },      // check in/out data
       }
     },
     filters: {
@@ -212,7 +249,7 @@
 
     },
     methods: {
-      ...mapActions(['payAnalysisPie']),
+      ...mapActions(['payAnalysisPie', 'getStatisticNum']),
 
       // 选择日期tab
       dateTab(index) {
@@ -220,12 +257,13 @@
         if (index == 1 && this.dayTime === '') {
           this.dayTime = new Date().toLocaleDateString();
         }else if (index == 2 && this.weekTime === '') {
-          this.weekTime = new Date().toLocaleDateString();
+          this.weekTime = new Date();
         }else if (index == 3 && this.monthTime === '') {
           this.monthTime = new Date().toLocaleDateString();
         }else if (index == 4 && this.timeVal.length === 0) {
           this.timeVal.push(new Date().toLocaleDateString(), new Date().toLocaleDateString())
         }
+        this.statisticNum();
         this.payAnalysis();
       },
 
@@ -250,9 +288,9 @@
       // pre Time
       preDay() {
         if (this.dateIndex == 1) {
-          this.dayTime = new Date(this.dayTime.getTime() - 24 * 60 * 60 * 1000)
+          this.dayTime = new Date(new Date(this.dayTime).getTime() - 24 * 60 * 60 * 1000);
         }else if (this.dateIndex == 2) {
-          this.weekTime = new Date(this.weekTime.getTime() - 24 * 60 * 60 * 1000 * 6)
+          this.weekTime = new Date(new Date(this.weekTime).getTime() - 24 * 60 * 60 * 1000 * 6);
         }else if (this.dateIndex == 3) {
           let nowdate = new Date(this.monthTime);
           nowdate.setMonth(nowdate.getMonth()-1);
@@ -266,9 +304,9 @@
       // next time
       nextDay() {
         if (this.dateIndex == 1) {
-          this.dayTime = new Date(this.dayTime.getTime() + 24 * 60 * 60 * 1000)
+          this.dayTime = new Date(new Date(this.dayTime).getTime() + 24 * 60 * 60 * 1000);
         }else if (this.dateIndex == 2) {
-          this.weekTime = new Date(this.weekTime.getTime() + 24 * 60 * 60 * 1000 * 6)
+          this.weekTime = new Date(new Date(this.weekTime).getTime() + 24 * 60 * 60 * 1000 * 6);
         }else if (this.dateIndex == 3) {
           let nowdate = new Date(this.monthTime);
           nowdate.setMonth(nowdate.getMonth()+1);
@@ -277,6 +315,11 @@
           let d = nowdate.getDate();
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
+      },
+
+      // 打印
+      printBtn() {
+        this.$print(this.$refs.printTig);
       },
 
       // 柱形图
@@ -292,12 +335,15 @@
             "boundaryGap": true,
             "data" : ['自助入住','自助退房'],
             "axisLine": {
-              "show": false
+              "show": false,
+            },
+            axisTick: {
+              show: false
             },
             "axisLabel": {
               margin: 14,
               textStyle: {
-                color: '#888',
+//                color: '#333',
                 fontSize: 24
               }
             }
@@ -326,18 +372,18 @@
                 position: 'top',
                 textStyle: {
                   color: '#888',
-                  fontSize: 32
+                  fontSize: 24
                 }
               },
               data:[
                 {
-                  value:200,
+                  value: this.checkinData.checkInCount ? this.checkinData.checkInCount : 0,
                   itemStyle:{
                     normal:{ color: '#669BFF'}
                   }
                 },
                 {
-                  value:300,
+                  value: this.checkinData.checkOutCount ? this.checkinData.checkOutCount : 0,
                   itemStyle:{
                     normal:{ color: '#74CCFF'}
                   }
@@ -361,7 +407,9 @@
 
       // 入住统计tab选择
       liveBtn(index) {
-          this.liveIndex = index;
+        this.liveIndex = index;
+        this.statisticNum();
+        this.payAnalysis();
       },
 
       // 环形图
@@ -376,7 +424,7 @@
             {
               name: '交易金额',
               type: 'pie',
-              radius: ['25%', '55%'],
+              radius: ['25%', '60%'],
               center: ['50%', '65%'],
               color:['#5690FF','#D1F5E8'],
               avoidLabelOverlap: false,
@@ -399,21 +447,21 @@
                   rich: {
                     a: {
                       color: '#5690FF',
-                      fontSize: 28,
+                      fontSize: 24,
                       lineHeight: 20
                     },
                     b: {
-                      fontSize: 28,
+                      fontSize: 24,
                       lineHeight: 36,
                       align: 'left'
                     },
                     c: {
-                      fontSize: 28,
+                      fontSize: 24,
                       color: '#888888',
                       align: 'left'
                     },
                     ped: {
-                      fontSize: 28,
+                      fontSize: 24,
                       lineHeight: 36,
                       align: 'left'
                     },
@@ -422,14 +470,14 @@
               },
               data: [
                 {
-                  value: this.data.pieData.aliPayFee ? parseFloat(this.data.pieData.aliPayFee/100).toFixed(2) : 0,
+                  value: this.pieData.aliPayFee ? parseFloat(this.pieData.aliPayFee/100).toFixed(2) : 0,
                   name: '支付宝',
-                  total: this.data.pieData.aliPayNum,
+                  total: this.pieData.aliPayNum,
                 },
                 {
-                  value: this.data.pieData.weixinPayFee ? parseFloat(this.data.pieData.weixinPayFee/100).toFixed(2) : 0,
+                  value: this.pieData.weixinPayFee ? parseFloat(this.pieData.weixinPayFee/100).toFixed(2) : 0,
                   name: '微信',
-                  total: this.data.pieData.weixinPayNum
+                  total: this.pieData.weixinPayNum
                 }
               ]
             }
@@ -441,7 +489,7 @@
             {
               name: '预授权冻结',
               type: 'pie',
-              radius: ['25%', '55%'],
+              radius: ['25%', '60%'],
               center: ['50%', '65%'],
               color:['#5690FF','#D1F5E8'],
               avoidLabelOverlap: false,
@@ -464,21 +512,21 @@
                   rich: {
                     a: {
                       color: '#5690FF',
-                      fontSize: 28,
+                      fontSize: 26,
                       lineHeight: 20
                     },
                     b: {
-                      fontSize: 28,
+                      fontSize: 26,
                       lineHeight: 36,
                       align: 'left'
                     },
                     c: {
-                      fontSize: 28,
+                      fontSize: 26,
                       color: '#888888',
                       align: 'left'
                     },
                     ped: {
-                      fontSize: 28,
+                      fontSize: 26,
                       lineHeight: 36,
                       align: 'left'
                     },
@@ -487,14 +535,14 @@
               },
               data: [
                 {
-                  value: this.data.pieData.aliDepositFee ? parseFloat(this.data.pieData.aliDepositFee/100).toFixed(2) : 0,
+                  value: this.pieData.aliDepositFee ? parseFloat(this.pieData.aliDepositFee/100).toFixed(2) : 0,
                   name: '支付宝',
-                  total: this.data.pieData.aliDepositNum,
+                  total: this.pieData.aliDepositNum,
                 },
                 {
-                  value: this.data.pieData.weixinDepositFee ? parseFloat(this.data.pieData.weixinDepositFee/100).toFixed(2) : 0,
+                  value: this.pieData.weixinDepositFee ? parseFloat(this.pieData.weixinDepositFee/100).toFixed(2) : 0,
                   name: '微信',
-                  total: this.data.pieData.weixinDepositNum
+                  total: this.pieData.weixinDepositNum
                 }
               ]
             }
@@ -530,17 +578,19 @@
         this.payAnalysisPie({
           data: data,
           onsuccess: body => {
-            if (body.data.errcode == 0) {
-              this.data.pieData.totalFee = body.data.data.totalFee;
-              this.data.pieData.weixinPayNum = body.data.data.weixinPayNum;
-              this.data.pieData.weixinPayFee = body.data.data.weixinPayFee;
-              this.data.pieData.aliPayNum = body.data.data.aliPayNum;
-              this.data.pieData.aliPayFee = body.data.data.aliPayFee;
-              this.data.pieData.totalDepositFee = body.data.data.totalDepositFee;
-              this.data.pieData.weixinDepositNum = body.data.data.weixinDepositNum;
-              this.data.pieData.weixinDepositFee = body.data.data.weixinDepositFee;
-              this.data.pieData.aliDepositNum = body.data.data.aliDepositNum;
-              this.data.pieData.aliDepositFee = body.data.data.aliDepositFee;
+            if (body.data.code == 0) {
+              this.pieData.totalFee = body.data.data.totalFee;
+              this.pieData.weixinPayNum = body.data.data.weixinPayNum;
+              this.pieData.weixinPayFee = body.data.data.weixinPayFee;
+              this.pieData.aliPayNum = body.data.data.aliPayNum;
+              this.pieData.aliPayFee = body.data.data.aliPayFee;
+              this.pieData.totalDepositFee = body.data.data.totalDepositFee;
+              this.pieData.weixinDepositNum = body.data.data.weixinDepositNum;
+              this.pieData.weixinDepositFee = body.data.data.weixinDepositFee;
+              this.pieData.aliDepositNum = body.data.data.aliDepositNum;
+              this.pieData.aliDepositFee = body.data.data.aliDepositFee;
+              this.pieData.inTime = startTime;
+              this.pieData.outTime = endTime;
               this.$nextTick(() => {
                 this.echartsBar();
               })
@@ -556,13 +606,58 @@
         })
       },
 
+      // 人员，使用量统计
+      statisticNum() {
+        let startTime, endTime;
+        if (this.dateIndex == 1) {
+          startTime = new Date(this.dayTime).getTime();
+          endTime = new Date(this.dayTime).getTime() + (24*60*60*1000)-1000;
+        }else if (this.dateIndex == 2) {
+          startTime = new Date(this.weekTime).getTime() - (24*60*60*1000);
+          endTime = new Date(this.weekTime).getTime() + (24*60*60*1000*6)-1000;
+        }else if (this.dateIndex == 3) {
+          let year = this.datetimeparse(new Date(this.monthTime).getTime(), 'yy');
+          let month = this.datetimeparse(new Date(this.monthTime).getTime(), 'MM');
+          let day = new Date(year,month,0).getDate();
+          startTime = new Date(this.monthTime).getTime();
+          endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
+        }else {
+          startTime = new Date(this.timeVal[0]).getTime();
+          endTime = new Date(this.timeVal[0]).getTime();
+        }
+        let data = {
+          beginDate: startTime,
+          endDate: endTime
+        };
+        if (this.liveIndex != 0) {
+            data.orderType = this.liveIndex == 1 ? 2 : this.liveIndex == 2 ? 1 : 0
+        }
+        this.getStatisticNum({
+          data: data,
+          onsuccess: body => {
+              if (body.data.code == 0) {
+                this.checkinData.checkInCount = body.data.data.checkInCount;
+                this.checkinData.checkOutCount = body.data.data.checkOutCount;
+                this.dataList = body.data.data.statisticVoList ? body.data.data.statisticVoList : [];
+                this.echartsRectangle();
+              }
+          },
+          onfail: body => {
+
+          },
+          onerror: body => {
+
+          }
+        })
+      },
+
     },
     beforeMount () {
       this.loadingShow = true;
       this.dateTab(1);
     },
     mounted () {
-      this.echartsRectangle();
+
     },
 
     beforeRouteEnter(to,from,next){
@@ -587,7 +682,7 @@
       padding: 55px 0 85px 50px;
       margin-bottom: 25px;
       .title {
-        font-size: 28px;
+        font-size: 26px;
         color: #FFFFFF;
         margin-bottom: 42px;
         text-align: left;
@@ -602,7 +697,7 @@
           padding: 11px 19px;
           background: rgba(255, 255, 255, .6);
           border-radius: 25px;
-          font-size: 24px;
+          font-size: 20px;
           color: #888888;
         }
         .active {
@@ -622,14 +717,15 @@
       background: #FFFFFF;
       box-shadow: 0 3px 16px 0 rgba(0,0,0,0.08);
       border-radius: 18px;
+      padding-bottom: 34px;
       .title {
         padding: 57px 0 57px 52px;
         text-align: left;
-        font-size: 28px;
+        font-size: 26px;
         color: #333333;
       }
       #rectangle {
-        height: 320px;
+        height: 300px;
       }
     }
     .liveInTable {
@@ -640,7 +736,7 @@
       .title {
         padding: 57px 0 42px 50px;
         text-align: left;
-        font-size: 28px;
+        font-size: 26px;
         color: #333333;
       }
       .tabs {
@@ -649,13 +745,13 @@
         align-items: center;
         justify-content: flex-start;
         padding-left: 50px;
-        margin-bottom: 62px;
+        margin-bottom: 40px;
         span {
           background: #F7F7F7;
           border-radius: 25px;
           margin-right: 16px;
           padding: 11px 21px;
-          font-size: 24px;
+          font-size: 20px;
           color: #888888;
         }
         .active {
@@ -670,7 +766,7 @@
       /deep/ .el-table th {
         background: #F7F7F7;
         padding: 39px 0;
-        font-size: 28px;
+        font-size: 24px;
         color: #888888;
         font-weight: normal;
       }
@@ -681,7 +777,7 @@
         padding: 40px 0;
       }
       /deep/ .el-table td .cell {
-        font-size: 28px;
+        font-size: 20px;
       }
       /deep/ .el-table td:nth-of-type(2) .cell {
         color: #888888;
@@ -693,7 +789,7 @@
         text-align: center;
       }
       /deep/ .el-table__empty-text {
-        font-size: 28px;
+        font-size: 24px;
       }
       .ownImg {
         display: inline-flex;
@@ -726,12 +822,12 @@
         .title_left {
           text-align: left;
           .name {
-            font-size: 28px;
-            color: #888888;
+            font-size: 26px;
+            color: #333;
             margin-bottom: 16px;
           }
           .value {
-            font-size: 42px;
+            font-size: 34px;
             color: #333333;
           }
         }
@@ -749,6 +845,49 @@
     }
   }
 
+  .printTig {
+    display: none;
+    .tig_title {
+      text-align: center;
+      padding: 20px 0;
+      color: #000;
+      font-size: 18px;
+    }
+    .lists {
+      border-bottom: 1px solid #eee;
+      padding: 20px 0;
+      .list {
+        padding: 0 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .list:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+    .lists:last-of-type {
+      border-bottom: none;
+    }
+  }
+
+  @media print {
+    .printTig {
+      display: block;
+    }
+    .tig_title {
+      text-align: center;
+    }
+  }
+
+  @page {
+    size: auto;
+    margin: 0;
+    padding: 0;
+  }
+
   /deep/ .el-date-picker {
     z-index: 10;
   }
@@ -761,7 +900,7 @@
   /deep/ .el-input__inner {
     background-color: #85ACF7;
     border: none;
-    font-size: 32px;
+    font-size: 20px;
     color: #FFFFFF;
     text-align: center;
   }
@@ -772,7 +911,7 @@
   /deep/ .el-range-editor .el-range-input {
     border: none;
     background-color: #85ACF7;
-    font-size: 32px;
+    font-size: 20px;
     color: #FFFFFF;
     text-align: center;
   }
@@ -781,6 +920,12 @@
     color: #fff;
   }
   /deep/ .el-icon-date:before {
+    display: none;
+  }
+  /deep/ .el-input__icon {
+    display: none;
+  }
+  /deep/ .el-table--scrollable-y .el-table__body-wrapper::-webkit-scrollbar {
     display: none;
   }
 

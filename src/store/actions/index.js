@@ -1244,6 +1244,25 @@ const actions = {
     })
   },
 
+  // 数据看板统计
+  getStatisticNum(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/hotel/check/in/out/statistic',
+      body: param.data,
+      method: 'POST',
+      emulateJSON: false,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
 };
 export default {
   actions: actions
