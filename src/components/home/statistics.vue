@@ -88,7 +88,7 @@
                   <template slot-scope="scope" >
                     <div class="ownImg">
                       <img src="../../assets/ic_man.png" alt="">
-                      <span>{{ scope.row.userName }}</span>
+                      <span>{{ scope.row.userName ? scope.row.userName : '未知账号' }}</span>
                     </div>
                   </template>
                 </el-table-column>
@@ -97,7 +97,7 @@
                   label="房间数">
                 </el-table-column>
                 <el-table-column
-                  label="占比"  >
+                  label="占比"  width="150">
                   <template slot-scope="scope">
                     <span>{{ scope.row.percent }}%</span>
                   </template>
@@ -134,7 +134,7 @@
 
         <!-- 打印-->
         <div class="printTig" ref="printTig">
-          <div class="tig_title">值房通交易汇总</div>
+          <div class="tig_title">自助机交易汇总</div>
           <div class="lists">
             <div class="list">
               <span class="name">门店名称：</span>
@@ -283,6 +283,8 @@
         }else {
             console.log(new Date(val[0]).getTime(), new Date(val[1]).getTime());
         }
+        this.statisticNum();
+        this.payAnalysis();
       },
 
       // pre Time
@@ -299,6 +301,8 @@
           let d = nowdate.getDate();
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
+        this.statisticNum();
+        this.payAnalysis();
       },
 
       // next time
@@ -315,6 +319,8 @@
           let d = nowdate.getDate();
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
+        this.statisticNum();
+        this.payAnalysis();
       },
 
       // 打印
