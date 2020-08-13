@@ -94,10 +94,11 @@
                 </el-table-column>
                 <el-table-column
                   prop="amount"
-                  label="房间数">
+                  label="房间数"
+                  width="150">
                 </el-table-column>
                 <el-table-column
-                  label="占比"  width="136">
+                  label="占比"  width="160">
                   <template slot-scope="scope">
                     <span>{{ scope.row.percent }}%</span>
                   </template>
@@ -373,6 +374,7 @@
           series: [
             {
               type: 'bar',
+              barWidth: 120,
               label: {
                 show: true,
                 position: 'top',
@@ -430,9 +432,9 @@
             {
               name: '交易金额',
               type: 'pie',
-              radius: ['25%', '60%'],
+              radius: ['38%', '68%'],
               center: ['50%', '65%'],
-              color:['#5690FF','#D1F5E8'],
+              color:['#5690FF','#61E2B4'],
               avoidLabelOverlap: false,
               silent: false,
 
@@ -445,7 +447,7 @@
               label: {
                 normal: {
                   formatter: function (params) {
-                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n}'
+                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n\n}'
                   },
                   borderWidth: 20,
                   borderRadius: 4,
@@ -495,9 +497,9 @@
             {
               name: '预授权冻结',
               type: 'pie',
-              radius: ['25%', '60%'],
+              radius: ['38%', '68%'],
               center: ['50%', '65%'],
-              color:['#5690FF','#D1F5E8'],
+              color:['#5690FF','#61E2B4'],
               avoidLabelOverlap: false,
               silent: false,
 
@@ -510,7 +512,7 @@
               label: {
                 normal: {
                   formatter: function (params) {
-                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n}'
+                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n\n}'
                   },
                   borderWidth: 20,
                   borderRadius: 4,
@@ -692,6 +694,7 @@
         color: #FFFFFF;
         margin-bottom: 42px;
         text-align: left;
+        font-weight: bold;
       }
       .tabs {
         display: flex;
@@ -729,6 +732,7 @@
         text-align: left;
         font-size: 26px;
         color: #333333;
+        font-weight: bold;
       }
       #rectangle {
         height: 300px;
@@ -744,6 +748,7 @@
         text-align: left;
         font-size: 26px;
         color: #333333;
+        font-weight: bold;
       }
       .tabs {
         display: flex;
@@ -783,7 +788,7 @@
         padding: 40px 0;
       }
       /deep/ .el-table td .cell {
-        font-size: 20px;
+        font-size: 22px;
       }
       /deep/ .el-table td:nth-of-type(2) .cell {
         color: #888888;
@@ -829,12 +834,14 @@
           text-align: left;
           .name {
             font-size: 26px;
-            color: #333;
+            color: #888;
             margin-bottom: 16px;
+            font-weight: bold;
           }
           .value {
-            font-size: 34px;
+            font-size: 38px;
             color: #333333;
+            font-weight: bold;
           }
         }
         .title_right {
@@ -906,7 +913,7 @@
   /deep/ .el-input__inner {
     background-color: #85ACF7;
     border: none;
-    font-size: 20px;
+    font-size: 24px;
     color: #FFFFFF;
     text-align: center;
   }
@@ -917,7 +924,7 @@
   /deep/ .el-range-editor .el-range-input {
     border: none;
     background-color: #85ACF7;
-    font-size: 20px;
+    font-size: 24px;
     color: #FFFFFF;
     text-align: center;
   }
