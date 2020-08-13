@@ -250,7 +250,7 @@
                   sessionStorage.session_id = body.data.data.token;
                   sessionStorage.hotel_id = body.data.data.hotelId;
                   sessionStorage.hotel_Name = body.data.data.hotelName;
-                  jsObj.IdentityUserInfo = new Date().getSeconds() + "@" + body.data.data.userId;
+                  this.SendParameter(body.data.data.userId);
                   this.getAllConfig({
                     onsuccess: body => {
                       this.loginLoading = false;
@@ -286,6 +286,10 @@
             })
           }
         }
+      },
+      SendParameter(type) {
+        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
+        jsObj.IdentityUserInfo();
       },
     },
 

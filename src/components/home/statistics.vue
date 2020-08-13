@@ -97,7 +97,7 @@
                   label="房间数">
                 </el-table-column>
                 <el-table-column
-                  label="占比"  width="150">
+                  label="占比"  width="136">
                   <template slot-scope="scope">
                     <span>{{ scope.row.percent }}%</span>
                   </template>
