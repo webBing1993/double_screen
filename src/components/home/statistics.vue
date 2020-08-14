@@ -264,7 +264,7 @@
         }else if (index == 4 && this.timeVal.length === 0) {
           this.timeVal.push(new Date().toLocaleDateString(), new Date().toLocaleDateString())
         }
-        this.statisticNum();
+        this.statisticNum(1);
         this.payAnalysis();
       },
 
@@ -284,7 +284,7 @@
         }else {
             console.log(new Date(val[0]).getTime(), new Date(val[1]).getTime());
         }
-        this.statisticNum();
+        this.statisticNum(1);
         this.payAnalysis();
       },
 
@@ -302,7 +302,7 @@
           let d = nowdate.getDate();
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
-        this.statisticNum();
+        this.statisticNum(1);
         this.payAnalysis();
       },
 
@@ -320,7 +320,7 @@
           let d = nowdate.getDate();
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
-        this.statisticNum();
+        this.statisticNum(1);
         this.payAnalysis();
       },
 
@@ -416,8 +416,7 @@
       // 入住统计tab选择
       liveBtn(index) {
         this.liveIndex = index;
-        this.statisticNum();
-        this.payAnalysis();
+        this.statisticNum(2);
       },
 
       // 环形图
@@ -615,7 +614,7 @@
       },
 
       // 人员，使用量统计
-      statisticNum() {
+      statisticNum(type) {
         let startTime, endTime;
         if (this.dateIndex == 1) {
           startTime = new Date(this.dayTime).getTime();
@@ -644,10 +643,12 @@
           data: data,
           onsuccess: body => {
               if (body.data.code == 0) {
-                this.checkinData.checkInCount = body.data.data.checkInCount;
-                this.checkinData.checkOutCount = body.data.data.checkOutCount;
                 this.dataList = body.data.data.statisticVoList ? body.data.data.statisticVoList : [];
-                this.echartsRectangle();
+                if (type == 1) {
+                  this.checkinData.checkInCount = body.data.data.checkInCount;
+                  this.checkinData.checkOutCount = body.data.data.checkOutCount;
+                  this.echartsRectangle();
+                }
               }
           },
           onfail: body => {
