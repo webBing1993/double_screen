@@ -577,7 +577,7 @@
           endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
         }else {
           startTime = new Date(this.timeVal[0]).getTime();
-          endTime = new Date(this.timeVal[0]).getTime();
+          endTime = new Date(this.timeVal[1]).getTime();
         }
         let data = {
           startTime: startTime,
@@ -631,7 +631,7 @@
           endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
         }else {
           startTime = new Date(this.timeVal[0]).getTime();
-          endTime = new Date(this.timeVal[0]).getTime();
+          endTime = new Date(this.timeVal[1]).getTime();
         }
         let data = {
           beginDate: startTime,
@@ -776,7 +776,7 @@
       }
       /deep/ .el-table th {
         background: #F7F7F7;
-        padding: 39px 0;
+        padding: 30px 0;
         font-size: 24px;
         color: #888888;
         font-weight: normal;
@@ -835,7 +835,7 @@
           .name {
             font-size: 26px;
             color: #888;
-            margin-bottom: 16px;
+            margin-bottom: 6px;
             font-weight: bold;
           }
           .value {
