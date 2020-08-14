@@ -29,6 +29,9 @@
                   ref="date2"
                   type="week"
                   v-model="weekTime"
+                  :picker-options="{
+                      firstDayOfWeek: 1
+                  }"
                   value-format="yyyy/MM/dd"
                   format="yyyy 第 WW 周"
                   placeholder="选择日期"
