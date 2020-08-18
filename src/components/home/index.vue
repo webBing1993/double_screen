@@ -22,7 +22,7 @@
             <span>您有待办事项点击查看</span>
             <img src="../../assets/gengduo.png" alt="">
           </div>
-          <div class="myInfo">
+          <div class="myInfo" @click="myInfoClick">
             <img :src="myInfo.img" alt="" onerror="this.myInfo.src='../../assets/morentouxiang.png'">
             <span>{{myInfo.name}}</span>
           </div>
@@ -158,6 +158,11 @@
         }else {
           sessionStorage.setItem('tabIndex', index);
         }
+      },
+
+      // 点击头像调用A屏事件
+      myInfoClick() {
+        jsObj.WalkInConfig();
       },
 
       // 语音播报
