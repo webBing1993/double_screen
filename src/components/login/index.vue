@@ -250,13 +250,16 @@
                   sessionStorage.session_id = body.data.data.token;
                   sessionStorage.hotel_id = body.data.data.hotelId;
                   sessionStorage.hotel_Name = body.data.data.hotelName;
-                  this.SendParameter(body.data.data.userId);
+                  let userId = body.data.data.userId;
                   this.getAllConfig({
                     onsuccess: body => {
                       this.loginLoading = false;
                       if(body.data.data != null) {
                         sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
                         this.goto('/home');
+                        setTimeout(() => {
+                          this.SendParameter(userId);
+                        }, 1500);
                       }else {
                         this.$message.error('该账号无权限');
                       }
