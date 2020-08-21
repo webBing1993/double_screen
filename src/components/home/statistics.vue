@@ -261,7 +261,8 @@
         if (index == 1 && this.dayTime === '') {
           this.dayTime = new Date().toLocaleDateString();
         }else if (index == 2 && this.weekTime === '') {
-          this.weekTime = new Date();
+          console.log(new Date(val).getTime() - (24*60*60*1000), new Date(val).getTime()+(24*60*60*1000*6)-1000);
+          this.weekTime = new Date().toLocaleDateString();
         }else if (index == 3 && this.monthTime === '') {
           this.monthTime = new Date().toLocaleDateString();
         }else if (index == 4 && this.timeVal.length === 0) {
@@ -620,9 +621,11 @@
       statisticNum(type) {
         let startTime, endTime;
         if (this.dateIndex == 1) {
+            console.log('new Date(this.dayTime).getTime()', new Date(this.dayTime).getTime());
           startTime = new Date(this.dayTime).getTime();
           endTime = new Date(this.dayTime).getTime() + (24*60*60*1000)-1000;
         }else if (this.dateIndex == 2) {
+            console.log('new Date(this.weekTime).getTime()', new Date(this.weekTime).getTime());
           startTime = new Date(this.weekTime).getTime() - (24*60*60*1000);
           endTime = new Date(this.weekTime).getTime() + (24*60*60*1000*6)-1000;
         }else if (this.dateIndex == 3) {
