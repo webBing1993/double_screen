@@ -261,8 +261,10 @@
         if (index == 1 && this.dayTime === '') {
           this.dayTime = new Date().toLocaleDateString();
         }else if (index == 2 && this.weekTime === '') {
-          console.log(new Date(val).getTime() - (24*60*60*1000), new Date(val).getTime()+(24*60*60*1000*6)-1000);
-          this.weekTime = new Date().toLocaleDateString();
+//          console.log('new Date(Nowdate-(Nowdate.getDay()-1)*86400000)', new Date(new Date()-(new Date().getDay()-1)*86400000).toLocaleDateString());
+//          console.log('new Date(Nowdate-(Nowdate.getDay()-1)*86400000)', new Date(new Date(new Date()-(new Date().getDay()-1)*86400000)).toLocaleDateString());
+          console.log(new Date().toLocaleDateString());
+          this.weekTime = new Date(new Date()-(new Date().getDay()-1)*86400000+(24*60*60*1000)).toLocaleDateString();
         }else if (index == 3 && this.monthTime === '') {
           this.monthTime = new Date().toLocaleDateString();
         }else if (index == 4 && this.timeVal.length === 0) {
@@ -297,7 +299,7 @@
         if (this.dateIndex == 1) {
           this.dayTime = new Date(new Date(this.dayTime).getTime() - 24 * 60 * 60 * 1000);
         }else if (this.dateIndex == 2) {
-          this.weekTime = new Date(new Date(this.weekTime).getTime() - 24 * 60 * 60 * 1000 * 6);
+          this.weekTime = new Date(new Date(this.weekTime).getTime() - 24 * 60 * 60 * 1000 * 7);
         }else if (this.dateIndex == 3) {
           let nowdate = new Date(this.monthTime);
           nowdate.setMonth(nowdate.getMonth()-1);
@@ -315,7 +317,7 @@
         if (this.dateIndex == 1) {
           this.dayTime = new Date(new Date(this.dayTime).getTime() + 24 * 60 * 60 * 1000);
         }else if (this.dateIndex == 2) {
-          this.weekTime = new Date(new Date(this.weekTime).getTime() + 24 * 60 * 60 * 1000 * 6);
+          this.weekTime = new Date(new Date(this.weekTime).getTime() + 24 * 60 * 60 * 1000 * 7);
         }else if (this.dateIndex == 3) {
           let nowdate = new Date(this.monthTime);
           nowdate.setMonth(nowdate.getMonth()+1);
@@ -576,7 +578,7 @@
           let year = this.datetimeparse(new Date(this.monthTime).getTime(), 'yy');
           let month = this.datetimeparse(new Date(this.monthTime).getTime(), 'MM');
           let day = new Date(year,month,0).getDate();
-          startTime = new Date(this.monthTime).getTime();
+          startTime = new Date(new Date(year+'/'+month+'/'+'01').toLocaleDateString()).getTime();
           endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
         }else {
           startTime = new Date(this.timeVal[0]).getTime();
@@ -621,18 +623,16 @@
       statisticNum(type) {
         let startTime, endTime;
         if (this.dateIndex == 1) {
-            console.log('new Date(this.dayTime).getTime()', new Date(this.dayTime).getTime());
           startTime = new Date(this.dayTime).getTime();
           endTime = new Date(this.dayTime).getTime() + (24*60*60*1000)-1000;
         }else if (this.dateIndex == 2) {
-            console.log('new Date(this.weekTime).getTime()', new Date(this.weekTime).getTime());
           startTime = new Date(this.weekTime).getTime() - (24*60*60*1000);
           endTime = new Date(this.weekTime).getTime() + (24*60*60*1000*6)-1000;
         }else if (this.dateIndex == 3) {
           let year = this.datetimeparse(new Date(this.monthTime).getTime(), 'yy');
           let month = this.datetimeparse(new Date(this.monthTime).getTime(), 'MM');
           let day = new Date(year,month,0).getDate();
-          startTime = new Date(this.monthTime).getTime();
+          startTime = new Date(new Date(year+'/'+month+'/'+'01').toLocaleDateString()).getTime();
           endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
         }else {
           startTime = new Date(this.timeVal[0]).getTime();
