@@ -930,5 +930,10 @@
     }
   }
 
+  /deep/ .ivu-date-picker-cells span em {
+    width: auto;
+    height: auto;
+  }
+
 
 </style>
