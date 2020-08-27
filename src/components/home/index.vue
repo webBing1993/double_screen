@@ -48,34 +48,34 @@
       </div>
 
       <!-- 退房，发卡槽无卡或回收卡槽满 待办弹框-->
-      <div class="quitHouse" v-if="quithouse">
-        <div class="content" v-if="quithouse_">
-          【{{onlyItem.roomNo}}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
+      <div class="quitHouse" v-for="(item, index) in tipArr">
+        <div class="content" v-if="item.doType == 1">
+          【{{ item.roomNo }}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
         </div>
-        <div class="content" v-if="wuka">
-          发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看
+        <!--<div class="content" v-if="wuka">-->
+          <!--发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看-->
+        <!--</div>-->
+        <!--<div class="content" v-if="manka">-->
+          <!--回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看-->
+        <!--</div>-->
+        <div class="content" v-else-if="item.doType == 4">
+          收款成功！收款金额{{ item.totalFeeStr }}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
         </div>
-        <div class="content" v-if="manka">
-          回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看
+        <div class="content" v-else-if="item.doType == 5">
+          房号【{{item.roomNo}}】客人插卡退房成功，房卡已回收，房态已改为脏房请及时打扫
         </div>
-        <div class="content" v-if="pmsPay">
-          收款成功！收款金额{{onlyItem.totalFeeStr}}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
+        <div class="content" v-else-if="item.doType == 6">
+          房号【{{item.roomNo}}】退款计划失败，{{ item.remark }}
         </div>
-        <div class="content" v-if="quitSuccessHouse">
-          房号【{{onlyItem.roomNo}}】客人插卡退房成功，房卡已回收，房态已改为脏房请及时打扫
+        <div class="content" v-else-if="item.doType == 7">
+          房号【{{item.roomNo}}】客人插卡退房成功，房态已改为脏房请及时打扫
         </div>
-        <div class="content" v-if="quitMoney">
-          房号【{{onlyItem.roomNo}}】退款计划失败，{{ onlyItem.remark }}
+        <div class="btns" v-if="item.doType != 5 && item.doType != 7">
+          <span class="knowBtn" @click="checkOut(item.id, index, 1)">我知道了</span>
+          <span class="lookDetail" @click="lookDetail(item, index)">查看详情</span>
         </div>
-        <div class="content" v-if="checkoutsuccess">
-          房号【{{onlyItem.roomNo}}】客人插卡退房成功，房态已改为脏房请及时打扫
-        </div>
-        <div class="btns" v-if="!quitSuccessHouse && !checkoutsuccess">
-          <span class="knowBtn" @click="checkOut()">我知道了</span>
-          <span class="lookDetail" @click="lookDetail">查看详情</span>
-        </div>
-        <div class="btns" v-if="quitSuccessHouse || checkoutsuccess">
-          <span class="lookDetail" @click="checkOut(onlyItem.id)">我知道了</span>
+        <div class="btns" v-if="item.doType == 5 || item.doType == 7">
+          <span class="lookDetail" @click="checkOut(item.id, index, 2)">我知道了</span>
         </div>
       </div>
 
@@ -123,6 +123,7 @@
         checkoutsuccess: false, // 插卡退房成功
         pmsOrderIdChange: 0,
         onlyItem: {},    // 临时退房数据
+        tipArr: [],
       }
     },
     methods: {
@@ -206,6 +207,7 @@
 
       // 获取列表
       doSthList() {
+          let arr = [];
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
@@ -213,22 +215,71 @@
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
+                  let doSthList = sessionStorage.getItem('doSthArr') ? JSON.parse(sessionStorage.getItem('doSthArr')) : [];
 //                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
-                      this.findItem(body.data.data, 1);
+//                    this.findItem(body.data.data, 1);
+                    body.data.data.checkoutapply.forEach(item => {
+                        item.doType = 1;
+                    });
+                    arr = [...body.data.data.checkoutapply, ...arr];
                   }
                   if (body.data.data.pmspay.length != 0) {
-                    this.findItem(body.data.data, 4);
+//                    this.findItem(body.data.data, 4);
+                    body.data.data.pmspay.forEach(item => {
+                      item.doType = 4;
+                    });
+                    arr = [...body.data.data.pmspay, ...arr];
                   }
                   if (body.data.data.creditcheckout && body.data.data.creditcheckout.length != 0) {
-                    this.findItem(body.data.data, 5);
+//                    this.findItem(body.data.data, 5);
+                    body.data.data.creditcheckout.forEach(item => {
+                      item.doType = 5;
+                    });
+                    arr = [...body.data.data.creditcheckout, ...arr];
                   }
                   if (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length != 0) {
-                    this.findItem(body.data.data, 6);
+//                    this.findItem(body.data.data, 6);
+                    body.data.data.AUTO_SETTLE_PAY.forEach(item => {
+                      item.doType = 6;
+                    });
+                    arr = [...body.data.data.AUTO_SETTLE_PAY, ...arr];
                   }
                   if (body.data.data.checkoutsuccess.length != 0) {
-                    this.findItem(body.data.data, 7);
+//                    this.findItem(body.data.data, 7);
+                    body.data.data.checkoutsuccess.forEach(item => {
+                      item.doType = 7;
+                    });
+                    arr = [...body.data.data.checkoutsuccess, ...arr];
                   }
+                  console.log('arr', arr);
+                  if (doSthList.length != 0) {
+                    let result = [];
+                    for(var i = 0; i < arr.length; i++){
+                      let obj = arr[i];
+                      let num = obj.id;
+                      let isExist = false;
+                      for(var j = 0; j < doSthList.length; j++){
+                        var aj = doSthList[j];
+                        var n = aj.id;
+                        if(n == num){
+                          isExist = true;
+                          break;
+                        }
+                      }
+                      if(!isExist){
+                        result.push(obj);
+                      }
+                    }
+                    console.log('result', result);
+                    if (result.length != 0) {
+                      this.tipArr = [...result, ...this.tipArr];
+                      console.log('this.tipArr', this.tipArr);
+//                      this.findItem(result, result[0].doType);
+                      this.findItem(result);
+                    }
+                  }
+                  sessionStorage.setItem('doSthArr', JSON.stringify(arr));
               }
             }
             this.loadingShow = false;
@@ -243,198 +294,38 @@
       },
 
       // 过滤
-      findItem(data, type) {
-          console.log('type', type);
+      findItem(data) {
         let checkOutList = [];
-        if (type == 1) {
-          checkOutList = data.checkoutapply;
-        }else if (type == 2) {
-          checkOutList = data.wuka;
-        }else if (type == 3) {
-          checkOutList = data.manka;
-        }else if (type == 4) {
-          checkOutList = data.pmspay;
-        }else if (type == 5) {
-          checkOutList = data.creditcheckout
-        }else if (type == 6) {
-          checkOutList = data.AUTO_SETTLE_PAY;
-        }else if (type == 7) {
-          checkOutList = data.checkoutsuccess;
-        }
+        checkOutList = data;
         console.log('checkOutList', checkOutList);
-        let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-        console.log('arr_', arr_);
-        if (arr_.length == 0) {
-          this.$nextTick(() => {
-            this.onlyItem = checkOutList[0];
-            if (type == 1) {
-              this.wuka = false;
-              this.manka = false;
-              this.quithouse_ = true;
-              this.pmsPay = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
+        this.onlyItem = checkOutList[0];
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.quithouse = true;
+            if (this.onlyItem.doType == 1) {
+              this.speckText(checkOutList[0].roomNo+'房间客人申请退房，房卡已回收，请及时处理');
+            }else if (this.onlyItem.doType == 4) {
+              this.speckText('收款成功！收款金额'+checkOutList[0].totalFeeStr+'元，自动入账失败，请手工至PMS系统处理入账');
+            }else if (this.onlyItem.doType == 5) {
+              this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房卡已回收，房态已改为脏房请及时打扫');
+            }else if (this.onlyItem.doType == 6) {
+              this.speckText('房号'+checkOutList[0].roomNo+'退款计划失败，'+checkOutList[0].remark);
+            }else if (this.onlyItem.doType == 7) {
+              this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房态已改为脏房请及时打扫');
             }
-            if (type == 2) {
-              this.wuka = true;
-              this.quithouse_ = false;
-              this.manka = false;
-              this.pmsPay = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }
-            if (type == 3){
-              this.manka = true;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.pmsPay = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }else if (type == 4) {
-              this.pmsPay = true;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.quitSuccessHouse = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }
-            if (type == 5) {
-              this.quitSuccessHouse = true;
-              this.pmsPay = false;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.quitMoney = false;
-              this.checkoutsuccess = false;
-            }
-            if (type == 6) {
-              this.quitSuccessHouse = false;
-              this.pmsPay = false;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.checkoutsuccess = false;
-              this.quitMoney = true;
-            }
-            if (type == 7) {
-              this.quitSuccessHouse = false;
-              this.pmsPay = false;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.checkoutsuccess = true;
-              this.quitMoney = false;
-            }
-            setTimeout(() => {
-              this.quithouse = true;
-            }, 500)
-          })
-        }else {
-          let result = [];
-          for(var i = 0; i < checkOutList.length; i++){
-            let obj = checkOutList[i];
-            let num = obj.id+obj.orderId;
-            let isExist = false;
-            for(var j = 0; j < arr_.length; j++){
-              let aj = arr_[j];
-              let n = aj.id+aj.orderId;
-              if(n == num){
-                isExist = true;
-                break;
-              }
-            }
-            if(!isExist){
-              result.push(obj);
-            }
-          }
-          console.log('result', result);
-          console.log('result', result.length);
-          this.$nextTick(() => {
-            if (result.length != 0) {
-              this.onlyItem = result[0];
-              if (type == 1) {
-                this.wuka = false;
-                this.manka = false;
-                this.quithouse_ = true;
-                this.pmsPay = false;
-                this.quitSuccessHouse = false;
-                this.quitMoney = false;
-                this.checkoutsuccess = false;
-              }
-              if (type == 2) {
-                this.wuka = true;
-                this.quithouse_ = false;
-                this.manka = false;
-                this.pmsPay = false;
-                this.quitSuccessHouse = false;
-                this.quitMoney = false;
-              }
-              if (type == 3){
-                this.manka = true;
-                this.quithouse_ = false;
-                this.wuka = false;
-                this.pmsPay = false;
-                this.quitSuccessHouse = false;
-                this.quitMoney = false;
-                this.checkoutsuccess = false;
-              }
-              if (type == 4) {
-                this.pmsPay = true;
-                this.manka = false;
-                this.quithouse_ = false;
-                this.wuka = false;
-                this.quitSuccessHouse = false;
-                this.quitMoney = false;
-                this.checkoutsuccess = false;
-              }
-              if (type == 5) {
-                this.quitSuccessHouse = true;
-                this.pmsPay = false;
-                this.manka = false;
-                this.quithouse_ = false;
-                this.wuka = false;
-                this.quitMoney = false;
-                this.checkoutsuccess = false;
-              }
-              if (type == 6) {
-                this.quitSuccessHouse = false;
-                this.pmsPay = false;
-                this.manka = false;
-                this.quithouse_ = false;
-                this.wuka = false;
-                this.checkoutsuccess = false;
-                this.quitMoney = true;
-              }
-              if (type == 7) {
-                this.quitSuccessHouse = false;
-                this.pmsPay = false;
-                this.manka = false;
-                this.quithouse_ = false;
-                this.wuka = false;
-                this.checkoutsuccess = true;
-                this.quitMoney = false;
-              }
-              setTimeout(() => {
-                this.quithouse = true;
-              }, 500)
-            }
-          })
-        }
+          }, 500)
+        })
       },
 
       // 我知道了
-      checkOut(id) {
-          if (id) {
+      checkOut(id, index, type) {
+          if (type == 2) {
               this.creditDoSth({
                 id: id,
                 onsuccess: body => {
                     if (body.data.code == 0) {
                       this.quithouse = false;
-                      this.doSthList();
+                      this.tipArr.splice(index, 1);
                     }
                 },
                 onfail: body => {
@@ -445,27 +336,19 @@
                 }
               })
           }else {
-            let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-            this.quithouse = false;
-            arr.push(this.onlyItem);
-            sessionStorage.setItem('checkOutList', JSON.stringify(arr));
-            this.doSthList();
+            this.tipArr.splice(index, 1);
           }
       },
 
       // 查看详情
-      lookDetail() {
-        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-        this.quithouse = false;
-        arr.push(this.onlyItem);
-        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
-        if (this.onlyItem.id) {
+      lookDetail(item, index) {
+        this.tipArr.splice(index, 1);
+        if (item.id) {
           this.goto('/doSth');
         }else {
-          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId+'-'+this.onlyItem.payFlowId);
+          sessionStorage.setItem('pmsPayDetail', item.orderId+'-'+item.payFlowId);
           this.tabClick(3);
           this.pmsOrderIdChange++;
-          this.doSthList();
         }
       },
 
