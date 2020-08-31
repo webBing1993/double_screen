@@ -437,7 +437,7 @@
             {
               name: '交易金额',
               type: 'pie',
-              radius: ['38%', '68%'],
+              radius: ['35%', '56%'],
               center: ['50%', '65%'],
               color:['#5690FF','#61E2B4'],
               avoidLabelOverlap: false,
@@ -452,7 +452,7 @@
               label: {
                 normal: {
                   formatter: function (params) {
-                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n\n}'
+                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n}'
                   },
                   borderWidth: 20,
                   borderRadius: 4,
@@ -502,7 +502,7 @@
             {
               name: '预授权冻结',
               type: 'pie',
-              radius: ['38%', '68%'],
+              radius: ['35%', '56%'],
               center: ['50%', '65%'],
               color:['#5690FF','#61E2B4'],
               avoidLabelOverlap: false,
@@ -517,7 +517,7 @@
               label: {
                 normal: {
                   formatter: function (params) {
-                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n\n}'
+                    return '{b|'+params.data.name+'}  {ped|'+params.data.total+'笔 }\n {c|¥'+params.data.value+'\n\n\n}'
                   },
                   borderWidth: 20,
                   borderRadius: 4,
