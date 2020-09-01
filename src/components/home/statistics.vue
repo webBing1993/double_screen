@@ -274,7 +274,6 @@
           this.timeVal = [this.datetimeparse(new Date(), 'yy/MM/dd'), this.datetimeparse(new Date(), 'yy/MM/dd')];
         }
         this.statisticNum(1);
-        this.payAnalysis();
       },
 
       // 日期选择
@@ -295,7 +294,6 @@
             console.log(new Date(val[0]).getTime(), new Date(val[1]).getTime());
         }
         this.statisticNum(1);
-        this.payAnalysis();
       },
 
       // pre Time
@@ -313,7 +311,6 @@
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
         this.statisticNum(1);
-        this.payAnalysis();
       },
 
       // next time
@@ -331,7 +328,6 @@
           this.monthTime = new Date(y+'/'+m+'/'+d);
         }
         this.statisticNum(1);
-        this.payAnalysis();
       },
 
       // 打印
@@ -659,6 +655,7 @@
                   this.checkinData.checkInCount = body.data.data.checkInCount;
                   this.checkinData.checkOutCount = body.data.data.checkOutCount;
                   this.echartsRectangle();
+                  this.payAnalysis();
                 }
               }
           },
