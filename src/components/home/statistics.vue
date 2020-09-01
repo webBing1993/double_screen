@@ -54,15 +54,16 @@
               </div>
               <div class="time_change" v-show="dateIndex == 4">
                 <!--<i @click="preDay"><img src="../../assets/ic_chevron_left.png" alt=""></i>-->
-                <el-date-picker
-                  ref="date4"
-                  type="daterange"
-                  v-model="timeVal"
-                  placeholder="选择日期"
-                  @change="datePicker"
-                  :default-time="['00:00:00', '23:59:59']"
-                >
-                </el-date-picker>
+                <!--<el-date-picker-->
+                  <!--ref="date4"-->
+                  <!--type="daterange"-->
+                  <!--v-model="timeVal"-->
+                  <!--placeholder="选择日期"-->
+                  <!--@change="datePicker"-->
+                  <!--:default-time="['00:00:00', '23:59:59']"-->
+                <!--&gt;-->
+                <!--</el-date-picker>-->
+                <DatePicker :value="timeVal" @on-change="datePicker" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="选择日期"></DatePicker>
                 <!--<i @click="nextDay"><img src="../../assets/ic_chevron_right.png" alt=""></i>-->
               </div>
             </div>
@@ -207,10 +208,11 @@
   require('echarts/lib/component/tooltip');
   require('echarts/lib/component/title');
   require('echarts/lib/component/legend');
+  import { DatePicker } from 'iview'
 
   export default {
     name: 'statistics',
-    components: {ElCol, loadingList},
+    components: {ElCol, loadingList, DatePicker},
     data () {
       return {
         loadingShow: false,  // loading
@@ -264,11 +266,12 @@
 //          console.log('new Date(Nowdate-(Nowdate.getDay()-1)*86400000)', new Date(new Date()-(new Date().getDay()-1)*86400000).toLocaleDateString());
 //          console.log('new Date(Nowdate-(Nowdate.getDay()-1)*86400000)', new Date(new Date(new Date()-(new Date().getDay()-1)*86400000)).toLocaleDateString());
           console.log(new Date().toLocaleDateString());
-          this.weekTime = new Date(new Date()-(new Date().getDay()-1)*86400000+(24*60*60*1000)).toLocaleDateString();
+          this.weekTime = new Date(new Date()-(new Date().getDay()-1)*86400000+(24*60*60*1000));
         }else if (index == 3 && this.monthTime === '') {
           this.monthTime = new Date().toLocaleDateString();
         }else if (index == 4 && this.timeVal.length === 0) {
-          this.timeVal.push(new Date().toLocaleDateString(), new Date().toLocaleDateString())
+//          this.timeVal.push(new Date(), new Date())
+          this.timeVal = [this.datetimeparse(new Date(), 'yy/MM/dd'), this.datetimeparse(new Date(), 'yy/MM/dd')];
         }
         this.statisticNum(1);
         this.payAnalysis();
@@ -276,7 +279,7 @@
 
       // 日期选择
       datePicker(val) {
-        console.log(val);
+        console.log(111, val);
         if (this.dateIndex == 1) {
             console.log(new Date(val).getTime(), new Date(val).getTime()+(24*60*60*1000)-1000);
         }else if (this.dateIndex == 2) {
@@ -288,6 +291,7 @@
             let day = new Date(year,month,0).getDate();
             console.log(new Date(year+'/'+month+'/'+day).getTime()+(24*60*60*1000)-1000);
         }else {
+            this.timeVal = val;
             console.log(new Date(val[0]).getTime(), new Date(val[1]).getTime());
         }
         this.statisticNum(1);
@@ -567,13 +571,14 @@
 
       // 环形图接口
       payAnalysis() {
+          console.log('this.timeVal', this.timeVal);
         let startTime, endTime;
         if (this.dateIndex == 1) {
           startTime = new Date(this.dayTime).getTime();
           endTime = new Date(this.dayTime).getTime() + (24*60*60*1000)-1000;
         }else if (this.dateIndex == 2) {
-          startTime = new Date(this.weekTime).getTime() - (24*60*60*1000);
-          endTime = new Date(this.weekTime).getTime() + (24*60*60*1000*6)-1000;
+          startTime = new Date(this.datetimeparse(this.weekTime, 'yy/MM/dd')+' 00:00:00').getTime() - (24*60*60*1000);
+          endTime = new Date(this.datetimeparse(this.weekTime, 'yy/MM/dd')+' 00:00:00').getTime() + (24*60*60*1000*6)-1000;
         }else if (this.dateIndex == 3) {
           let year = this.datetimeparse(new Date(this.monthTime).getTime(), 'yy');
           let month = this.datetimeparse(new Date(this.monthTime).getTime(), 'MM');
@@ -581,8 +586,8 @@
           startTime = new Date(new Date(year+'/'+month+'/'+'01').toLocaleDateString()).getTime();
           endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
         }else {
-          startTime = new Date(this.timeVal[0]).getTime();
-          endTime = new Date(this.timeVal[1]).getTime();
+          startTime = new Date(this.timeVal[0]+' 00:00:00').getTime();
+          endTime = new Date(this.timeVal[1]+' 23:59:59').getTime();
         }
         let data = {
           startTime: startTime,
@@ -626,8 +631,8 @@
           startTime = new Date(this.dayTime).getTime();
           endTime = new Date(this.dayTime).getTime() + (24*60*60*1000)-1000;
         }else if (this.dateIndex == 2) {
-          startTime = new Date(this.weekTime).getTime() - (24*60*60*1000);
-          endTime = new Date(this.weekTime).getTime() + (24*60*60*1000*6)-1000;
+          startTime = new Date(this.datetimeparse(this.weekTime, 'yy/MM/dd')+' 00:00:00').getTime() - (24*60*60*1000);
+          endTime = new Date(this.datetimeparse(this.weekTime, 'yy/MM/dd')+' 00:00:00').getTime() + (24*60*60*1000*6)-1000;
         }else if (this.dateIndex == 3) {
           let year = this.datetimeparse(new Date(this.monthTime).getTime(), 'yy');
           let month = this.datetimeparse(new Date(this.monthTime).getTime(), 'MM');
@@ -635,8 +640,8 @@
           startTime = new Date(new Date(year+'/'+month+'/'+'01').toLocaleDateString()).getTime();
           endTime = new Date(year+'/'+month+'/'+day).getTime() + (24*60*60*1000)-1000;
         }else {
-          startTime = new Date(this.timeVal[0]).getTime();
-          endTime = new Date(this.timeVal[1]).getTime();
+          startTime = new Date(this.timeVal[0]+' 00:00:00').getTime();
+          endTime = new Date(this.timeVal[1]+' 23:59:59').getTime();
         }
         let data = {
           beginDate: startTime,
@@ -726,7 +731,27 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-
+        /deep/ .ivu-date-picker {
+          height: 40px;
+        }
+        /deep/ .ivu-input {
+          background-color: transparent;
+          padding: 4px 0;
+          border: none;
+          font-size: 24px;
+          color: #FFFFFF;
+          text-align: center;
+          height: 40px;
+          line-height: 40px;
+        }
+        /deep/ .ivu-input:focus {
+          border: none;
+          box-shadow: none;
+        }
+        /deep/ .ivu-date-picker-cells span, /deep/ .ivu-date-picker-header-label {
+          font-size: 20px !important;
+          font-weight: 700 !important;
+        }
       }
     }
     .ractangle {
