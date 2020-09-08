@@ -182,6 +182,8 @@
                 <span v-else-if="detailVal.payFlag == 2">支付宝</span>
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
                 <span v-else-if="detailVal.payFlag == 3">翼支付</span>
+                <span v-else-if="detailVal.payFlag == 5">PMS微信支付</span>
+                <span v-else-if="detailVal.payFlag == 7">河马支付</span>
                 <span v-else>银联</span>
               </div>
               <div class="list">
