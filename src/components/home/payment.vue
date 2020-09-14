@@ -1180,7 +1180,7 @@
                 this.paymentList(1);
               }else if(body.data.code == 20003){
                 this.showPmsAbnormal = true;
-                this.secoundTip1 = true;
+                this.secoundTip1 = false;
               }else if (body.data.code == 10006) {
                 this.$toast({
                   message: body.data.msg,
@@ -1188,7 +1188,7 @@
                 });
               }else if (body.data.code == 100049 || body.data.code == 100036) {
                 this.showBalance = true;
-                this.secoundTip1 = true;
+                this.secoundTip1 = false;
               }
               this.checked = '';
               this.payTig = false;
@@ -1317,10 +1317,13 @@
                 this.page = 1;
                 this.paymentList(1);
               }else if(body.data.code == 20003){
+                this.secoundTip = false;
                 this.showPmsAbnormal_ = true;
               }else if (body.data.code == 100049 || body.data.code == 100036) {
+                this.secoundTip = false;
                 this.showBalance = true;
               }else if (body.data.code == 10006) {
+                this.secoundTip = false;
                 this.payTig = false;
                 this.$toast({
                   message: body.data.msg,
@@ -1331,7 +1334,13 @@
                 this.loadingShow = true;
                 this.page = 1;
                 this.paymentList(1);
+              }else {
+                this.$toast({
+                  message: body.data.msg,
+                  iconClass: 'icon ',
+                });
               }
+              this.countinuedSureLoading = false;
             },
             onfail: (body, headers) => {
               this.infoLoading = false;
