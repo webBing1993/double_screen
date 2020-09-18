@@ -1003,14 +1003,10 @@
         return mins;
       },
 
-      getAppLocation(value) {
-          console.log('当前在'+value+'屏');
-          this.wherePrint = value;
-      },
-
     },
     beforeMount() {
       this.dwimeX = new this.dwimeXFun();
+      this.wherePrint = sessionStorage.getItem('getAppLocation') ? sessionStorage.getItem('getAppLocation') : 2;
     },
 
     mounted () {
@@ -1038,7 +1034,6 @@
       this.$route.meta.isBack = false;
       window.showOrderInfo = this.showOrderInfo;
       window.startUpDevice = this.startUpDevice;
-      window.getAppLocation = this.getAppLocation;
     },
     beforeRouteEnter(to,from,next){
       if(from.name == 'checkIn'){
