@@ -13,8 +13,7 @@
               <span>批量同步</span>
             </div>
             <div class="replayList" @click="replayList">
-              <img src="../../assets/tongbu.png" alt="">
-              <span>刷新</span>
+              <span>拉取订单</span>
             </div>
           </div>
         </div>
@@ -202,6 +201,34 @@
           </div>
         </div>
       </div>
+
+      <!-- 拉去订单-->
+      <div class="searchBox" v-if="searchBox">
+        <div class="shadow"></div>
+        <div class="searchBoxContent">
+          <div class="searchTabs">
+            <div class="searchTabLeft">
+              <span :class="tabIndex_ == 1 ? 'active tab' : 'tab'" @click="tabClick_(1)" :style="tabIndex_ == 1 ? tabImg[1] : tabImg[0]">散客订单</span>
+              <span :class="tabIndex_ == 2 ? 'active tab' : 'tab'" @click="tabClick_(2)" :style="tabIndex_ == 2 ? tabImg[1] : tabImg[0]">团队订单</span>
+            </div>
+            <div class="searchTabRight">
+              <span @click="cancleSearch">取消</span>
+            </div>
+          </div>
+          <div class="searchContent">
+            <div class="searchInput">
+              <img src="../../assets/Icon-search.png" alt="">
+              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus">
+            </div>
+            <div class="searchBtn">
+              <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
+            </div>
+          </div>
+          <div class="noDataTip" v-if="noData">
+            *订单不存在，请检查输入的条件
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -258,6 +285,15 @@
         isFreeDeposit: 1,
         loadingCheckInSure: false,    // 修改订单状态loading
         checkInTip: false,      // 修改支付状态弹框
+        searchBox: false,        // 拉去订单tip
+        tabIndex_: 1,           // tip tab
+        searchSureLoading: false,
+        searchString3: '',      // tip input
+        searchBtnText: '确认查询',       // tip button text
+        noData: false,
+        isPms: false,         // 判断是否是pms拉取的
+        dwimeX: null,         // 键盘
+        wherePrint: 2,        // 1A屏2B屏
       }
     },
     filters: {
@@ -280,8 +316,10 @@
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = false;
+        this.isPms = false;
         if (type == 1) {
           this.tabIndex = index;
+          this.tabIndex_ = index;
           sessionStorage.setItem('tabIndex_', this.tabIndex);
         }else {
           let today=new Date().getTime();
@@ -299,8 +337,81 @@
         this.getPreOrder(1);
       },
 
+      tabClick_ (index) {
+        this.dwimeX.SendCmd("close");
+        this.tabIndex = index;
+        this.tabIndex_ = index;
+      },
+
+      // 取消
+      cancleSearch() {
+          this.searchString3 = '';
+          this.searchBtnText = '确认查询';
+          this.searchBox = false;
+          this.searchSureLoading = false;
+          this.dwimeX.SendCmd("close");
+      },
+
+      // search tip input focus
+      searchBoxFocus() {
+        let x;
+        if (this.wherePrint == 2) {
+            x = 1920;
+        }else {
+            x = 0;
+        }
+        let y = document.body.clientHeight - 420;
+
+        this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+      },
+
+      // 调用键盘 api
+      dwimeXFun() {
+        this.url = "http://127.0.0.1:1606/";
+
+        // 调用无参数 api
+        this.SendCmd = function(param) {
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", this.url + param, true);
+
+          try {
+            xhr.send(null);
+          } catch(e) {
+            alert("Please start \"DWMain\" first！");
+            return null;
+          }
+
+          // 获取数据后的处理程序
+          xhr.onreadystatechange = function ()
+          {
+            if (xhr.readyState == 4 && xhr.status == 200)
+            {
+              var json = JSON.parse(xhr.responseText);
+              return json["result"];
+            }
+          };
+
+          return null;
+        };
+      },
+
+      // 确认查询
+      searchSureBtn() {
+        this.dwimeX.SendCmd("close");
+        if (this.searchString3 !== '') {
+          this.searchBtnText = '查询中';
+          this.isPms = true;
+          this.searchSureLoading = true;
+          this.searchString = this.searchString3;
+          this.page = 1;
+          this.getPreOrder(1);
+        }
+      },
+
       // 键盘事件
       changeKeyBords () {
+        this.isPms = false;
         if (this.changeTabString == 1) {
           this.searchString = this.searchString1;
           this.page = 1;
@@ -744,15 +855,13 @@
         });
       },
 
-      // 刷新
+      // 拉取订单
       replayList () {
-        this.page = 1;
-        this.showList = false;
-        this.showList_ = false;
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
-        this.searchString = this.searchString2 = this.searchString1 = '';
-        this.getPreOrder(1);
+        this.noData = false;
+        this.searchBox = true;
+        setTimeout(() => {
+          this.$refs.searchBoxInput.focus();
+        }, 500)
       },
 
       //获得同步时间
@@ -787,11 +896,12 @@
             precheckinStatus: '',
             status: "1",
             type: this.tabIndex == 1 ? 1 : 0,
-            searchString: this.searchString
+            searchString: this.searchString,
+            pms: this.isPms
           },
           onsuccess: body => {
             this.loadingShow = false;
-            if (body.data.code == 0 && body.data.data.list) {
+            if (body.data.code == 0 && body.data.data) {
               if (body.data.data.list) {
                 body.data.data.list.forEach(item => {
                   item.loadingTongbu = false;
@@ -806,6 +916,15 @@
                    }
                 });
                 this.orderLists = body.data.data.list;
+                if (this.isPms) {
+                  if(this.searchBox) {
+                    this.$toast({
+                      message: "订单拉取成功",
+                      iconClass: 'icon ',
+                    });
+                  }
+                  this.searchString1 = body.data.data.list[0].ownerSpelling;
+                }
                 this.total = body.data.data.total;
               }
               if (body.data.data.list.length == 0) {
@@ -817,6 +936,19 @@
                   this.total = body.data.data.total;
                 }
               }
+              if (body.data.data.total == 0) {
+                this.searchBtnText = '确认查询';
+                this.searchSureLoading = false;
+                this.noData = true;
+              }else {
+                this.cancleSearch();
+              }
+            }else {
+                if (this.searchBox) {
+                  this.searchBtnText = '确认查询';
+                  this.searchSureLoading = false;
+                  this.noData = true;
+                }
             }
             this.showList = true;
             this.showList_ = true;
@@ -871,6 +1003,14 @@
         return mins;
       },
 
+      getAppLocation(value) {
+          console.log('当前在'+value+'屏');
+          this.wherePrint = value;
+      },
+
+    },
+    beforeMount() {
+      this.dwimeX = new this.dwimeXFun();
     },
 
     mounted () {
@@ -898,6 +1038,7 @@
       this.$route.meta.isBack = false;
       window.showOrderInfo = this.showOrderInfo;
       window.startUpDevice = this.startUpDevice;
+      window.getAppLocation = this.getAppLocation;
     },
     beforeRouteEnter(to,from,next){
       if(from.name == 'checkIn'){
@@ -1530,6 +1671,119 @@
             background-color: #d7d7d7;
             border-color: #d7d7d7
           }
+        }
+      }
+    }
+    .searchBox {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .searchBoxContent {
+        position: fixed;
+        z-index: 12;
+        left: 0;
+        top: 0;
+        padding: 0 40px;
+        width: calc(100% - 480px);
+        min-height: calc(100vh - 100px);
+        .searchTabs {
+          padding-top: 121px;
+          padding-bottom: 18px;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+          .searchTabLeft {
+            display: inline-flex;
+            align-items: center;
+            .tab {
+              padding: 18px 30px;
+              color: #303133;
+              font-size: 20px;
+              margin-right: 30px;
+              font-weight: bold;
+            }
+            .active {
+              color: #1AAD19;
+            }
+          }
+          .searchTabRight {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 146px;
+            height: 56px;
+            line-height: 56px;
+            margin-left: 30px;
+            background: #FFFFFF;
+            box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
+            border-radius: 40px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            span {
+              color: #1AAD19;
+              font-size: 20px;
+              font-weight: bold;
+            }
+          }
+        }
+        .searchContent {
+          width: 100%;
+          background: #EFF7EF;
+          border-radius: 9px;
+          padding: 20px 30px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .searchInput {
+            display: inline-flex;
+            align-items: center;
+            width: 70%;
+            img {
+              width: 32px;
+              height: 32px;
+            }
+            input {
+              margin-left: 30px;
+              width: 80%;
+              font-family: SourceHanSansCN-Normal;
+              font-size: 22px;
+              color: #000000;
+              border: none;
+              background-color: transparent;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+              outline: none
+            }
+          }
+          .searchBtn {
+            button {
+              background: #1AAD19;
+              border-radius: 50.76px;
+              width: 146px;
+              line-height: 56px;
+              font-family: SourceHanSansCN-Regular;
+              font-size: 20px;
+              color: #FFFFFF;
+              letter-spacing: 3px;
+              outline: none;
+              box-shadow: none;
+            }
+          }
+        }
+        .noDataTip {
+          background: #FFD6DC;
+          padding: 20px 35px;
+          font-family: SourceHanSansCN-Normal;
+          font-size: 20px;
+          color: #FB2142;
+          text-align: left;
+          margin-top: -4px;
         }
       }
     }
