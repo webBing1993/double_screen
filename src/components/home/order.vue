@@ -6,15 +6,14 @@
           <div class="tabs">
             <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1, 1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">散客订单</span>
             <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(1, 2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">团队订单</span>
-            <!--<span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)" :style="tabToDay ? tabImg[1] : tabImg[0]">今日预抵</span>-->
+            <span :class="tabToDay ? 'active tab' : 'tab'" @click="tabClick(2, 1)" :style="tabToDay ? tabImg[1] : tabImg[0]">今日预抵</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
               <span>批量同步</span>
             </div>
             <div class="replayList" @click="replayList">
-              <img src="../../assets/tongbu.png" alt="">
-              <span>刷新</span>
+              <span>拉取订单</span>
             </div>
           </div>
         </div>
@@ -53,7 +52,8 @@
                     </p>
                   </div>
                   <el-button type="primary" class="tongbu_status" :loading="item.loadingTongbu"  @click="getRefresh(item)"  v-if="pmsFlag">同步</el-button>
-                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli"  @click="checkGoIn(item)" >办理入住</el-button>
+                  <el-button type="primary" class="daiSure_status" :loading="item.loadingdaiSure" v-if="item.payMode == 0 && item.type == 1"  @click="changeStatus(item)" >待确认</el-button>
+                  <el-button type="primary" class="banli_status" :loading="item.loadingBanli" v-else  @click="checkGoIn(item)" >办理入住</el-button>
                 </div>
               </div>
               <div class="remark">备注：{{item.remark ? item.remark : '-'}}</div>
@@ -63,7 +63,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="4"
+            :page-size="3"
             layout="total, prev, pager, next"
             :total="total" v-if="orderLists.length != 0 && showList_">
           </el-pagination>
@@ -98,7 +98,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入预订人姓名的首字母查询" v-model="searchString1" @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -108,7 +108,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入预订人手机号查询" v-model="searchString2" maxlength="11" @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
@@ -117,7 +117,10 @@
               </div>
             </div>
           </div>
-          <div class="corporation">复创客服电话 4001-690-890</div>
+          <div class="corporation">
+            <p>复创客服电话 4001-690-890</p>
+            <p>技术支持电话 021-62593690</p>
+          </div>
         </div>
       </div>
 
@@ -144,6 +147,85 @@
           <div class="tig_btns">
             <span class="cancel" @click="tigOrderShow=false;changeItem.loadingBanli = false;">取消</span>
             <span class="sure" @click="openScreen">查看外屏</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 修改状态-->
+      <div class="checkIn_tip" v-if="checkInTip">
+        <div class="shadow" @click="checkInTip = false;"></div>
+        <div class="checkIn_content">
+          <div class="checkIn_title">
+            <span>请确认订单支付状态</span>
+            <div class="checkIn_close" @click="closeTip">关闭</div>
+          </div>
+          <div class="lists">
+            <div class="list">
+              <div class="title"><span>应付房费：</span><span>{{(roomFeeShow/100).toFixed(2)}}元</span></div>
+              <div class="changeItem" >
+                <div class="item_tab" @click="payModeChange(2)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 2">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>已预付</span>
+                </div>
+                <div class="item_tab" @click="payModeChange(3)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 3">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>挂账</span>
+                </div>
+                <div class="item_tab" @click="payModeChange(1)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="payMode == 1">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>在线收款</span>
+                </div>
+              </div>
+            </div>
+            <div class="list">
+              <div class="title"><span>应付押金：</span><span>{{(cashFee/100).toFixed(2)}}元</span></div>
+              <div class="changeItem" v-if="cashFee != 0">
+                <div class="item_tab" @click="freeDepositChange(1)">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="cashFeeTrue || isFreeDeposit == 1">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>不收押金</span>
+                </div>
+                <div class="item_tab" @click="freeDepositChange(2)"  v-if="!cashFeeTrue">
+                  <img src="../../assets/xuanzhongle.png" alt="" v-if="isFreeDeposit == 2">
+                  <img src="../../assets/weixuan.png" alt="" v-else>
+                  <span>收押金</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="btns">
+            <el-button type="primary" :class="payMode != 0 ? 'btn_button_primary' : 'btn_button_disabled'" :disabled="payMode == 0" round :loading="loadingCheckInSure" @click="checkInSure()">完成</el-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 拉去订单-->
+      <div class="searchBox" v-if="searchBox">
+        <div class="shadow"></div>
+        <div class="searchBoxContent">
+          <div class="searchTabs">
+            <div class="searchTabLeft">
+              <span :class="tabIndex_ == 1 ? 'active tab' : 'tab'" @click="tabClick_(1)" :style="tabIndex_ == 1 ? tabImg[1] : tabImg[0]">散客订单</span>
+              <span :class="tabIndex_ == 2 ? 'active tab' : 'tab'" @click="tabClick_(2)" :style="tabIndex_ == 2 ? tabImg[1] : tabImg[0]">团队订单</span>
+            </div>
+            <div class="searchTabRight">
+              <span @click="cancleSearch">取消</span>
+            </div>
+          </div>
+          <div class="searchContent">
+            <div class="searchInput">
+              <img src="../../assets/Icon-search.png" alt="">
+              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus">
+            </div>
+            <div class="searchBtn">
+              <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
+            </div>
+          </div>
+          <div class="noDataTip" v-if="noData">
+            *订单不存在，请检查输入的条件
           </div>
         </div>
       </div>
@@ -200,6 +282,18 @@
         startTime: '',  // 开始时间
         endTime: '',  // 结束时间
         tigOrderShow: false, // 判断A屏是否有订单在操作
+        isFreeDeposit: 1,
+        loadingCheckInSure: false,    // 修改订单状态loading
+        checkInTip: false,      // 修改支付状态弹框
+        searchBox: false,        // 拉去订单tip
+        tabIndex_: 1,           // tip tab
+        searchSureLoading: false,
+        searchString3: '',      // tip input
+        searchBtnText: '确认查询',       // tip button text
+        noData: false,
+        isPms: false,         // 判断是否是pms拉取的
+        dwimeX: null,         // 键盘
+        wherePrint: 2,        // 1A屏2B屏
       }
     },
     filters: {
@@ -213,7 +307,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag', 'refreshOne'
+        'goto', 'replaceto', 'getQueryByPage', 'refreshList', 'getRefreshTime', 'getOrderFree', 'sendCheck', 'updatePaidMode', 'getPmsFlag', 'refreshOne', 'getOrderFree', 'updatePaidMode'
       ]),
 
       // tab切换
@@ -222,8 +316,10 @@
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = false;
+        this.isPms = false;
         if (type == 1) {
           this.tabIndex = index;
+          this.tabIndex_ = index;
           sessionStorage.setItem('tabIndex_', this.tabIndex);
         }else {
           let today=new Date().getTime();
@@ -239,6 +335,97 @@
         }
         this.page = 1;
         this.getPreOrder(1);
+      },
+
+      tabClick_ (index) {
+        this.dwimeX.SendCmd("close");
+        this.tabIndex = index;
+        this.tabIndex_ = index;
+      },
+
+      // 取消
+      cancleSearch() {
+          this.searchString3 = '';
+          this.searchBtnText = '确认查询';
+          this.searchBox = false;
+          this.searchSureLoading = false;
+          this.dwimeX.SendCmd("close");
+      },
+
+      // search tip input focus
+      searchBoxFocus() {
+        let x;
+        if (this.wherePrint == 2) {
+            x = 1920;
+        }else {
+            x = 0;
+        }
+        let y = document.body.clientHeight - 420;
+
+        this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+      },
+
+      // 调用键盘 api
+      dwimeXFun() {
+        this.url = "http://127.0.0.1:1606/";
+
+        // 调用无参数 api
+        this.SendCmd = function(param) {
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", this.url + param, true);
+
+          try {
+            xhr.send(null);
+          } catch(e) {
+            alert("Please start \"DWMain\" first！");
+            return null;
+          }
+
+          // 获取数据后的处理程序
+          xhr.onreadystatechange = function ()
+          {
+            if (xhr.readyState == 4 && xhr.status == 200)
+            {
+              var json = JSON.parse(xhr.responseText);
+              return json["result"];
+            }
+          };
+
+          return null;
+        };
+      },
+
+      // 确认查询
+      searchSureBtn() {
+        this.dwimeX.SendCmd("close");
+        if (this.searchString3 !== '') {
+          this.searchBtnText = '查询中';
+          this.isPms = true;
+          this.searchSureLoading = true;
+          this.searchString = this.searchString3;
+          this.page = 1;
+          this.getPreOrder(1);
+        }
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        this.isPms = false;
+        if (this.changeTabString == 1) {
+          this.searchString = this.searchString1;
+          this.page = 1;
+          this.getPreOrder(1);
+        }else {
+          this.searchString = this.searchString2;
+          if (this.searchString2.length == 11) {
+            this.page = 1;
+            this.getPreOrder(1);
+          }else if (this.searchString2.length == 0) {
+            this.page = 1;
+            this.getPreOrder(1);
+          }
+        }
       },
 
       // 右侧筛选tab切换
@@ -302,6 +489,7 @@
 //          this.loadingText = '加载中...';
 //          this.loadingShow = true;
 //          this.showList = false;
+          this.tabToDay = false;
           this.page = 1;
           this.getPreOrder(1);
         }else {
@@ -312,6 +500,7 @@
 //              this.loadingShow = true;
 //              this.showList = false;
               this.searchString = this.searchString2;
+              this.tabToDay = false;
               this.page = 1;
               this.getPreOrder(1);
             }
@@ -341,13 +530,120 @@
         this.getPreOrder(1);
       },
 
+      // 关闭
+      closeTip() {
+        this.checkInTip = false;
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
+      },
+
+      // 选择框完成事件
+      checkInSure() {
+        this.loadingCheckInSure = true;
+        this.updatePaidMode({
+          orderId: this.changeItem.id,
+          isFreeDeposit: this.isFreeDeposit == 1 ? true : false,
+          modeId: this.payMode,
+          onsuccess: body => {
+            this.loadingCheckInSure = false;
+            if (body.data.code == 0) {
+              this.checkInTip = false;
+              this.getPreOrder(this.page);
+            }
+          },
+          onfail: (body, headers) => {
+            this.loadingCheckInSure = false;
+          },
+          onerror: body => {
+            item.loadingCheckInSure = false;
+          }
+        });
+      },
+
+      // 房费更改
+      payModeChange(index) {
+        this.payMode = index;
+      },
+
+      // 选择是否免押金
+      freeDepositChange(num) {
+        if (num == 1) {
+          this.changeItem.isFreeDeposit = true;
+        }else {
+          this.changeItem.isFreeDeposit = false;
+        }
+        this.isFreeDeposit = num;
+      },
+
+      // 待确认选择
+      changeStatus(item) {
+        item.loadingdaiSure = true;
+        this.changeItem = item;
+        this.getOrderFree({
+          data: {
+            orderId: item.id
+          },
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.loadingShow = false;
+              if (this.changeItem.isFreeDeposit) {
+                this.isFreeDeposit = 1;
+              }else {
+                this.isFreeDeposit = 2;
+              }
+              if (body.data.data.cashFeeShow == '免押') {
+                this.cashFee = 0;
+                this.cashFeeTrue = true;
+              }else {
+                this.cashFeeTrue = false;
+                this.cashFee = body.data.data.cashFeeShow;
+              }
+              if (body.data.data.roomFeeShow == '预付房费') {
+                if (body.data.data.cashFeeShow == '免押') {
+                  this.roomFeeShow = body.data.data.totalFeeShow;
+                }else {
+                  this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                }
+              }else {
+                this.roomFeeShow = body.data.data.roomFeeShow;
+              }
+              this.paidFeeShow = body.data.data.paidFeeShow;
+              this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
+              if (this.needPayRoomFeeShow < 0) {
+                this.needPayRoomFeeShow = 0;
+              }
+              this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
+              item.loadingdaiSure = false;
+              this.checkInTip = true;
+              document.body.addEventListener('touchmove',this.bodyScroll,false);
+              document.body.style.position = 'fixed';
+              document.body.style.width = '100%';
+            }else {
+              item.loadingdaiSure = false;
+            }
+          },
+          onfail: (body, headers) => {
+            item.loadingdaiSure = false;
+          },
+          onerror: body => {
+            item.loadingdaiSure = false;
+          }
+        });
+      },
+
       //办理入住
       checkGoIn(item) {
         item.loadingBanli = true;
         this.changeItem = item;
         // 先判断A屏正在办理ing
         this.getOrderProcess();
-//        this.showOrderInfo(true)
+//        this.showOrderInfo(true);
+        this.$nextTick(() => {
+          setTimeout(() => {
+            item.loadingBanli = false;
+          },5000)
+        })
       },
 
       getOrderProcess() {
@@ -431,6 +727,9 @@
                 this.loadingShow = false;
                 this.changeItem.loadingBanli = false;
                 this.tigTeamShow = true;
+                document.body.addEventListener('touchmove',this.bodyScroll,false);
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
               }else {
                 this.changeItem.loadingBanli = false;
                 this.loadingShow = false;
@@ -473,6 +772,9 @@
 
       // 请先将团队主单入住后才能操作 我知道了
       tigTeamKnow() {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.tigTeamShow = false;
         sessionStorage.setItem('changeItem', JSON.stringify(this.changeItem));
         sessionStorage.setItem('currentChange', this.page);
@@ -520,6 +822,7 @@
               this.getPreOrder(1);
               this.initRefreshTime();
             }else {
+              this.orderLists = [];
               this.loadingShow = false;
             }
             this.$message({
@@ -552,15 +855,13 @@
         });
       },
 
-      // 刷新
+      // 拉取订单
       replayList () {
-        this.page = 1;
-        this.showList = false;
-        this.showList_ = false;
-        this.loadingText = '加载中...';
-        this.loadingShow = true;
-        this.searchString = this.searchString2 = this.searchString1 = '';
-        this.getPreOrder(1);
+        this.noData = false;
+        this.searchBox = true;
+        setTimeout(() => {
+          this.$refs.searchBoxInput.focus();
+        }, 500)
       },
 
       //获得同步时间
@@ -574,38 +875,79 @@
 
       // 订单列表
       getPreOrder (page) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
+        if (this.tabToDay) {
+          let today=new Date().getTime();
+          this.startTime = this.datetimeparse(today,'YYYY-MM-DD')+' 00:00:00';
+          this.endTime = this.datetimeparse(today,'YYYY-MM-DD')+' 23:59:59';
+        }else {
+          this.startTime = '';
+          this.endTime = '';
+        }
         this.getQueryByPage({
           data: {
-            start: "",
-            end: "",
+            start: this.startTime,
+            end: this.endTime,
             page: page,
-            pageSize: 4,
+            pageSize: 3,
             payMode: '',
             precheckinStatus: '',
             status: "1",
             type: this.tabIndex == 1 ? 1 : 0,
-            searchString: this.searchString
+            searchString: this.searchString,
+            pms: this.isPms
           },
           onsuccess: body => {
             this.loadingShow = false;
-            if (body.data.code == 0 && body.data.data.list) {
-              if (body.data.data.list) {
+            if (body.data.code == 0 && body.data.data) {
+              if (body.data.data.list && body.data.data.list.length != 0) {
                 body.data.data.list.forEach(item => {
                   item.loadingTongbu = false;
                   item.loadingBanli = false;
+                  item.loadingdaiSure = false;
+                });
+                body.data.data.list.forEach(item => {
+                   if (item.updateTime) {
+
+                   }else {
+                       item.updateTime = item.createTime;
+                   }
                 });
                 this.orderLists = body.data.data.list;
+                if (this.isPms) {
+                  if(this.searchBox) {
+                    this.$toast({
+                      message: "订单拉取成功",
+                      iconClass: 'icon ',
+                    });
+                  }
+                  this.searchString1 = body.data.data.list[0].ownerSpelling;
+                }
                 this.total = body.data.data.total;
-              }
-              if (body.data.data.list.length == 0) {
-                if (this.page > 1) {
-                  this.page--;
-                  this.getPreOrder(this.page);
-                }else {
-                  this.orderLists = [];
-                  this.total = body.data.data.total;
+                this.cancleSearch();
+              }else {
+                this.searchBtnText = '确认查询';
+                this.searchSureLoading = false;
+                this.noData = true;
+                if (body.data.data.list.length == 0) {
+                  if (this.page > 1) {
+                    this.page--;
+                    this.getPreOrder(this.page);
+                  }else {
+                    this.orderLists = [];
+                    this.total = body.data.data.total;
+                  }
                 }
               }
+
+            }else {
+                if (this.searchBox) {
+                  this.searchBtnText = '确认查询';
+                  this.searchSureLoading = false;
+                  this.noData = true;
+                }
             }
             this.showList = true;
             this.showList_ = true;
@@ -637,20 +979,6 @@
         this.getPreOrder(val);
       },
 
-      // 房费更改
-      payModeChange(index) {
-        this.payMode = index;
-      },
-
-      // 选择是否免押金
-      changeFreeDeposit(num) {
-        if (num == 1) {
-          this.changeItem.isFreeDeposit = true;
-        }else {
-          this.changeItem.isFreeDeposit = false;
-        }
-      },
-
       // 判断是否是对接pms
       initPmsFlag(){
         this.getPmsFlag({
@@ -674,6 +1002,10 @@
         return mins;
       },
 
+    },
+    beforeMount() {
+      this.dwimeX = new this.dwimeXFun();
+      this.wherePrint = sessionStorage.getItem('getAppLocation') ? sessionStorage.getItem('getAppLocation') : 2;
     },
 
     mounted () {
@@ -700,6 +1032,7 @@
       this.getPreOrder(this.page);
       this.$route.meta.isBack = false;
       window.showOrderInfo = this.showOrderInfo;
+      window.startUpDevice = this.startUpDevice;
     },
     beforeRouteEnter(to,from,next){
       if(from.name == 'checkIn'){
@@ -707,6 +1040,10 @@
       }
       next();
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 
@@ -889,6 +1226,22 @@
               cursor: pointer;
               -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
             }
+            .daiSure_status {
+              position: absolute;
+              right: 0;
+              top: 0;
+              background: #F5222D;
+              box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
+              border-radius: 29.63px;
+              border-color: #F5222D;
+              width: 146px;
+              padding: 17px 0;
+              text-align: center;
+              font-size: 20px;
+              color: #fff;
+              cursor: pointer;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
           }
         }
       }
@@ -898,8 +1251,7 @@
       background-color: #fff;
       .corporation {
         text-align: center;
-        height: 80px;
-        line-height: 80px;
+        padding: 10px 0;
         font-size: 30px;
         background-color: #4A90E2;
         color: #fff;
@@ -1204,10 +1556,235 @@
         }
       }
     }
+    .checkIn_tip {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .checkIn_content {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 0 60px 50px;
+        .checkIn_title {
+          text-align: center;
+          position: relative;
+          padding: 40px 0;
+          border-bottom: 1px solid #D8D8D8;
+          color: #303133;
+          font-size: 40px;
+          font-family: PingFangSC-Semibold;
+          .checkIn_close {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: #1AAD19;
+          }
+        }
+        .lists {
+          margin-bottom: 40px;
+          padding: 40px 0;
+          .list {
+            margin-bottom: 40px;
+            .title {
+              color: #303133;
+              font-weight: bold;
+              font-size: 26px;
+              text-shadow: 0 2px 3px rgba(0,0,0,0.04);
+              width: 358px;
+              text-align: left;
+              margin-bottom: 40px;
+              span:first-of-type {
+                width: 150px;
+                display: inline-block;
+              }
+              span:last-of-type {
+                color: #F55825;
+              }
+            }
+            .changeItem {
+              display: inline-flex;
+              justify-content: flex-start;
+              width: 100%;
+              .item_tab {
+                position: relative;
+                font-size: 22px;
+                color: #000;
+                line-height: 64px;
+                height: 64px;
+                width: 172px;
+                text-align: center;
+                margin-right: 44px;
+                img {
+                  position: absolute;
+                  z-index: 1;
+                  width: 172px;
+                  height: 64px;
+                  left: 0;
+                  top: 0;
+                }
+                span {
+                  position: absolute;
+                  left: 50%;
+                  top: 50%;
+                  z-index: 2;
+                  transform: translate(-50%, -50%);
+                  width: 100%;
+                  display: block;
+                }
+              }
+            }
+          }
+        }
+        .btns {
+          text-align: center;
+          .el-button {
+            width: 390px;
+            height: 80px;
+            border-radius: 50px;
+            font-size: 28px;
+            color: #fff;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          }
+          .btn_button_primary {
+            background-color: #1AAD19;
+            border-color: #1AAD19;
+          }
+          .btn_button_disabled {
+            background-color: #d7d7d7;
+            border-color: #d7d7d7
+          }
+        }
+      }
+    }
+    .searchBox {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .searchBoxContent {
+        position: fixed;
+        z-index: 12;
+        left: 0;
+        top: 0;
+        padding: 0 40px;
+        width: calc(100% - 480px);
+        min-height: calc(100vh - 100px);
+        .searchTabs {
+          padding-top: 121px;
+          padding-bottom: 18px;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+          .searchTabLeft {
+            display: inline-flex;
+            align-items: center;
+            .tab {
+              padding: 18px 30px;
+              color: #303133;
+              font-size: 20px;
+              margin-right: 30px;
+              font-weight: bold;
+            }
+            .active {
+              color: #1AAD19;
+            }
+          }
+          .searchTabRight {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 146px;
+            height: 56px;
+            line-height: 56px;
+            margin-left: 30px;
+            background: #FFFFFF;
+            box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
+            border-radius: 40px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            span {
+              color: #1AAD19;
+              font-size: 20px;
+              font-weight: bold;
+            }
+          }
+        }
+        .searchContent {
+          width: 100%;
+          background: #EFF7EF;
+          border-radius: 9px;
+          padding: 20px 30px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .searchInput {
+            display: inline-flex;
+            align-items: center;
+            width: 70%;
+            img {
+              width: 32px;
+              height: 32px;
+            }
+            input {
+              margin-left: 30px;
+              width: 80%;
+              font-family: SourceHanSansCN-Normal;
+              font-size: 22px;
+              color: #000000;
+              border: none;
+              background-color: transparent;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+              outline: none
+            }
+          }
+          .searchBtn {
+            button {
+              background: #1AAD19;
+              border-radius: 50.76px;
+              width: 146px;
+              line-height: 56px;
+              font-family: SourceHanSansCN-Regular;
+              font-size: 20px;
+              color: #FFFFFF;
+              letter-spacing: 3px;
+              outline: none;
+              box-shadow: none;
+            }
+          }
+        }
+        .noDataTip {
+          background: #FFD6DC;
+          padding: 20px 35px;
+          font-family: SourceHanSansCN-Normal;
+          font-size: 20px;
+          color: #FB2142;
+          text-align: left;
+          margin-top: -4px;
+        }
+      }
+    }
   }
 
   .noMsg {
-    margin-top: 150px;
+    padding-top: 150px;
     img {
       display: block;
       width: 180px;

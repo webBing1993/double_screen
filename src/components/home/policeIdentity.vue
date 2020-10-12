@@ -133,7 +133,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabFr == 1">
               <div class="input">
-                <input type="text" placeholder="请输入姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入姓名的首字母查询" v-model="searchString1"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -152,7 +152,10 @@
               </div>
             </div>
           </div>
-          <div class="corporation">复创客服电话 4001-690-890</div>
+          <div class="corporation">
+            <p>复创客服电话 4001-690-890</p>
+            <p>技术支持电话 021-62593690</p>
+          </div>
         </div>
       </div>
     </div>
@@ -276,6 +279,21 @@
           this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
         }
         this.$emit('getMessage', index);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        this.page = 1;
+        this.page1 = 1;
+        this.page2 = 1;
+        this.searchString = this.searchString1;
+        if (this.changeTabString == 1) {
+          this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+        }else if (this.changeTabString == 2) {
+          this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
+        }else {
+          this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+        }
       },
 
       // 右侧筛选tab切换
@@ -450,22 +468,52 @@
           limit: 5,
           offset: (page-1)*5,
           onsuccess: (body, headers) => {
-            if (body.errcode == 0 && body.data.content) {
-              body.data.content.forEach(item => {
-                  item.unhandleLoading = false;
-              });
-              if (type == 1) {
-                this.total = parseFloat(headers['x-total-count']);
-                this.unhandleList = [ ...body.data.content];
-                this.hotelConfig = body.data.config;
-                this.$emit('unhandleNumFun', this.total);
-              }else if (type == 2) {
-                this.total2 = parseFloat(headers['x-total-count']);
-                this.handleingList = [ ...body.data.content];
-              }else {
-                this.total1 = parseFloat(headers['x-total-count']);
-                this.handleList = [ ...body.data.content];
-              }
+            if (body.errcode == 0) {
+                if (body.data.content.length != 0) {
+                  body.data.content.forEach(item => {
+                    item.unhandleLoading = false;
+                  });
+                  if (type == 1) {
+                    this.total = parseFloat(headers['x-total-count']);
+                    this.unhandleList = [ ...body.data.content];
+                    this.hotelConfig = body.data.config;
+                    this.$emit('unhandleNumFun', this.total);
+                  }else if (type == 2) {
+                    this.total2 = parseFloat(headers['x-total-count']);
+                    this.handleingList = [ ...body.data.content];
+                  }else {
+                    this.total1 = parseFloat(headers['x-total-count']);
+                    this.handleList = [ ...body.data.content];
+                  }
+                }else {
+                  if (type == 1) {
+                      if (page > 1) {
+                        this.page--;
+                        this.policeIdentityList(JSON.stringify(["NONE","FAILED"]), '', '', this.page, 1);
+                      }else {
+                        this.total = parseFloat(headers['x-total-count']);
+                        this.unhandleList = [ ...body.data.content];
+                        this.hotelConfig = body.data.config;
+                        this.$emit('unhandleNumFun', this.total);
+                      }
+                  }else if (type == 2) {
+                    if (page > 1) {
+                      this.page2--;
+                      this.policeIdentityList(JSON.stringify(["PENDING"]), '', '', this.page2, 2);
+                    }else {
+                      this.total2 = parseFloat(headers['x-total-count']);
+                      this.handleingList = [...body.data.content];
+                    }
+                  }else {
+                    if (page > 1) {
+                      this.page1--;
+                      this.policeIdentityList(JSON.stringify(["SUCCESS","PENDING","UNREPORTED"]), this.todayStart, this.todayEnd, this.page1, 3);
+                    }else {
+                      this.total1 = parseFloat(headers['x-total-count']);
+                      this.handleList = [...body.data.content];
+                    }
+                  }
+                }
             }
             this.loadingShow = false;
             this.showList = true;
@@ -525,6 +573,10 @@
       }
       next();
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 
@@ -642,7 +694,7 @@
                     display: inline-block;
                   }
                   span:first-of-type {
-                    width: 84px;
+                    width: 90px;
                   }
                   .blue {
                     color: #1AAD19;
@@ -686,8 +738,7 @@
       background-color: #fff;
       .corporation {
         text-align: center;
-        height: 80px;
-        line-height: 80px;
+        padding: 10px 0;
         font-size: 30px;
         background-color: #4A90E2;
         color: #fff;

@@ -25,7 +25,8 @@ const actions = {
       method: param.method || 'GET',
       baseURL: '/',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        deviceId : sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : ''
       },
       params: param.params || null,
       data: param.body || null,
@@ -78,11 +79,12 @@ const actions = {
       baseURL: '/',
       headers: param.headers || {
         Session: sessionStorage.session_id,
-        token: sessionStorage.session_id
+        token: sessionStorage.session_id,
+        deviceId : sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : ''
       },
       params: qs.stringify(param.params) || null,
       data: qs.stringify(param.body) || null,
-      timeout: param.timeout || 120000,
+      timeout: param.timeout || 180000,
       credentials: false,
       emulateHTTP: false,
       emulateJSON: param.emulateJSON ? param.emulateJSON:true,
@@ -137,7 +139,8 @@ const actions = {
       baseURL: '/',
       headers: param.headers || {
         Session: sessionStorage.session_id,
-        token: sessionStorage.session_id
+        token: sessionStorage.session_id,
+        deviceId : sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : ''
       },
       params: param.params || null,
       data: param.body || null,
@@ -192,7 +195,8 @@ const actions = {
       baseURL: '/',
       headers: param.headers || {
         Session: sessionStorage.session_id,
-        token: sessionStorage.session_id
+        token: sessionStorage.session_id,
+        deviceId : sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : ''
       },
       params: param.params || null,
       data: param.body || null,
@@ -232,6 +236,59 @@ const actions = {
 
           }else {
             // router.push('/wuwangluo');
+          }
+          param.onError && param.onError(error);
+        }
+
+      }
+    )
+  },
+
+  resourceeasypos: (ctx, param) => {
+    axios({
+      url: httpTool.httpUrlEnv() + sessionStorage.getItem('windowUrl') + 'independent-trade' + param.url,
+      method: param.method || 'GET',
+      baseURL: '/',
+      headers: param.headers || {
+        "X-auth-token": sessionStorage.session_id,
+        deviceId : sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : ''
+      },
+      params: qs.stringify(param.params) || null,
+      data: param.body || null,
+      timeout: param.timeout || 120000,
+      credentials: false,
+      emulateHTTP: false,
+      emulateJSON: param.emulateJSON == false ? param.emulateJSON : true,
+    }).then(response => {
+      console.log("response",response);
+      if (response.data.code == 0 || response.data.errcode == 0 || response.data.code === 100002) {
+        param.onSuccess && param.onSuccess(response)
+      }
+      else if (response.data.code === 10004) {
+        router.replace('/');
+      }
+      else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        param.onFail && param.onFail(response)
+      }
+      else {
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        param.onFail && param.onFail(response)
+      }
+    }).catch(
+      error => {
+        if(error){
+          console.log("error",error);
+          if (error.response) {
+
+          }else {
+
           }
           param.onError && param.onError(error);
         }
@@ -415,6 +472,23 @@ const actions = {
     })
   },
 
+  // 获取团队二维码列表
+  getcodeList(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/'+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   // 判断是否为今日的订单
   sendCheck(ctx, param) {
     ctx.dispatch('resource', {
@@ -571,12 +645,66 @@ const actions = {
     })
   },
 
+  // 交易退款
+  refundpos (ctx, param) {
+    ctx.dispatch('resourceeasypos', {
+      url: '/payment/refund',
+      method: 'PUT',
+      body: param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   // 预授权结算
   depositConsume(ctx, param) {
     ctx.dispatch('resource', {
       url: '/ecard/wechatPay/depositConsume',
       body: param.data,
       method: 'POST',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 预授权消费
+  consume (ctx, param) {
+    ctx.dispatch('resourceeasypos', {
+      url: '/payment/auth/consume',
+      method: 'PUT',
+      body: param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 预授权撤销
+  resciendCancel (ctx, param) {
+    ctx.dispatch('resourceeasypos', {
+      url: '/payment/auth/cancel',
+      method: 'PUT',
+      body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },
@@ -625,6 +753,41 @@ const actions = {
     })
   },
 
+  // 退款和预授权结算初始金额
+  accountFeeInfo(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/getRoomFeeInfo?orderId='+param.orderId+'&payFlowId='+param.payFlowId,
+      method: 'GET',
+      body:param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 判断是多房关联支付情况
+  unionPayInfo(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/wechatPay/unionPayInfo/'+param.payFlowId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //获取支付纪录
   getChargeRecard(ctx, param){
     ctx.dispatch('resource', {
@@ -643,10 +806,45 @@ const actions = {
     })
   },
 
+  // 交易管理item 刷新
+  refreshItem(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/wechatPay/refresh/auto/settle/'+param.flowId,
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   // 获取交易记录
   undisposed(ctx, param) {
     ctx.dispatch('resource_', {
       url: '/ecard/wechatPay/getWechatPayList',
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 补打小票
+  printPay(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/rc/payPrint',
       method: 'POST',
       body: param.data,
       onSuccess: (body, headers) => {
@@ -702,6 +900,23 @@ const actions = {
     ctx.dispatch('resource', {
       url: '/ecard/hotel/getTodoLists',
       method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 退房成功待办 我知道了
+  creditDoSth(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/update/auto/credit/'+param.id,
+      method: 'PUT',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },
@@ -923,6 +1138,130 @@ const actions = {
     })
   },
 
+  // rc单开关
+  getRcConfig(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/get/rc/status',
+      method: 'GET',
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // RC单打印功能
+  rcPrint(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/rc/print',
+      body: param.data,
+      method: 'POST',
+      emulateJSON: false,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 制卡
+  sendRealCard(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/orders/sendRealCardIotMsg/'+param.subOrderId+'/'+(sessionStorage.getItem('deviceId') ? sessionStorage.getItem('deviceId') : 'null'),
+      method: 'GET',
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 获取制卡状态
+  roomCard(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/room/card/'+param.id,
+      method: 'GET',
+      onSuccess: (response) => {
+        param.onsuccess ? param.onsuccess(response.data, response.headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 获取权限接口
+  configList (ctx, param) {
+    ctx.dispatch('resourceeasypos', {
+      url: '/auth/info',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 数据看板pie
+  payAnalysisPie(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/wechatPay/payAnalysis ',
+      body: param.data,
+      method: 'POST',
+      emulateJSON: false,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 数据看板统计
+  getStatisticNum(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/hotel/check/in/out/statistic',
+      body: param.data,
+      method: 'POST',
+      emulateJSON: false,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
 
 };
 export default {

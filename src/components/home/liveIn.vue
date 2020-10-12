@@ -20,10 +20,10 @@
         <div class="content">
           <div class="order_lists" v-if="showList">
             <div class="list" v-for="item in orderLists">
-              <!--<div class="list_header">-->
-                <!--<div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>-->
-                <!--<div class="list_time"></div>-->
-              <!--</div>-->
+              <div class="list_header">
+                <div class="list_origin">预订人：{{item.orderOwner ? item.orderOwner : '-'}}</div>
+                <div class="list_time"></div>
+              </div>
               <div class="list_content">
                 <div class="list_cell">
                   <div class="img"><img src="../../assets/fangjian.png" alt=""></div>
@@ -42,11 +42,12 @@
                 <div class="list_cell">
                   <div class="img"><img src="../../assets/renyuan.png" alt=""></div>
                   <div class="listCell">
-                    <p class="name"><span v-for="(i, index) in item.guestList">{{i.name ? i.name + ((index+1) < item.guestList.length ? '/' : '') : '-'}}</span>
+                    <p class="name">
+                      <span v-for="(i, index) in item.guestList">{{i.name}}/{{i.gender}}/{{i.idCardNo | idCard}}</span>
                     </p>
                     <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 "  @click="add(item)">添加同住人</el-button>
                     <div class="tongbu_status add_status" v-else>人数已满</div>
-                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">退房</el-button>
+                    <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">详单</el-button>
                   </div>
                 </div>
               </div>
@@ -57,7 +58,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="page"
-            :page-size="5"
+            :page-size="4"
             layout="total, prev, pager, next"
             :total="total" v-if="orderLists.length != 0 && showList_">
           </el-pagination>
@@ -82,7 +83,7 @@
           <div class="change_tabs">
             <div class="tab" v-if="changeTabString == 1">
               <div class="input">
-                <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2" maxlength="11">
+                <input type="text" placeholder="请输入入住人房间号查询" v-model="searchString2"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch1" v-if="searchString2.length > 0">
               </div>
               <div class="keyBoard2">
@@ -92,7 +93,7 @@
             </div>
             <div class="tab" v-else>
               <div class="input">
-                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1">
+                <input type="text" placeholder="请输入入住人姓名的首字母查询" v-model="searchString1"  @input="changeKeyBords">
                 <img src="../../assets/close.png" alt="" @click="clearSearch" v-if="searchString1.length > 0">
               </div>
               <div class="keyBoard">
@@ -101,7 +102,10 @@
               </div>
             </div>
           </div>
-          <div class="corporation">复创客服电话 4001-690-890</div>
+          <div class="corporation">
+            <p>复创客服电话 4001-690-890</p>
+            <p>技术支持电话 021-62593690</p>
+          </div>
         </div>
       </div>
 
@@ -187,6 +191,9 @@
         }else{
           return '';
         }
+      },
+      idCard: function (value) {
+        return value.substr(-4)
       }
     },
     methods: {
@@ -220,6 +227,19 @@
         }
         this.page = 1;
         this.getPreOrder(1);
+      },
+
+      // 键盘事件
+      changeKeyBords () {
+        if (this.changeTabString == 1) {
+          this.searchString = this.searchString2;
+          this.page = 1;
+          this.getPreOrder(1);
+        }else {
+          this.searchString = this.searchString1;
+          this.page = 1;
+          this.getPreOrder(1);
+        }
       },
 
       // 右侧筛选tab切换
@@ -308,6 +328,7 @@
               this.getPreOrder(1);
               this.initRefreshTime();
             }else {
+              this.orderLists = [];
               this.loadingShow = false;
             }
             this.$message({
@@ -362,12 +383,15 @@
 
       // 订单列表
       getPreOrder (page) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.getNoPmsQueryCheckInList({
           data: {
             start:"",
             end:"",
             page: page,
-            pageSize: 5,
+            pageSize: 4,
             statusList:'4',
             orderByClause: this.orderByFiled||'',
             checkInStatus:'CHECKIN',
@@ -376,13 +400,24 @@
           },
           onsuccess: body => {
             this.loadingShow = false;
-            if (body.data.code == 0 && body.data.data.list) {
-              body.data.data.list.forEach(item => {
+            if (body.data.code == 0) {
+              if (body.data.data.list.length != 0) {
+                body.data.data.list.forEach(item => {
                   item.quitLoading = false;
                   item.tongbuLoading = false;
-              });
-              this.orderLists = body.data.data.list;
-              this.total = body.data.data.total;
+                });
+                this.orderLists = body.data.data.list;
+                this.total = body.data.data.total;
+              }else {
+                  if (page > 1) {
+                    this.page--;
+                    this.getPreOrder(this.page);
+                  }
+                  else {
+                    this.orderLists = body.data.data.list;
+                    this.total = body.data.data.total;
+                  }
+              }
               this.showList = true;
               this.showList_ = true;
             }
@@ -412,6 +447,7 @@
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = true;
+        this.page = val;
         this.getPreOrder(val);
       },
 
@@ -440,6 +476,9 @@
                   if (body.data.data.orderGuestVos.length < body.data.data.maxCheckinCount && body.data.data.orderGuestVos.length < 4) {
                     if (this.cardShow) {
                       this.fakaTig = true;
+                      document.body.addEventListener('touchmove',this.bodyScroll,false);
+                      document.body.style.position = 'fixed';
+                      document.body.style.width = '100%';
                     }else {
                       this.goAdd(0);
                     }
@@ -471,6 +510,9 @@
           });
         }else {
           this.tigOrderShow = true;
+          document.body.addEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
         }
       },
 
@@ -550,6 +592,10 @@
       }
       next();
     },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
+    }
   }
 </script>
 
@@ -685,6 +731,9 @@
                   }
                   .name {
                     width: 42%;
+                    span {
+                      display: block;
+                    }
                   }
                 }
               }
@@ -748,8 +797,7 @@
       background-color: #fff;
       .corporation {
         text-align: center;
-        height: 80px;
-        line-height: 80px;
+        padding: 10px 0;
         font-size: 30px;
         background-color: #4A90E2;
         color: #fff;

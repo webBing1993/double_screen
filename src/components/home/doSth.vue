@@ -8,15 +8,14 @@
             <span>返回首页</span>
           </div>
           <div class="tabs">
-            <span>待办事项</span>
+            <span :class="tabIndex == 1 ? 'active' : ''" @click="tabChange(1)">入住<el-badge class="mark" :value="tabNums.checkInNum" v-if="tabNums.checkInNum != 0" :max="99" /></span>
+            <span :class="tabIndex == 2 ? 'active' : ''" @click="tabChange(2)">退房<el-badge class="mark" :value="tabNums.quitNum" v-if="tabNums.quitNum != 0" :max="99" /></span>
+            <span :class="tabIndex == 3 ? 'active' : ''" @click="tabChange(3)">账务<el-badge class="mark" :value="tabNums.payNum" v-if="tabNums.payNum != 0" :max="99" /></span>
+            <span :class="tabIndex == 4 ? 'active' : ''" @click="tabChange(4)">旅业<el-badge class="mark" :value="tabNums.lvyeNum" v-if="tabNums.lvyeNum != 0" :max="99" /></span>
           </div>
         </div>
       </div>
       <div class="doSthContent">
-        <!--<div class="changTabs">-->
-          <!--<span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>-->
-          <!--<span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>-->
-        <!--</div>-->
         <div class="doSthLists" v-if="showList">
           <div class="list" v-for="item in doSthLists">
             <div class="list_header">
@@ -43,7 +42,9 @@
                 <div class="roomIn" v-else><span>失败原因：</span>回收卡槽已满</div>
               </div>
               <div class="list_fr">
-                <span @click="faka(item.id)">处理完成</span>
+                <el-button @click="faka(item.id)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='PMS入住失败'">
@@ -52,17 +53,23 @@
                 <div class="roomIn"><span>住客信息：</span><span v-if="item.guestList" v-for="i in item.guestList">【{{i.name}}/{{i.idCard}}/{{i.address}} 】</span></div>
               </div>
               <div class="list_fr">
-                <span @click="pmsCheckIn(item.id)">处理完成</span>
+                <el-button @click="pmsCheckIn(item.id)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='PMS入账失败'">
               <div class="list_fl">
                 <div class="roomIn"><span>PMS订单号：</span>{{item.pmsOrderNo}}</div>
-                <div class="rooms"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}  &nbsp;&nbsp;&nbsp;&nbsp;<span>房费：</span>{{item.roomFeeStr == '预付房费' ? '预付房费' : item.roomFeeStr + '元'}}  &nbsp;&nbsp;&nbsp;&nbsp;<span>押金：</span>{{item.depositFeeStr}}元</div>
+                <div class="rooms rooms_"><span>预订人：</span>{{item.contactName}} {{item.contactPhone}}  &nbsp;&nbsp;<span>房费：</span>{{item.roomFeeStr == '预付房费' ? '预付房费' : (item.roomFeeStr != null ? item.roomFeeStr + '元' : '无')}}  &nbsp;&nbsp;<span>押金：</span>{{item.depositFeeStr != '免押' ? (item.depositFeeStr != null ? item.depositFeeStr+'元' : '无') : item.depositFeeStr}}</div>
               </div>
               <div class="list_fr">
-                <span @click="pmsPayDetail(item.orderId)" class="lookDetail">查看详情</span>
-                <span @click="pmsPay(item.orderId)">处理完成</span>
+                <el-button @click="pmsPayDetail(item.orderId, item.payFlowId)" class="lookDetail" :disabled="loadingShow">
+                  查看详情
+                </el-button>
+                <el-button @click="pmsPay(item.orderId, item.payFlowId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle == '前台支付'">
@@ -71,7 +78,9 @@
                 <div class="roomIn"><span>订单金额：</span>{{(item.totalfee/100).toFixed(2)}}元</div>
               </div>
               <div class="list_fr">
-                <span @click="nativepay(item.id)">处理完成</span>
+                <el-button @click="nativepay(item.id)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='旅业退房失败'">
@@ -80,7 +89,9 @@
                 <div class="roomIn"><span>住客姓名：</span><span v-for="(i, index) in item.guestList">{{index < (item.guestList.length - 1) ? i.name + '/' : i.name}}</span></div>
               </div>
               <div class="list_fr">
-                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='旅业换房失败'">
@@ -90,7 +101,31 @@
                 <div class="roomIn"><span>住客姓名：</span><span>{{item.checkInName}}</span></div>
               </div>
               <div class="list_fr">
-                <span @click="lvyeCheckout(item.id, item.subOrderId)">处理完成</span>
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='自动挂账失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn">请至PMS处理挂账</div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='退款计划失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>失败原因：</span><span>{{ item.remark }}</span></div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
               </div>
             </div>
           </div>
@@ -117,13 +152,15 @@
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
         showList: false,
-        changeTabString: 1,  // tab选中
-        page: 1,  // 当前页数
-        page1: 1,  // 当前页数
-        total: 1, // 总条数
-        total1: 1, // 总条数
         doSthLists: [],  // 代办未处理列表
-        doSthLists1: [],  //代办已处理列表
+        doSthLists_: [],  // 代办未处理列表
+        tabNums: {
+          checkInNum: 0,    // 入住待办数量(PMS入住失败、脏房入住)
+          quitNum: 0,       // 退房待办数量(退房申请)
+          payNum: 0,        // 账务待办数量(入账失败、挂账失败、结算失败、退款计划失败)
+          lvyeNum: 0,       // 旅业待办数量(旅业登记入住失败、退房失败)
+        },
+        tabIndex: 1,        // tab index active
       }
     },
     filters: {
@@ -135,10 +172,24 @@
       ]),
 
       // tab
-      changeTabClick(index) {
-          this.changeTabString = index;
-          this.page = 0;
-          this.page1 = 1;
+      tabChange(index) {
+          this.tabIndex = index;
+          let arr = [];
+          if (this.doSthLists_.length != 0) {
+            this.doSthLists_.forEach(item => {
+                if (index == 1 && item.doSthTitle == 'PMS入住失败') {
+                    arr.push(item)
+                }else if (index == 2 && item.doSthTitle == '退房申请') {
+                    arr.push(item)
+                }else if ((index == 3 && item.doSthTitle == '自动挂账失败') || (index == 3 && item.doSthTitle == 'PMS入账失败') || (index == 3 && item.doSthTitle == '退款计划失败')) {
+                    arr.push(item);
+                }else if (index == 4 && item.doSthTitle == '旅业退房失败') {
+                    arr.push(item);
+                }
+            })
+          }
+          this.doSthLists = arr;
+          this.doSthLists.sort(this.compare('createTime'));
       },
 
       // 分页
@@ -170,13 +221,17 @@
               let checkoutapply = [];  // 退房申请
               let lvyeCheckout = [];   // 旅业退房
               let lvyeChangeRoom = [];  // 旅业换房
+              let autoSettleAccount = [];   // 自动挂账失败
+              let autoSettlePay = [];   // 退款计划失败
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
               checkoutapply = body.data.data.checkoutapply != null ? body.data.data.checkoutapply : [];
               lvyeCheckout = body.data.data.lvyeCheckout;
-              lvyeChangeRoom = body.data.data.lvyeChangeRoom;
+              lvyeChangeRoom = body.data.data.LVYECHANGEROOM ? body.data.data.LVYECHANGEROOM : [];
+              autoSettleAccount = body.data.data.AUTO_CREDIT_ACCOUNT ? body.data.data.AUTO_CREDIT_ACCOUNT : [];
+              autoSettlePay = body.data.data.AUTO_SETTLE_PAY ? body.data.data.AUTO_SETTLE_PAY : [];
               checkoutapply.forEach(item => {
                 item.doSthTitle = '退房申请';
                 item.createTime = item.applyTime;
@@ -199,8 +254,18 @@
               lvyeChangeRoom.forEach(item => {
                 item.doSthTitle = '旅业换房失败';
               });
-              this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom);
-              this.doSthLists.sort(this.compare('createTime'));
+              autoSettleAccount.forEach(item => {
+                item.doSthTitle = '自动挂账失败';
+              });
+              autoSettlePay.forEach(item => {
+                item.doSthTitle = '退款计划失败';
+              });
+              this.doSthLists_ = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay);
+              this.tabChange(this.tabIndex);
+              this.tabNums.checkInNum = pmscheckin.length;
+              this.tabNums.quitNum = checkoutapply.length;
+              this.tabNums.payNum = pmspay.length + autoSettleAccount.length + autoSettlePay.length;
+              this.tabNums.lvyeNum = lvyeCheckout.length;
               console.log('this.doSthLists',this.doSthLists);
             }
             this.showList = true;
@@ -242,8 +307,8 @@
       },
 
       // 查看详情
-      pmsPayDetail(orderId) {
-        sessionStorage.setItem('pmsPayDetail', orderId);
+      pmsPayDetail(orderId, payFlowId) {
+        sessionStorage.setItem('pmsPayDetail', orderId+"-"+payFlowId);
         this.goto(-1);
       },
 
@@ -267,11 +332,12 @@
       },
 
       // pms入账失败处理事件
-      pmsPay(id) {
+      pmsPay(id, payFlowId) {
         this.loadingShow = true;
         this.updateWechatPay({
           data:{
-            orderId: id
+            orderId: id,
+            payFlowId: payFlowId
           },
           onsuccess: (body) => {
             if(body.data.code == 0){
@@ -331,6 +397,10 @@
     mounted () {
       this.loadingShow = true;
       this.doSthList();
+    },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
     }
   }
 </script>
@@ -384,6 +454,32 @@
             font-size: 26px;
             display: inline-flex;
             align-items: center;
+            cursor: pointer;
+            /deep/ .el-badge__content {
+              font-size: 24px;
+              height: 30px;
+              line-height: 30px;
+              border-radius: 50%;
+              top: 0;
+            }
+            /deep/ .el-badge {
+              display: inline-flex;
+              align-items: center;
+            }
+          }
+          .active {
+            color: #1AAD19;
+          }
+          .active:after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            width: 80%;
+            height: 4px;
+            background-color: #1AAD19;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
           }
         }
       }
@@ -471,12 +567,18 @@
                   display: inline-block;
                 }
               }
+              .rooms_ {
+                span {
+                  width: auto !important;
+                }
+              }
             }
             .list_fr {
-              span {
+              .el-button {
                 cursor: pointer;
                 width: 125px;
-                height: 44px;
+                padding: 0;
+                line-height: 44px;
                 line-height: 44px;
                 background-color: #1AAD19;
                 font-size: 20px;

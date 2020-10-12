@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="homeIndex" v-show="homeIndexShow">
-      <div class="header">
+      <div :class="tabIndex != 5 ? 'header' : 'header header_'">
         <div class="header_fl">
           <div class="changeScreen" @click="openExternalScreen()">
             <img src="../../assets/qiehuan.png" alt="">
@@ -12,21 +12,34 @@
             <span :class="tabIndex == 2 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(2)" data-id="2" v-if="getAllConfigList.qyCheckIn">在住房间</span>
             <span :class="tabIndex == 3 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(3)" data-id="3" v-if="getAllConfigList.isQyPay">交易管理</span>
             <span :class="tabIndex == 4 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(4)" data-id="4" v-if="getAllConfigList.isRztCheck">公安核验 <i v-if="unhandleNum > 0">{{unhandleNum > 99 ? '99+' : unhandleNum}}</i></span>
-            <span :class="tabIndex == 5 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(5)" data-id="4" v-if="getAllConfigList.independentTrande">EasyPos</span>
+            <span :class="tabIndex == 5 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(5)" data-id="5">数据看板</span>
+            <span :class="tabIndex == 6 ? 'tab homeTab active' : 'tab homeTab'" @click="tabClick(6)" data-id="6" v-if="getAllConfigList.independentTrande">EasyPos</span>
           </div>
         </div>
         <div class="header_fr">
           <div class="newTig" @click="goto('/doSth')" v-if="speakShow">
             <img src="../../assets/xiaoxi.png" alt="">
-            <span>您有待办事项未处理，点击查看</span>
+            <span>您有待办事项点击查看</span>
             <img src="../../assets/gengduo.png" alt="">
           </div>
-          <div class="myInfo">
-            <img :src="myInfo.img" alt="">
+          <div class="myInfo" @click="myInfoClick">
+            <img :src="myInfo.img" alt="" onerror="this.myInfo.src='../../assets/morentouxiang.png'">
             <span>{{myInfo.name}}</span>
           </div>
-          <div class="tuichu" @click="quit=true;">
-            <img src="../../assets/tuichu.png" alt="">
+          <!--<div class="tuichu" @click="quitTipShow">-->
+            <!--<img src="../../assets/tuichu.png" alt="">-->
+          <!--</div>-->
+          <div class="warpper_ownInfo">
+            <el-dropdown trigger="click">
+                <span class="el-dropdown-link">
+                  设置
+                </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-s-home"  @click.native="printTipShow(2)">续住模式</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-switch-button" @click.native="quitTipShow">退出系统</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </div>
         </div>
       </div>
@@ -40,29 +53,63 @@
         <div class="quit_content">
           <div class="quit_title">是否确认退出？</div>
           <div class="quit_tabs">
-            <span class="cancel" @click="quit=false">取消</span>
+            <span class="cancel" @click="quitTipClose">取消</span>
             <span class="sure" @click="sure">确认</span>
           </div>
         </div>
       </div>
 
       <!-- 退房，发卡槽无卡或回收卡槽满 待办弹框-->
-      <div class="quitHouse" v-if="quithouse">
-        <div class="content" v-if="quithouse_">
-          【{{onlyItem.roomNo}}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
+      <div class="quitHouse" v-for="(item, index) in tipArr">
+        <div class="content" v-if="item.doType == 1">
+          【{{ item.roomNo }}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
         </div>
-        <div class="content" v-if="wuka">
-          发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看
+        <!--<div class="content" v-if="wuka">-->
+          <!--发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看-->
+        <!--</div>-->
+        <!--<div class="content" v-if="manka">-->
+          <!--回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看-->
+        <!--</div>-->
+        <div class="content" v-else-if="item.doType == 4">
+          收款成功！收款金额{{ item.totalFeeStr }}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
         </div>
-        <div class="content" v-if="manka">
-          回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看
+        <div class="content" v-else-if="item.doType == 5">
+          房号【{{item.roomNo}}】客人插卡退房成功，房卡已回收，房态已改为脏房请及时打扫
         </div>
-        <div class="content" v-if="pmsPay">
-          收款成功！收款金额{{onlyItem.totalFeeStr}}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
+        <div class="content" v-else-if="item.doType == 6">
+          房号【{{item.roomNo}}】退款计划失败，{{ item.remark }}
         </div>
-        <div class="btns">
-          <span class="knowBtn" @click="checkOut">我知道了</span>
-          <span class="lookDetail" @click="lookDetail">查看详情</span>
+        <div class="content" v-else-if="item.doType == 7">
+          房号【{{item.roomNo}}】客人插卡退房成功，房态已改为脏房请及时打扫
+        </div>
+        <div class="btns" v-if="item.doType != 5 && item.doType != 7">
+          <span class="knowBtn" @click="checkOut(item.id, index, 1)">我知道了</span>
+          <span class="lookDetail" @click="lookDetail(item, index)">查看详情</span>
+        </div>
+        <div class="btns" v-if="item.doType == 5 || item.doType == 7">
+          <span class="lookDetail" @click="checkOut(item.id, index, 2)">我知道了</span>
+        </div>
+      </div>
+
+      <!-- 选择续住类型/散客房价码-->
+      <div class="printTip" v-if="printTip">
+        <div class="shadow"></div>
+        <div class="tip_content">
+          <div class="title">{{ tipStatusType == 1 ? '请选择上门散客房价' : '请选择续住模式' }}</div>
+          <div class="lists" v-if="tipStatusType == 2">
+            <div class="list" v-for="item in tipLists">
+              <el-radio v-model="tipStatus" :label="item.id" border size="medium">{{ item.label }}</el-radio>
+            </div>
+          </div>
+          <div class="lists" v-else>
+            <div class="list" v-for="item in tipLists_">
+              <el-radio v-model="tipStatus" :label="item.id" border size="medium">{{ item.label }}</el-radio>
+            </div>
+          </div>
+          <div class="btns">
+            <button type="info" @click="tipCancel">取消</button>
+            <el-button type="primary" @click="tipSure()">确认</el-button>
+          </div>
         </div>
       </div>
 
@@ -105,18 +152,65 @@
         wuka: false,        // 无卡提示
         manka: false,       // 卡槽满
         pmsPay: false,       // pms入账失败
+        quitSuccessHouse: false,       // 插卡退房成功
+        quitMoney: false,       // 退款计划失败
+        checkoutsuccess: false, // 插卡退房成功
         pmsOrderIdChange: 0,
         onlyItem: {},    // 临时退房数据
+        tipArr: [],
+        printTip: false,     // 续住选择tip
+        tipStatus: 1,        // 续住选择
+        tipLists: [
+          {
+            id: 1,
+            label: '按前一天价格续住'
+          },
+          {
+            id: 2,
+            label: '按订单房价码续住'
+          }
+        ],       // 续住tip
+        tipLists_: [
+          {
+            id: 1,
+            label: '房价码1'
+          },
+          {
+            id: 2,
+            label: '房价码2'
+          },
+          {
+            id: 3,
+            label: '房价码3'
+          },
+          {
+            id: 4,
+            label: '房价码4'
+          },
+          {
+            id: 5,
+            label: '房价码5'
+          },
+          {
+            id: 6,
+            label: '房价码6'
+          },
+        ],        // 上门散客房价
+        tipStatusType: 1,     // 区分是续住模式2还是散客房价码模式1
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList', 'newIdentityList'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'creditDoSth'
       ]),
 
       // tab切换
       tabClick (index) {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.tabIndex = index;
+        this.loadingShow = false;
         if (index == 1) {
           sessionStorage.removeItem('changeTabString');
           this.replaceto('/order');
@@ -128,7 +222,9 @@
           this.replaceto('/payment');
         }else if (index == 4) {
           this.replaceto('/policeIdentity');
-        }else {
+        }else if (index == 5) {
+          this.replaceto('/statistics');
+        }else if (index == 6) {
           this.replaceto('/independent');
         }
         if (sessionStorage.getItem('pmsPayDetail')) {
@@ -136,6 +232,28 @@
         }else {
           sessionStorage.setItem('tabIndex', index);
         }
+      },
+
+      // 点击头像调用A屏事件
+      myInfoClick() {
+        jsObj.WalkInConfig();
+      },
+
+      // tip show
+      printTipShow(type) {
+        this.tipStatusType = type;
+        this.printTip = true;
+      },
+
+      // tip cancel
+      tipCancel() {
+        this.printTip = false;
+        this.tipStatus = 1;
+      },
+
+      // tip sure
+      tipSure() {
+
       },
 
       // 语音播报
@@ -147,11 +265,30 @@
         n = null;
       },
 
+      // 退出弹框
+      quitTipShow() {
+          document.body.addEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          this.quit = true;
+      },
+
       // 退出事件
       sure() {
+        document.body.removeEventListener('touchmove',this.bodyScroll,false);
+        document.body.style.position = 'initial';
+        document.body.style.width = 'auto';
         this.quit = false;
 //        window.location.href = this.windowUrl;
         this.logOut();
+      },
+
+      // 退出弹框消失
+      quitTipClose() {
+          document.body.removeEventListener('touchmove',this.bodyScroll,false);
+          document.body.style.position = 'initial';
+          document.body.style.width = 'auto';
+          this.quit = false;
       },
 
       logOut() {
@@ -160,19 +297,79 @@
 
       // 获取列表
       doSthList() {
+          let arr = [];
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.lvyeChangeRoom.length == 0) {
+              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.creditcheckout.length == 0 && body.data.data.checkoutsuccess.length == 0) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
+                  let doSthList = sessionStorage.getItem('doSthArr') ? JSON.parse(sessionStorage.getItem('doSthArr')) : [];
 //                  this.speckText('您有待办事项未处理，点击查看');
                   if (body.data.data.checkoutapply != null) {
-                      this.findItem(body.data.data, 1);
-                  }else if (body.data.data.pmspay) {
-                    this.findItem(body.data.data, 4);
+//                    this.findItem(body.data.data, 1);
+                    body.data.data.checkoutapply.forEach(item => {
+                        item.doType = 1;
+                    });
+                    arr = [...body.data.data.checkoutapply, ...arr];
                   }
+                  if (body.data.data.pmspay.length != 0) {
+//                    this.findItem(body.data.data, 4);
+                    body.data.data.pmspay.forEach(item => {
+                      item.doType = 4;
+                    });
+                    arr = [...body.data.data.pmspay, ...arr];
+                  }
+                  if (body.data.data.creditcheckout && body.data.data.creditcheckout.length != 0) {
+//                    this.findItem(body.data.data, 5);
+                    body.data.data.creditcheckout.forEach(item => {
+                      item.doType = 5;
+                    });
+                    arr = [...body.data.data.creditcheckout, ...arr];
+                  }
+                  if (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length != 0) {
+//                    this.findItem(body.data.data, 6);
+                    body.data.data.AUTO_SETTLE_PAY.forEach(item => {
+                      item.doType = 6;
+                    });
+                    arr = [...body.data.data.AUTO_SETTLE_PAY, ...arr];
+                  }
+                  if (body.data.data.checkoutsuccess.length != 0) {
+//                    this.findItem(body.data.data, 7);
+                    body.data.data.checkoutsuccess.forEach(item => {
+                      item.doType = 7;
+                    });
+                    arr = [...body.data.data.checkoutsuccess, ...arr];
+                  }
+                  console.log('arr', arr);
+                  if (doSthList.length != 0) {
+                    let result = [];
+                    for(var i = 0; i < arr.length; i++){
+                      let obj = arr[i];
+                      let num = obj.id;
+                      let isExist = false;
+                      for(var j = 0; j < doSthList.length; j++){
+                        var aj = doSthList[j];
+                        var n = aj.id;
+                        if(n == num){
+                          isExist = true;
+                          break;
+                        }
+                      }
+                      if(!isExist){
+                        result.push(obj);
+                      }
+                    }
+                    console.log('result', result);
+                    if (result.length != 0) {
+                      this.tipArr = [...result, ...this.tipArr];
+                      console.log('this.tipArr', this.tipArr);
+//                      this.findItem(result, result[0].doType);
+                      this.findItem(result);
+                    }
+                  }
+                  sessionStorage.setItem('doSthArr', JSON.stringify(arr));
               }
             }
             this.loadingShow = false;
@@ -187,116 +384,61 @@
       },
 
       // 过滤
-      findItem(data, type) {
-        let checkOutList = '';
-        if (type == 1) {
-          checkOutList = data.checkoutapply;
-        }else if (type == 2) {
-          checkOutList = data.wuka;
-        }else if (type == 3) {
-          checkOutList = data.manka;
-        }else {
-          checkOutList = data.pmspay;
-        }
-        let arr_ = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-        if (arr_.length == 0) {
-          this.onlyItem = checkOutList[0];
-          if (type == 1) {
+      findItem(data) {
+        let checkOutList = [];
+        checkOutList = data;
+        console.log('checkOutList', checkOutList);
+        this.onlyItem = checkOutList[0];
+        this.$nextTick(() => {
+          setTimeout(() => {
             this.quithouse = true;
-            this.wuka = false;
-            this.manka = false;
-            this.quithouse_ = true;
-            this.pmsPay = false;
-          }else if (type == 2) {
-            this.wuka = true;
-            this.quithouse_ = false;
-            this.manka = false;
-            this.quithouse = true;
-            this.pmsPay = false;
-          }else if (type == 3){
-            this.manka = true;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.quithouse = true;
-            this.pmsPay = false;
-          }else {
-            this.pmsPay = true;
-            this.manka = false;
-            this.quithouse_ = false;
-            this.wuka = false;
-            this.quithouse = true;
-          }
-        }else {
-          let result = [];
-          for(var i = 0; i < checkOutList.length; i++){
-            let obj = checkOutList[i];
-            let num = obj.orderId;
-            let isExist = false;
-            for(var j = 0; j < arr_.length; j++){
-              let aj = arr_[j];
-              let n = aj.orderId;
-              if(n == num){
-                isExist = true;
-                break;
-              }
+            if (this.onlyItem.doType == 1) {
+              this.speckText(checkOutList[0].roomNo+'房间客人申请退房，房卡已回收，请及时处理');
+            }else if (this.onlyItem.doType == 4) {
+              this.speckText('收款成功！收款金额'+checkOutList[0].totalFeeStr+'元，自动入账失败，请手工至PMS系统处理入账');
+            }else if (this.onlyItem.doType == 5) {
+              this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房卡已回收，房态已改为脏房请及时打扫');
+            }else if (this.onlyItem.doType == 6) {
+              this.speckText('房号'+checkOutList[0].roomNo+'退款计划失败，'+checkOutList[0].remark);
+            }else if (this.onlyItem.doType == 7) {
+              this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房态已改为脏房请及时打扫');
             }
-            if(!isExist){
-              result.push(obj);
-            }
-          }
-          if (result.length != 0) {
-            this.onlyItem = result[0];
-            if (type == 1) {
-              this.quithouse = true;
-              this.wuka = false;
-              this.manka = false;
-              this.quithouse_ = true;
-              this.pmsPay = false;
-            }else if (type == 2) {
-              this.wuka = true;
-              this.quithouse_ = false;
-              this.manka = false;
-              this.quithouse = true;
-              this.pmsPay = false;
-            }else if (type == 3){
-              this.manka = true;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.quithouse = true;
-              this.pmsPay = false;
-            }else {
-              this.pmsPay = true;
-              this.manka = false;
-              this.quithouse_ = false;
-              this.wuka = false;
-              this.quithouse = true;
-            }
-          }
-        }
+          }, 500)
+        })
       },
 
       // 我知道了
-      checkOut() {
-        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-        this.quithouse = false;
-        arr.push(this.onlyItem);
-        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
-        this.doSthList();
+      checkOut(id, index, type) {
+          if (type == 2) {
+              this.creditDoSth({
+                id: id,
+                onsuccess: body => {
+                    if (body.data.code == 0) {
+                      this.quithouse = false;
+                      this.tipArr.splice(index, 1);
+                    }
+                },
+                onfail: body => {
+
+                },
+                onerror: body => {
+
+                }
+              })
+          }else {
+            this.tipArr.splice(index, 1);
+          }
       },
 
       // 查看详情
-      lookDetail() {
-        let arr = sessionStorage.getItem('checkOutList') ? JSON.parse(sessionStorage.getItem('checkOutList')) : [];
-        this.quithouse = false;
-        arr.push(this.onlyItem);
-        sessionStorage.setItem('checkOutList', JSON.stringify(arr));
-        if (this.onlyItem.id) {
+      lookDetail(item, index) {
+        this.tipArr.splice(index, 1);
+        if (item.id) {
           this.goto('/doSth');
         }else {
-          sessionStorage.setItem('pmsPayDetail', this.onlyItem.orderId);
+          sessionStorage.setItem('pmsPayDetail', item.orderId+'-'+item.payFlowId);
           this.tabClick(3);
           this.pmsOrderIdChange++;
-          this.doSthList();
         }
       },
 
@@ -333,20 +475,19 @@
 
       // 进公安核验详情
       policeIdentity(val) {
+        this.loadingShow = true;
         this.goto('/policeIdentityDetail/'+val);
       },
 
       // 进入团队投屏前选择
       gotocheckIn(val) {
+        this.loadingShow = true;
         this.goto('/checkIn/'+val);
       },
 
       // 进入退房详情
       goCheckOut(val) {
         this.loadingShow = true;
-//        setTimeout(() => {
-//          this.loadingShow = false;
-//        }, 600);
         this.goto('/checkOut/'+val)
       },
 
@@ -376,11 +517,8 @@
       },
       websocketonopen(e){ //建立通道
         // let redata = e;
-        console.log('============websocket建立链接==============')
       },
       websocketonmessage(e){ //数据接收
-        console.log('============websocket数据接收成功==============');
-        console.log(e);
         let date = e.data;
         if (date == '"refresh"') {
           this.speakShow = true;
@@ -390,11 +528,9 @@
         }
       },
       websocketsend(agentData){//数据发送
-        console.log('============websocket数据发送成功==============');
         this.websock.send(agentData);
       },
       websocketclose(e){  //关闭通道
-        console.log("关闭通道connection closed (" + e.code + ")");
         this.initWebSocket();
       },
 
@@ -443,7 +579,7 @@
 
   .homeIndex {
     .header {
-      background: #FFFFFF;
+      background: #f7f7f7;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
       height: 100px;
       display: flex;
@@ -486,14 +622,13 @@
         .tabs {
           height: 100%;
           .tab {
-            margin-right: 60px;
+            margin-right: 30px;
             height: 100%;
             position: relative;
             color: #909399;
             font-size: 26px;
             display: inline-flex;
             align-items: center;
-            font-weight: bold;
             i {
               font-style:normal;
               background-color: #F5222D;
@@ -508,6 +643,7 @@
           }
           .active {
             color: #303133;
+            font-weight: bold;
           }
           .active:after {
             content: '';
@@ -561,12 +697,31 @@
           span {
             color: #4A4A4A;
             font-size: 18px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 80px;
           }
         }
         .tuichu {
           margin-right: 20px;
         }
+        .warpper_ownInfo {
+          margin-right: 60px;
+          span {
+            display: inline-block;
+            font-size: 24px;
+            border: 1px solid #909399;
+            border-radius: 8px;
+            padding: 10px 20px;
+            background: #fff;
+            color: #1AAD19;
+          }
+        }
       }
+    }
+    .header_ {
+      box-shadow: none;
     }
     .quit {
       .shadow {
@@ -667,6 +822,127 @@
           color: #fff;
         }
       }
+    }
+    .printTip {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .tip_content {
+        background: #FFFFFF;
+        border-radius: 13.2px;
+        width: 750px;
+        padding: 67px 74px 60px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 12;
+        .title {
+          font-family: MicrosoftYaHei;
+          font-size: 36px;
+          color: #333333;
+          letter-spacing: 3.27px;
+          margin-bottom: 71px;
+        }
+        .lists {
+          padding: 0 9px;
+          overflow-y: scroll;
+          max-height: 55vh;
+          -webkit-overflow-scrolling: touch;
+          .list {
+            margin-bottom: 23px;
+            /deep/ .el-radio.is-bordered {
+              padding: 35px 72px 39px;
+              background: #F7F7F7;
+              border-radius: 10.4px;
+              height: auto;
+              width: 100%;
+              text-align: left;
+            }
+            /deep/ .el-radio__label {
+              font-size: 32px;
+              font-family: MicrosoftYaHei;
+              letter-spacing: 2px;
+              color: #666666;
+              margin-left: 42px;
+            }
+            /deep/ label {
+              display: flex;
+              align-items: center;
+            }
+            /deep/ .el-radio--medium.is-bordered .el-radio__inner {
+              width: 27px;
+              height: 27px;
+            }
+            /deep/ .el-radio.is-bordered.is-checked {
+              border: 1px solid #1AAD19;
+              color:  #1AAD19;
+              background: #F5FFF5;
+            }
+            /deep/ .el-radio__input.is-checked .el-radio__inner {
+              background: #1AAD19;
+              border-color: #1AAD19;
+            }
+            /deep/ .el-radio__input.is-checked+.el-radio__label {
+              color:  #1AAD19;
+            }
+          }
+        }
+        .lists::-webkit-scrollbar {
+          display: none; // 隐藏滚动条
+        }
+        .btns {
+          margin-top: 80px;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+          button {
+            width: 278px;
+            height: 80px;
+            border-radius: 45px;
+            font-size: 28px;
+            font-family: MicrosoftYaHei-Bold;
+            letter-spacing: 4.04px;
+            border: none;
+            outline: none;
+          }
+          button:first-of-type {
+            background: #EEEEEE;
+            color: #666666;
+          }
+          button:last-of-type {
+            background: #1AAD19;
+            box-shadow: 0 3px 16px 0 rgba(26,173,25,0.64);
+            color: #FFFFFF;
+          }
+        }
+      }
+    }
+  }
+
+  .el-dropdown-menu {
+    width: 260px;
+    z-index: 9 !important;
+    .el-dropdown-menu__item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      font-size: 24px;
+      line-height: 56px;
+      cursor: pointer;
+    }
+    .el-dropdown-menu__item:not(.is-disabled):hover {
+      color: #1AAD19;
+    }
+    /deep/ .el-dropdown-menu__item i {
+      margin-right: 15px;
     }
   }
 

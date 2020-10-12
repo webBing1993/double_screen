@@ -1,35 +1,65 @@
 <template>
     <div>
       <div class="login">
-        <div class="header">
-          <div class="bg"><img src="../../assets/logoBg.png" alt=""></div>
-         <div class="title_timer">
-           <div class="title"><img src="../../assets/zhuihuijiedai.png" alt=""></div>
-           <div class="timer">{{nowTime}}</div>
-         </div>
+        <div class="index_bg">
+          <img src="../../assets/index_bg.png" alt="">
         </div>
         <div class="content">
           <el-row >
-            <el-col :xs="14" :sm="14" :md="14" :lg="14" :xl="14" class="content_fr">
-              <p>请输入手机号登录</p>
-              <div class="phone">
-                <i><img src="../../assets/zhanghao.png" alt=""></i>
-                <input name="phone" type="tel" min="1" id="input_id" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
-                <el-button :plain="true" v-if="btntxt != '获取验证码' && btntxt != '重新获取'" class="btns btning">{{btntxt}}</el-button>
-                <el-button :plain="true" @click="sendcode" :class="btntxt == '获取验证码' || btntxt == '重新获取' ? 'btns' : 'btns btning'" v-else>{{btntxt}}</el-button>
+            <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="content_fr">
+              <div class="title" v-if="!resetUser">
+                <img src="../../assets/indexLogo.png" alt="">
               </div>
-              <div class="code">
-                <i><img src="../../assets/mima.png" alt=""></i>
-                <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
+              <div class="title" v-else @click="goBackBtn">
+                <img src="../../assets/return.png" alt="" class="back">
+                <span>返回</span>
               </div>
-              <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >确定</el-button>
+              <div class="tabs" v-if="!resetUser">
+                <span :class="tabIndex == 1 ? 'active' : ''" @click="tabChange(1)">密码登录</span>
+                <span :class="tabIndex == 2 ? 'active' : ''" @click="tabChange(2)">验证码登录</span>
+              </div>
+              <div class="lists" v-if="tabIndex == 1 && !resetUser">
+                <div class="list">
+                  <input name="phone" type="tel" min="1" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
+                </div>
+                <div class="list">
+                  <input type="number" placeholder="请输入6位密码" v-model="password" @focus="onFocus_"  maxlength="6"/>
+                  <el-button :plain="true" class="btns" @click="forgotBtn">忘记密码</el-button>
+                </div>
+                <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >确认登录</el-button>
+              </div>
+              <div class="lists" v-else-if="tabIndex == 2 && !resetUser">
+                <div class="list">
+                  <input name="phone" type="tel" min="1" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
+                  <el-button :plain="true" v-if="btntxt != '获取验证码' && btntxt != '重新获取'" class="btns btning">{{btntxt}}</el-button>
+                  <el-button :plain="true" @click="sendcode" :class="btntxt == '获取验证码' || btntxt == '重新获取' ? 'btns' : 'btns btning'" v-else>{{btntxt}}</el-button>
+                </div>
+                <div class="list">
+                  <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
+                </div>
+                <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >确认登录</el-button>
+              </div>
+              <div class="lists" v-else-if="resetUser">
+                <div class="list">
+                  <input name="phone" type="tel" min="1" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
+                  <el-button :plain="true" v-if="btntxt != '获取验证码' && btntxt != '重新获取'" class="btns btning">{{btntxt}}</el-button>
+                  <el-button :plain="true" @click="sendcode" :class="btntxt == '获取验证码' || btntxt == '重新获取' ? 'btns' : 'btns btning'" v-else>{{btntxt}}</el-button>
+                </div>
+                <div class="list">
+                  <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
+                </div>
+                <div class="list listLast">
+                  <input type="number" placeholder="请输入6位数字新密码" v-model="resetPassword" @focus="onFocus1"  maxlength="6"/>
+                </div>
+                <el-button type="primary" class="loginBtn" :loading="resetBtnLoading"  @click="resetBtn()" >确认修改</el-button>
+              </div>
             </el-col>
-            <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="content_fl">
+            <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="content_fl">
               <div class="key_board">
                 <div class="keyBoard">
                   <div class="keyBoards">
                     <span v-for="item in keyBords"  @click="item == '清除' ? clear($event, phoneCode) : keyEntry($event, item, phoneCode)">{{item}}</span>
-                    <span @click="keyCancel($event, phoneCode)"><img src="../../assets/shanchuanniu.png" alt=""></span>
+                    <span @click="keyCancel($event, phoneCode)"><img src="../../assets/ic_delete.png" alt=""></span>
                   </div>
                 </div>
               </div>
@@ -49,22 +79,33 @@
     data () {
       return {
         nowTime: '',
-        disabled:false,
+        disabled: false,
+        tabIndex: 1,      // tab active
         time:0,
         btntxt: "获取验证码",
         code: '',
         phone: '',
+        password: '',
+        resetPassword: '',
         entryAll: false,  // 判断是否可以点击确定按钮
         getTimer: null,
-        keyBords: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '清除', '0'],
+        keyBords: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
         phoneCode: 0,  // 0表示的是手机号输入，1表示的是验证码的输入
         loginLoading: false,
+        resetUser: false,     // 是否修改密码
+        resetBtnLoading: false,
       }
     },
     methods: {
       ...mapActions([
         'goto', 'getCode', 'loginEntry', 'getAllConfig'
       ]),
+
+      // tab click
+      tabChange(index) {
+        this.tabIndex = index;
+        this.phoneCode = 0;
+      },
 
       // 键盘清除事件
       clear (event, type) {
@@ -128,6 +169,10 @@
 
       onFocus_(){
         this.phoneCode = 1;
+      },
+
+      onFocus1(){
+        this.phoneCode = 2;
       },
 
       onBlur () {
@@ -249,12 +294,17 @@
                   sessionStorage.setItem('name',body.data.data.name);
                   sessionStorage.session_id = body.data.data.token;
                   sessionStorage.hotel_id = body.data.data.hotelId;
+                  sessionStorage.hotel_Name = body.data.data.hotelName;
+                  let userId = body.data.data.userId;
                   this.getAllConfig({
                     onsuccess: body => {
                       this.loginLoading = false;
                       if(body.data.data != null) {
                         sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
                         this.goto('/home');
+                        setTimeout(() => {
+                          this.SendParameter(userId);
+                        }, 1500);
                       }else {
                         this.$message.error('该账号无权限');
                       }
@@ -285,6 +335,32 @@
           }
         }
       },
+
+      // 确认修改
+      resetBtn() {
+//          this.resetBtnLoading = true;
+        this.resetUser = false;
+      },
+
+      // 忘记密码
+      forgotBtn() {
+          this.resetUser = true;
+      },
+
+      // 返回
+      goBackBtn() {
+        this.resetUser = false;
+      },
+
+      SendParameter(type) {
+        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
+        jsObj.IdentityUserInfo();
+      },
+    },
+
+    beforeMount () {
+      jsObj.getBrowserFinish();
+      jsObj.GetDeviceId();      // 获取deviceId
     },
 
     mounted () {
@@ -314,55 +390,37 @@
 <style scoped lang="less">
 
   .login {
-    .header {
-      height: 150px;
-      background: #FFFFFF;
-      position: relative;
-      .bg {
+    .index_bg {
+      position: fixed;
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      img {
         width: 100%;
-        height: 150px;
-        img {
-          display:  block;
-          width: 100%;
-          height: 100%;
-        }
-      }
-      .title_timer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 109px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 40px;
-        .title {
-          font-size: 48px;
-          color: #000;
-          font-weight: bold;
-          display: inline-flex;
-          img {
-            height: 54px;
-          }
-        }
-        .timer {
-          font-weight: bold;
-          color: #000;
-          font-size: 36px;
-        }
+        height: 100%;
+        display: block;
       }
     }
     .content {
+      position: fixed;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      padding: 60px 80px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       .content_fl {
         position: relative;
+        height: calc(100vh - 120px);
         .key_board {
           position: absolute;
           width: 100%;
-          height: calc(100vh - 112px);
-          background-color: #DEE7F8;
+          height: 100%;
+          background-color: #F7F7F7;
+          border-radius: 0 16px 16px 0;
           left: 0;
-          top: -38px;
+          top: 0;
           .keyBoard {
             position: relative;
             width: 100%;
@@ -371,48 +429,49 @@
               position: absolute;
               left: 50%;
               height: 50%;
-              width: 480px;
+              width: 511px;
               transform: translate(-50%, -50%);
               top: 50%;
               span {
-                border-radius: 3.6px;
-                width: 110px;
-                height: 78px;
-                line-height: 78px;
+                border-radius: 7.8px;
+                width: 157px;
+                height: 94px;
+                line-height: 94px;
                 text-align: center;
-                background-color: #D8D8D8;
-                color: #0B0B0B;
-                font-size: 40px;
-                margin: 0 25px 25px 0;
+                background-color: #FEFFFE;
+                color: #333333;
+                font-size: 38px;
+                margin: 0 14px 15px 0;
                 cursor: pointer;
                 display: inline-block;
-                font-weight: bold;
                 -moz-user-select:none;
                 -ms-user-select: none;
                 -webkit-user-select: none;
                 user-select: none;
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
               }
+              span:nth-of-type(2), span:nth-of-type(3), span:first-of-type {
+                margin-top: 0;
+              }
               span:nth-of-type(3n) {
                 margin-right: 0;
               }
               span:nth-of-type(10) {
-                font-size: 30px;
-                color: #EC8B2F;
+                width: 334px;
               }
               span:last-of-type {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                margin-right: 0;
                 img {
-                  width: 50px;
-                  height: 28px;
+                  width: 40px;
+                  height: 32px;
                   display: inline-block;
                 }
               }
               span:active {
-                background-color: #1AAD19;
-                color: #f1f1f1;
+                background-color: #d6d6d6;
               }
             }
           }
@@ -420,39 +479,73 @@
       }
       .content_fr {
         background-color: #fff;
-        height: calc(100vh - 150px);
-        padding: 0 13%;
-        p {
-          color: #000;
-          font-weight: bold;
-          font-size: 42px;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.04);
-          margin: 155px 0 20px;
-          text-align: left;
+        height: calc(100vh - 120px);
+        border-radius: 16px 0 0 16px;
+        padding: 123px 198px 0 200px;
+        .title {
+          margin-bottom: 88px;
+          display: flex;
+          align-items: center;
+          img {
+            width: 100%;
+          }
+          .back {
+            width: 15px;
+            height: 25px;
+          }
+          span {
+            font-family: PingFangSC-Medium;
+            font-size: 30px;
+            color: #333333;
+            margin-left: 5px;
+          }
         }
-        div {
+        .tabs {
+          text-align: left;
+          span {
+            position: relative;
+            margin-right: 40px;
+            /*font-family: MicrosoftYaHei;*/
+            font-size: 32px;
+            color: #666666;
+            letter-spacing: 4px;
+            padding: 12px 0;
+            cursor: pointer;
+          }
+          .active {
+            color: #1BAC18;
+            font-weight: bold;
+          }
+          .active:after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 4px;
+            background: #1BAC18;
+            border-radius: 2px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+          }
+        }
+        .list {
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          border-bottom: 1px solid #C0C4CC ;
-          margin: 60px 0;
-          i {
-            width: 36px;
-            height: 36px;
-            margin-right: 30px;
-            img {
-              display: inline-block;
-              width: 100%;
-              height: 100%;
-            }
-          }
+          margin-top: 28px;
+          background: #F7F7F7;
+          border-radius: 14px;
+          height: 100px;
           input {
             border: none;
-            font-size: 36px;
-            line-height: 48px;
-            background-color: #fff !important;
-            color: #606266;
+            font-size: 28px;
+            line-height: 100px;
+            background-color: #F7F7F7 !important;
+            color: #333;
             width: calc(100% - 200px);
+            padding-left: 40px;
+            border-radius: 14px 0 0 14px;
           }
           input::-webkit-outer-spin-button,
           input::-webkit-inner-spin-button {
@@ -478,12 +571,22 @@
             border: none;
             box-shadow: none;
             color: #1AAD19;
-            font-size: 32px;
+            font-size: 28px;
             cursor: pointer;
-            font-weight: bold;
+            width: 200px;
+            padding: 20px 15px 20px 0;
+            text-align: right;
           }
           .btning {
             color: #999;
+          }
+        }
+        .list:first-of-type {
+          margin-top: 53px;
+        }
+        .listLast {
+          input {
+            width: 360px;
           }
         }
         .loginBtn {
@@ -491,10 +594,11 @@
           margin-top: 56px;
           text-align: center;
           height: 78px;
-          font-size: 30px;
+          font-size: 28px;
           color: #fff;
-          border-radius: 50px;
-          background-color: #1AAD19;
+          background: #1AAD19;
+          box-shadow: 0 3px 16px 0 rgba(26,173,25,0.64);
+          border-radius: 45px;
           cursor: pointer;
           display: block;
           -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

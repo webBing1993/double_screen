@@ -32,29 +32,39 @@
       ]),
 
 
-      getSweepingSettlementOrderId(orderId, deviceId) {
-      // 给iframe传参
-        this.iframeWin.postMessage({
-          cmd: 'getParams', // cmd 用来判断触发的是什么事件
-          params: {
-            key: orderId,
-            deviceId: deviceId
-          }
-        }, '*')
+      getSweepingSettlementOrderId(orderId, deviceId, timeVal) {
+          console.log('orderId', orderId);
+        if (orderId == '') {
+          return
+        }else {
+          // 给iframe传参
+          this.iframeWin.postMessage({
+            cmd: 'getParams', // cmd 用来判断触发的是什么事件
+            params: {
+              key: orderId,
+              deviceId: deviceId,
+              timeVal: timeVal
+            }
+          }, '*');
+          setTimeout(() => {
+            orderId = '';
+          },100)
+        }
       },
 
       // 获取deviceId
       getDeviceId(deviceId) {
         console.log('getDeviceId', deviceId);
-//        this.iframeWin.postMessage({
-//          cmd: 'getParams', // cmd 用来判断触发的是什么事件
-//          params: {
-//            deviceId: deviceId
-//          }
-//        }, '*');
         this.src = "https://wqt.fortrun.cn" + sessionStorage.getItem('windowUrl') + 'independent_collection/#'+"?token=" + encodeURIComponent(sessionStorage.session_id+'/'+deviceId)
       },
 
+      sonPageClick (params){
+        if (params == 0) {
+          window.getSweepingSettlementOrderId = '';
+        }else {
+          window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
+        }
+      }
     },
 
     mounted () {
@@ -66,7 +76,12 @@
         this.iframeWin = this.$refs.iframe.contentWindow;
       }, 600);
       window.getDeviceId = this.getDeviceId;
-      window.getSweepingSettlementOrderId = this.getSweepingSettlementOrderId;
+
+      window.sonPageClick = this.sonPageClick;
+    },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
     }
   }
 </script>

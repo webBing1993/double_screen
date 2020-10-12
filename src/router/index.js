@@ -65,6 +65,11 @@ const router = new Router({
           name: 'independent',
           component: resolve => require(['../components/home/independent.vue'],resolve),
         },
+        {
+          path: '/statistics',
+          name: 'statistics',
+          component: resolve => require(['../components/home/statistics.vue'],resolve),
+        },
       ],
     },
     {
@@ -91,7 +96,9 @@ router.beforeEach((to, from, next) => {
             iconClass: 'icon ',
           });
           // window.location.href = url;
-          jsObj.LogOut();
+          setTimeout(() => {
+            jsObj.LogOut();
+          }, 1000)
         }
       }
       return;

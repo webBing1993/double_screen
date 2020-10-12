@@ -3,8 +3,75 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0, user-scalabel=0, minimum-scale=1.0,maximum-scale=1.0">
-    <title>双屏辅助机</title>
-    <!--<script src="static/js/vconsole.min.js"></script>-->
+    <title>智慧接待系统</title>
+    <script src="static/js/vconsole.min.js"></script>
+    <style>
+      body {
+        font-family: '微软雅黑', SourceHanSansCN,'黑体', "PingFang SC",'Avenir', Helvetica, Arial, sans-serif;
+      }
+      .el-date-range-picker {
+        width: 838px !important;
+        position: absolute !important;
+      }
+      .el-date-picker .el-picker-panel__content {
+        width: 400px !important;
+      }
+
+      .el-picker-panel {
+        /*left: 112px !important;*/
+      }
+      .el-date-picker__header {
+        height: 48px !important;
+        line-height: 48px !important;
+      }
+      .el-picker-panel__icon-btn {
+        width: 36px !important;
+        height: 48px !important;
+        color: #303133 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        margin-top: 0;
+      }
+      .el-date-picker__header-label {
+        color: #303133 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        line-height: 48px !important;
+      }
+      .el-date-picker {
+        width: 482px !important;
+        position: absolute !important;
+      }
+      .el-date-picker .el-picker-panel__content {
+        width: 420px !important;
+        margin: 28px !important;
+      }
+      .el-date-range-picker__content .el-date-range-picker__header div {
+        color: #303133 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        line-height: 48px !important;
+      }
+      .el-date-table th , .el-date-table td, .el-month-table td div{
+        color: #303133 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        width: 56px !important;
+        height: 56px !important;
+        line-height: 56px !important;
+        text-align: center !important;
+        margin: 5px 2px 2px !important;
+      }
+      .el-date-table td.next-month, .el-date-table td.prev-month {
+        color: #c5c8ce !important;
+      }
+      .el-popper .popper__arrow, .el-popper .popper__arrow::after {
+        display: none !important;
+      }
+      .el-icon-date:before {
+        display: none !important;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
@@ -135,15 +202,18 @@
     .el-message-box__message p {
       font-size: 20px;
     }
+    .ivu-icon-ios-calendar-outline:before {
+      display: none;
+    }
 
   </style>
 
   <script>
 
     // 小票二维码扫码
-    function getSweepingSettlement(orderId, deviceId) {
+    function getSweepingSettlement(orderId, deviceId, timeVal) {
       console.log('B屏orderId', orderId);
-      getSweepingSettlementOrderId(orderId, deviceId);
+      getSweepingSettlementOrderId(orderId, deviceId, timeVal);
     }
 
     // 检查A屏是否有正在办理的订单
@@ -152,8 +222,19 @@
       showOrderInfo(isTrue);
     }
 
-    function getDeviceId(val) {
-      getDeviceId(val);
+    // 检查A屏是否启动
+    function startUpDevice(value) {
+      startUpDevice(value);
+    }
+
+    function giveDeviceId(val) {
+      console.log('giveDeviceId', val);
+      sessionStorage.setItem('deviceId', val);
+    }
+
+    // 判断当前在A屏还是B屏
+    function getAppLocation(val) {
+      sessionStorage.setItem('getAppLocation', val);
     }
 
   </script>

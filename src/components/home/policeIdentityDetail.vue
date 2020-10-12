@@ -13,7 +13,7 @@
           <div class="search">
             <span>房间号：</span>
             <input type="text" placeholder="请输入房间号" :value="detail.roomNumber ? detail.roomNumber : '无'" disabled v-if="!buttonGroupShow">
-            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else>
+            <input type="text" placeholder="请输入房间号" v-model="roomNum" v-else @input="changeKeyBords">
             <span class="tig" v-if="!roomShow && roomNum != ''">酒店无该房间，请重新输入</span>
           </div>
           <div class="outTime" v-if="buttonGroupShow">
@@ -183,6 +183,17 @@
         console.log('datePickerTime', val);
       },
 
+      // 键盘事件
+      changeKeyBords () {
+        this.roomShow = false;
+        this.roomList.forEach(item=>{
+          if(this.roomNum == item.room_number){
+            this.roomShow = true;
+          }
+          return;
+        });
+      },
+
 
       // 右侧筛选tab切换
       changeTabClick(index) {
@@ -243,6 +254,7 @@
         this.newIdentityDetail({
           identity_id: this.$route.params.id,
           onsuccess: body => {
+            this.$emit('checkOutLoading', 1);
             if (body.errcode == 0) {
               this.detail = body.data.content;
               this.hotelConfig = body.data.config;
@@ -259,7 +271,12 @@
             this.buttonGroup();
             this.loadingShow = false;
           },
+          onfail: body => {
+            this.$emit('checkOutLoading', 1);
+            this.loadingShow = false;
+          },
           onerror: error => {
+            this.$emit('checkOutLoading', 1);
             this.loadingShow = false;
           }
         })
@@ -431,12 +448,16 @@
       this.loadingShow = true;
       this.getRoomNumber();
       this.getDetail();
+    },
+    beforeRouteLeave (to, from, next) {
+      this.loadingShow = false;
+      next();
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 
   .policeIdentityDetail {
     width: 100vw;
@@ -907,6 +928,11 @@
         }
       }
     }
+  }
+
+  /deep/ .ivu-date-picker-cells span em {
+    width: auto;
+    height: auto;
   }
 
 
