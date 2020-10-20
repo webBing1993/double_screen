@@ -218,7 +218,7 @@
           <div class="searchContent">
             <div class="searchInput">
               <img src="../../assets/Icon-search.png" alt="">
-              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus">
+              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput">
             </div>
             <div class="searchBtn">
               <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
@@ -365,6 +365,12 @@
         this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
       },
 
+      boxInput(val) {
+          if (val.target.value == '') {
+            this.noData = false;
+          }
+      },
+
       // 调用键盘 api
       dwimeXFun() {
         this.url = "http://127.0.0.1:1606/";
@@ -406,6 +412,8 @@
           this.searchString = this.searchString3;
           this.page = 1;
           this.getPreOrder(1);
+        }else {
+          this.noData = false;
         }
       },
 
@@ -902,36 +910,12 @@
           onsuccess: body => {
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data) {
-              if (body.data.data.list && body.data.data.list.length != 0) {
-                body.data.data.list.forEach(item => {
-                  item.loadingTongbu = false;
-                  item.loadingBanli = false;
-                  item.loadingdaiSure = false;
-                });
-                body.data.data.list.forEach(item => {
-                   if (item.updateTime) {
-
-                   }else {
-                       item.updateTime = item.createTime;
-                   }
-                });
-                this.orderLists = body.data.data.list;
-                if (this.isPms) {
-                  if(this.searchBox) {
-                    this.$toast({
-                      message: "订单拉取成功",
-                      iconClass: 'icon ',
-                    });
-                  }
-                  this.searchString1 = body.data.data.list[0].ownerSpelling;
-                }
-                this.total = body.data.data.total;
-                this.cancleSearch();
-              }else {
-                this.searchBtnText = '确认查询';
-                this.searchSureLoading = false;
-                this.noData = true;
+              if (body.data.data.list) {
                 if (body.data.data.list.length == 0) {
+                  this.searchBtnText = '确认查询';
+                  this.searchSureLoading = false;
+                  this.noData = true;
+                  this.noData = true;
                   if (this.page > 1) {
                     this.page--;
                     this.getPreOrder(this.page);
@@ -939,7 +923,35 @@
                     this.orderLists = [];
                     this.total = body.data.data.total;
                   }
+                }else {
+                  body.data.data.list.forEach(item => {
+                    item.loadingTongbu = false;
+                    item.loadingBanli = false;
+                    item.loadingdaiSure = false;
+                  });
+                  body.data.data.list.forEach(item => {
+                    if (item.updateTime) {
+
+                    }else {
+                      item.updateTime = item.createTime;
+                    }
+                  });
                 }
+                this.orderLists = body.data.data.list;
+                if (this.isPms) {
+                  if(this.searchBox) {
+                    this.$toast({
+                      message: "订单拉取成功",
+                      iconClass: 'icon ',
+                    });
+//                    this.cancleSearch();
+                  }
+                  this.searchString1 = body.data.data.list ? body.data.data.list[0].ownerInitials : '';
+                }
+                if (this.orderLists.length != 0) {
+                  this.cancleSearch();
+                }
+                this.total = body.data.data.total;
               }
 
             }else {
