@@ -406,6 +406,8 @@
           this.searchString = this.searchString3;
           this.page = 1;
           this.getPreOrder(1);
+        }else {
+          this.noData = false;
         }
       },
 
@@ -903,18 +905,32 @@
             this.loadingShow = false;
             if (body.data.code == 0 && body.data.data) {
               if (body.data.data.list) {
-                body.data.data.list.forEach(item => {
-                  item.loadingTongbu = false;
-                  item.loadingBanli = false;
-                  item.loadingdaiSure = false;
-                });
-                body.data.data.list.forEach(item => {
-                   if (item.updateTime) {
+                if (body.data.data.list.length == 0) {
+                  this.searchBtnText = '确认查询';
+                  this.searchSureLoading = false;
+                  this.noData = true;
+                  this.noData = true;
+                  if (this.page > 1) {
+                    this.page--;
+                    this.getPreOrder(this.page);
+                  }else {
+                    this.orderLists = [];
+                    this.total = body.data.data.total;
+                  }
+                }else {
+                  body.data.data.list.forEach(item => {
+                    item.loadingTongbu = false;
+                    item.loadingBanli = false;
+                    item.loadingdaiSure = false;
+                  });
+                  body.data.data.list.forEach(item => {
+                    if (item.updateTime) {
 
-                   }else {
-                       item.updateTime = item.createTime;
-                   }
-                });
+                    }else {
+                      item.updateTime = item.createTime;
+                    }
+                  });
+                }
                 this.orderLists = body.data.data.list;
                 if (this.isPms) {
                   if(this.searchBox) {
@@ -922,27 +938,16 @@
                       message: "订单拉取成功",
                       iconClass: 'icon ',
                     });
+//                    this.cancleSearch();
                   }
-                  this.searchString1 = body.data.data.list[0].ownerSpelling;
+                  this.searchString1 = body.data.data.list[0].ownerInitials;
+                }
+                if (this.orderLists.length != 0) {
+                  this.cancleSearch();
                 }
                 this.total = body.data.data.total;
               }
-              if (body.data.data.list.length == 0) {
-                if (this.page > 1) {
-                  this.page--;
-                  this.getPreOrder(this.page);
-                }else {
-                  this.orderLists = [];
-                  this.total = body.data.data.total;
-                }
-              }
-              if (body.data.data.total == 0) {
-                this.searchBtnText = '确认查询';
-                this.searchSureLoading = false;
-                this.noData = true;
-              }else {
-                this.cancleSearch();
-              }
+
             }else {
                 if (this.searchBox) {
                   this.searchBtnText = '确认查询';
