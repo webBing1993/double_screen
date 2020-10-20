@@ -218,7 +218,7 @@
           <div class="searchContent">
             <div class="searchInput">
               <img src="../../assets/Icon-search.png" alt="">
-              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus">
+              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput">
             </div>
             <div class="searchBtn">
               <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
@@ -363,6 +363,12 @@
         let y = document.body.clientHeight - 420;
 
         this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+      },
+
+      boxInput(val) {
+          if (val.target.value == '') {
+            this.noData = false;
+          }
       },
 
       // 调用键盘 api
@@ -940,7 +946,7 @@
                     });
 //                    this.cancleSearch();
                   }
-                  this.searchString1 = body.data.data.list[0].ownerInitials;
+                  this.searchString1 = body.data.data.list ? body.data.data.list[0].ownerInitials : '';
                 }
                 if (this.orderLists.length != 0) {
                   this.cancleSearch();
