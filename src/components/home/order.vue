@@ -360,9 +360,7 @@
 
       // blur input
       searchBoxBlur () {
-        setTimeout(() => {
-          this.$refs.searchBoxInput.focus();
-        }, 500)
+        this.$refs.searchBoxInput.focus();
       },
 
       // search tip input focus
