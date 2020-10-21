@@ -221,7 +221,7 @@
               <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput" @blur="searchBoxBlur">
             </div>
             <div class="searchBtn">
-              <button  type="primary" :loading="searchSureLoading" disabled="searchDisabled" @click="searchSureBtn">{{ searchBtnText }}</button>
+              <button  type="primary" :loading="searchSureLoading" :disabled="searchDisabled" @click="searchSureBtn">{{ searchBtnText }}</button>
             </div>
           </div>
           <div class="noDataTip" v-if="noData">
