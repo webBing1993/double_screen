@@ -915,7 +915,6 @@
                   this.searchBtnText = '确认查询';
                   this.searchSureLoading = false;
                   this.noData = true;
-                  this.noData = true;
                   if (this.page > 1) {
                     this.page--;
                     this.getPreOrder(this.page);
@@ -936,18 +935,19 @@
                       item.updateTime = item.createTime;
                     }
                   });
+                  if (this.isPms) {
+                    if(this.searchBox) {
+                      this.$toast({
+                        message: "订单拉取成功",
+                        iconClass: 'icon ',
+                      });
+//                    this.cancleSearch();
+                    }
+                    this.searchString1 = body.data.data.list ? body.data.data.list[0].ownerInitials : '';
+                  }
                 }
                 this.orderLists = body.data.data.list;
-                if (this.isPms) {
-                  if(this.searchBox) {
-                    this.$toast({
-                      message: "订单拉取成功",
-                      iconClass: 'icon ',
-                    });
-//                    this.cancleSearch();
-                  }
-                  this.searchString1 = body.data.data.list ? body.data.data.list[0].ownerInitials : '';
-                }
+
                 if (this.orderLists.length != 0) {
                   this.cancleSearch();
                 }
