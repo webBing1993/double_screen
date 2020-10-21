@@ -218,7 +218,7 @@
           <div class="searchContent">
             <div class="searchInput">
               <img src="../../assets/Icon-search.png" alt="">
-              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput">
+              <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput" @blur="searchBoxBlur">
             </div>
             <div class="searchBtn">
               <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
@@ -350,6 +350,19 @@
           this.searchBox = false;
           this.searchSureLoading = false;
           this.dwimeX.SendCmd("close");
+          if (this.orderLists.length == 0) {
+            this.isPms = false;
+            this.searchString = '';
+            this.page = 1;
+            this.getPreOrder(1);
+          }
+      },
+
+      // blur input
+      searchBoxBlur () {
+        setTimeout(() => {
+          this.$refs.searchBoxInput.focus();
+        }, 500)
       },
 
       // search tip input focus
