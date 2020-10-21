@@ -221,7 +221,7 @@
               <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput" @blur="searchBoxBlur">
             </div>
             <div class="searchBtn">
-              <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
+              <button  type="primary" :loading="searchSureLoading" disabled="searchDisabled" @click="searchSureBtn">{{ searchBtnText }}</button>
             </div>
           </div>
           <div class="noDataTip" v-if="noData">
@@ -288,6 +288,7 @@
         searchBox: false,        // 拉去订单tip
         tabIndex_: 1,           // tip tab
         searchSureLoading: false,
+        searchDisabled: false,
         searchString3: '',      // tip input
         searchBtnText: '确认查询',       // tip button text
         noData: false,
@@ -349,6 +350,7 @@
           this.searchBtnText = '确认查询';
           this.searchBox = false;
           this.searchSureLoading = false;
+          this.searchDisabled = false;
           this.dwimeX.SendCmd("close");
           if (this.orderLists.length == 0) {
             this.isPms = false;
@@ -423,6 +425,7 @@
           this.searchBtnText = '查询中';
           this.isPms = true;
           this.searchSureLoading = true;
+          this.searchDisabled = true;
           this.searchString = this.searchString3;
           this.page = 1;
           this.getPreOrder(1);
@@ -928,6 +931,7 @@
                 if (body.data.data.list.length == 0) {
                   this.searchBtnText = '确认查询';
                   this.searchSureLoading = false;
+                  this.searchDisabled = false;
                   this.noData = true;
                   if (this.page > 1) {
                     this.page--;
@@ -972,6 +976,7 @@
                 if (this.searchBox) {
                   this.searchBtnText = '确认查询';
                   this.searchSureLoading = false;
+                  this.searchDisabled = false;
                   this.noData = true;
                 }
             }
