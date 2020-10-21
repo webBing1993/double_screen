@@ -378,7 +378,11 @@
         }
         let y = document.body.clientHeight - 420;
 
-        this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+        if (this.searchBox) {
+          this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+        }else {
+          this.dwimeX.SendCmd("close");
+        }
       },
 
       boxInput(val) {
@@ -964,6 +968,11 @@
                     this.searchString1 = body.data.data.list ? body.data.data.list[0].ownerInitials : '';
                   }
                 }
+
+                if (this.searchBox) {
+                  this.searchBoxFocus();
+                }
+
                 this.orderLists = body.data.data.list;
 
                 if (this.orderLists.length != 0) {
