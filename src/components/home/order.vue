@@ -856,7 +856,7 @@
             }
             this.$message({
               message: body.data.data,
-              type: 'success'
+              type: body.data.data == '同步成功' ? 'success' : 'error'
             });
           },
           onfail: (body, headers) => {
