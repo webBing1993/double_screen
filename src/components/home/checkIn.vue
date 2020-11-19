@@ -169,6 +169,7 @@
             </div>
           </div>
         </div>
+        <div class="roomsData" v-if="!roomsDataLate">正在获取房间列表，请稍后...</div>
       </div>
       <loadingList v-if="loadingShow" :loadingText="loadingText"  style="width: 100vw"></loadingList>
 
@@ -233,6 +234,7 @@
         rcShow: false,    // rc单dab权限
         rooms: [],  // 房间号列表
         dataCode: [],   // 二维码列表
+        roomsDataLate: false,
       }
     },
     filters: {
@@ -459,6 +461,7 @@
               body.data.data.forEach((item, index) => {
                 item.roomList = true;
               });
+              this.roomsDataLate = true;
               this.rooms = body.data.data;
             }
           }
@@ -497,6 +500,7 @@
       }else {
         this.isFreeDeposit = 2;
       }
+      this.roomsDataLate = false;
       this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
@@ -723,6 +727,7 @@
       background-color: #fff;
       overflow-y: scroll;
       -webkit-overflow-scrolling: touch; // 为了滚动顺畅
+      position: relative;
       .fast_title {
         position: relative;
         margin: 40px 0;
@@ -809,6 +814,15 @@
             }
           }
         }
+      }
+      .roomsData {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: #303133;
+        font-size: 24px;
+        width: 100%;
       }
     }
     .check_fr::-webkit-scrollbar {
