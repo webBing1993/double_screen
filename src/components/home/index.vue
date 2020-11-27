@@ -26,8 +26,19 @@
             <img :src="myInfo.img" alt="" onerror="this.myInfo.src='../../assets/morentouxiang.png'">
             <span>{{myInfo.name}}</span>
           </div>
-          <div class="tuichu" @click="quitTipShow">
-            <img src="../../assets/tuichu.png" alt="">
+          <!--<div class="tuichu" @click="quitTipShow">-->
+            <!--<img src="../../assets/tuichu.png" alt="">-->
+          <!--</div>-->
+          <div class="tuichu">
+            <el-dropdown trigger="click">
+                <span class="el-dropdown-link">
+                  更多
+                </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item icon="el-icon-tickets"  @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </div>
         </div>
       </div>
@@ -615,6 +626,15 @@
         }
         .tuichu {
           margin-right: 20px;
+          .el-dropdown {
+            border: 1px solid #9A9A9A;
+            padding: 12px 22px;
+            font-size: 26px;
+            border-radius: 10px;
+            color: #1AAD19;
+            font-weight: bold;
+            letter-spacing: 2px;
+          }
         }
       }
     }

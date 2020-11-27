@@ -404,7 +404,6 @@
           try {
             xhr.send(null);
           } catch(e) {
-            alert("Please start \"DWMain\" first！");
             return null;
           }
 
