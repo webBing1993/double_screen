@@ -4,27 +4,11 @@
       <div class="header">
         <div class="header_fl">
           <div class="changeScreen" @click="goto('/home')">
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;返回&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <img src="../../assets/fanhui.png" alt="">
+            <span>返回首页</span>
           </div>
           <div class="tabs">
             <span>操作日志</span>
-          </div>
-        </div>
-        <div class="header_fr">
-          <div class="myInfo" @click="myInfoClick">
-            <img :src="myInfo.img" alt="" onerror="this.myInfo.src='../../assets/morentouxiang.png'">
-            <span>{{myInfo.name}}</span>
-          </div>
-          <div class="tuichu">
-            <el-dropdown trigger="click">
-                <span class="el-dropdown-link">
-                  更多
-                </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-tickets"  @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
           </div>
         </div>
       </div>
@@ -53,11 +37,12 @@
               </el-input>
             </div>
           </div>
-          <div class="doSthLists" > <!--v-if="showList"-->
+          <div class="doSthLists" v-if="showList">
             <el-table
               :data="dataLists"
               stripe
-              style="width: 100%">
+              style="width: 100%"
+              v-if="dataLists.length != 0">
               <el-table-column
                 label="操作时间">
                 <template slot-scope="scope">
@@ -103,6 +88,10 @@
               layout="total, prev, pager, next"
               :total="total" v-if="dataLists.length != 0">
             </el-pagination>
+            <div class="noMsg" v-if="dataLists.length == 0 && showList">
+              <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
+              <p>暂无内容</p>
+            </div>
           </div>
         </div>
       </div>
@@ -144,7 +133,6 @@
         dataLists: [],
         dateArr: [],
         queryString: '',
-        quit: false,
         dwimeX: null,         // 键盘
         wherePrint: 2,        // 1A屏2B屏
         daterangeList: [''],
@@ -157,41 +145,6 @@
       ...mapActions([
         'goto', 'getoperationLog'
       ]),
-
-      // 点击头像调用A屏事件
-      myInfoClick() {
-        jsObj.WalkInConfig();
-      },
-
-      // 退出弹框
-      quitTipShow() {
-        document.body.addEventListener('touchmove',this.bodyScroll,false);
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        this.quit = true;
-      },
-
-      // 退出事件
-      sure() {
-        document.body.removeEventListener('touchmove',this.bodyScroll,false);
-        document.body.style.position = 'initial';
-        document.body.style.width = 'auto';
-        this.quit = false;
-//        window.location.href = this.windowUrl;
-        this.logOut();
-      },
-
-      // 退出弹框消失
-      quitTipClose() {
-        document.body.removeEventListener('touchmove',this.bodyScroll,false);
-        document.body.style.position = 'initial';
-        document.body.style.width = 'auto';
-        this.quit = false;
-      },
-
-      logOut() {
-        jsObj.LogOut();
-      },
 
       // 分页
       handleSizeChange (val) {
@@ -211,9 +164,10 @@
       },
 
       inputChange_(val) {
-          this.daterangeList.push('');
-          this.page = 1;
-          this.getLog();
+        this.loadingShow = true;
+        this.daterangeList.push('');
+        this.page = 1;
+        this.getLog();
       },
 
       // blur input
@@ -364,46 +318,6 @@
           }
         }
       }
-      .header_fr {
-        height: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .myInfo {
-          margin: 0 60px 0 80px;
-          display: flex;
-          align-items: center;
-          height: 100%;
-          cursor: pointer;
-          img {
-            display: inline-block;
-            width: 68px;
-            height: 68px;
-            margin-right: 15px;
-            border-radius: 50%;
-          }
-          span {
-            color: #4A4A4A;
-            font-size: 18px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 80px;
-          }
-        }
-        .tuichu {
-          margin-right: 20px;
-          .el-dropdown {
-            border: 1px solid #9A9A9A;
-            padding: 12px 22px;
-            font-size: 26px;
-            border-radius: 10px;
-            color: #1AAD19;
-            font-weight: bold;
-            letter-spacing: 2px;
-          }
-        }
-      }
     }
     .doSthContent {
       padding: 20px 20px 20px;
@@ -510,7 +424,7 @@
       }
     }
     .noMsg {
-      padding-top: 400px;
+      padding-top: 100px;
       img {
         display: block;
         width: 180px;
@@ -519,64 +433,6 @@
       p {
         font-size: 26px;
         margin-top: 20px;
-      }
-    }
-    .quit {
-      .shadow {
-        position: fixed;
-        z-index: 999999999;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, .6);
-      }
-      .quit_content {
-        background: #FFFFFF;
-        border-radius: 20px;
-        width: 375px;
-        position: fixed;
-        z-index: 9999999999;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        .quit_title {
-          padding: 50px 30px;
-          border-bottom: 1px solid #D8D8D8;
-          color: #0B0B0B;
-          font-size: 26px;
-          text-align: center;
-          font-weight: bold;
-        }
-        .quit_tabs {
-          display: flex;
-          justify-content: center;
-          span {
-            display: inline-block;
-            width: 50%;
-            position: relative;
-            padding: 30px 0;
-            font-size: 24px;
-            text-align: center;
-          }
-          span:first-of-type {
-            color: #909399;
-          }
-          span:last-of-type {
-            color: #1AAD19;
-          }
-          span:first-of-type:after {
-            content: '';
-            display: block;
-            background-color: #D8D8D8;
-            width: 1px;
-            height: 64px;
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-          }
-        }
       }
     }
     /deep/ .el-input--prefix .el-input__inner {

@@ -2725,7 +2725,7 @@
   }
 
   .noMsg {
-    margin-top: 150px;
+    margin-top: 265px;
     img {
       display: block;
       width: 180px;
