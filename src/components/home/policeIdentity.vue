@@ -925,7 +925,7 @@
   }
 
   .noMsg {
-    margin-top: 265px;
+    margin-top: 150px;
     img {
       display: block;
       width: 180px;

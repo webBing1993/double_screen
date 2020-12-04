@@ -23,7 +23,7 @@
             <!--<span class="table_cell">入离时间</span>-->
             <!--<span class="table_cell">房间信息</span>-->
           <!--</div>-->
-          <div class="order_lists" v-if="showList">
+          <div class="order_lists" v-if="orderLists.length != 0 && showList">
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
                 <div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>

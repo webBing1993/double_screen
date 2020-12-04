@@ -41,8 +41,7 @@
             <el-table
               :data="dataLists"
               stripe
-              style="width: 100%"
-              v-if="dataLists.length != 0">
+              style="width: 100%">
               <el-table-column
                 label="操作时间">
                 <template slot-scope="scope">
@@ -374,6 +373,7 @@
           /deep/ .el-table__empty-text {
             font-size: 24px;
             color: #333333;
+            display: none;
           }
           .widthOnce {
             overflow: hidden;
@@ -424,7 +424,7 @@
       }
     }
     .noMsg {
-      padding-top: 100px;
+      margin-top: 150px;
       img {
         display: block;
         width: 180px;
