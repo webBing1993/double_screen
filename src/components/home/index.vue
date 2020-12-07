@@ -35,7 +35,7 @@
                   更多
                 </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-tickets"  @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-tickets" v-if="getAllConfigList.operateLog" @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -121,6 +121,7 @@
           isQyPay: false,     // 交易管理
           isRztCheck: false, // 公安验证
           independentTrande: false, // 独立支付
+          operateLog: false,  // 操作日志
         },  // 权限
         searchVal: 0,
         windowUrl: '',
@@ -472,6 +473,8 @@
           this.unhandleList();
         }else if (item.tag == 'sp_independent_trade') {
           this.getAllConfigList.independentTrande = true;
+        }else if (item.tag == 'sp_operate_log') {
+          this.getAllConfigList.operateLog = true;
         }
       });
       setTimeout(() => {
