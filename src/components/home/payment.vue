@@ -66,13 +66,13 @@
             </div>
             <div class="list_content">
               <div class="list_fl">
-                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : item.payFlag == 7 ? '河马支付' : '翼支付'}}<span v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</span></p>
+                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 3 ? '翼支付': item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : item.payFlag == 7 ? '河马支付' : '工行支付'}}<span v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</span></p>
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
                 <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '-'}}</div>
               </div>
               <div class="list_fr">
                 <p>{{item.channel == 4 ? '冻结' : item.channel == 5 ? '结算' : item.channel== 6 ? '解冻' : '交易'}}金额： <span class="green">{{item.totalFeeStr}}元</span></p>
-                <span :class="{'red':item.resultCode=='FAILED'}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} {{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
+                <span :class="{'red':(item.resultCode=='FAILED'||(item.tradeType=='refund'&&item.resultCode=='SUCCESS'))}" v-if="item.channel != 4 && item.channel != 5 && item.channel != 6">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} {{item.tradeType=='refund'?item.resultCode=='FAILED'?'退款失败':'已退款':item.resultCode=='FAILED'?'收款失败':'已收款'}}</span>
                 <span v-if="item.channel == 6" class="red">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已撤销</span>
                 <span v-if="item.channel == 4" class="blue">快速结算</span>
                 <span v-if="item.channel == 5" class="grey">{{item.founder}} {{datetimeparse(item.timeEnd,"yy-MM-dd hh:mm:ss")}} 已结算</span>
@@ -183,8 +183,9 @@
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
                 <span v-else-if="detailVal.payFlag == 3">翼支付</span>
                 <span v-else-if="detailVal.payFlag == 5">PMS微信支付</span>
+                <span v-else-if="detailVal.payFlag == 6">银联</span>
                 <span v-else-if="detailVal.payFlag == 7">河马支付</span>
-                <span v-else>银联</span>
+                <span v-else>工行支付</span>
               </div>
               <div class="list">
                 <span>授权时间</span>
@@ -280,7 +281,9 @@
                 <span v-else-if="detailVal.payFlag == 5">PMS微信</span>
                 <span v-else-if="detailVal.payFlag == 4">PMS支付宝</span>
                 <span v-else-if="detailVal.payFlag == 3">翼支付</span>
-                <span v-else>银联</span>
+                <span v-else-if="detailVal.payFlag == 6">银联</span>
+                <span v-else-if="detailVal.payFlag == 7">河马支付</span>
+                <span v-else>工行支付</span>
               </div>
               <div class="list">
                 <span>交易状态</span>
@@ -314,7 +317,7 @@
                 <span>{{detailVal.refundModel.outTradeNo}}</span>
               </div>
             </div>
-            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 8">
+            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 9">
               <span class="refund" @click="refund">退款</span>
             </div>
           </div>

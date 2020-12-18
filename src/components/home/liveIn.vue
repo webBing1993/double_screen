@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="content">
-          <div class="order_lists" v-if="showList">
+          <div class="order_lists" v-if="orderLists.length != 0 && showList">
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
                 <div class="list_origin">预订人：{{item.orderOwner ? item.orderOwner : '-'}}</div>

@@ -23,7 +23,7 @@
             <!--<span class="table_cell">入离时间</span>-->
             <!--<span class="table_cell">房间信息</span>-->
           <!--</div>-->
-          <div class="order_lists" v-if="showList">
+          <div class="order_lists" v-if="orderLists.length != 0 && showList">
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
                 <div class="list_origin">订单来源：{{item.channel ? item.channel : '-'}}</div>
@@ -221,7 +221,7 @@
               <input type="text" placeholder="请输入预订人姓名\手机号\订单号" ref="searchBoxInput" v-model="searchString3" @focus="searchBoxFocus" @input="boxInput" @blur="searchBoxBlur">
             </div>
             <div class="searchBtn">
-              <button  type="primary" :loading="searchSureLoading" @click="searchSureBtn">{{ searchBtnText }}</button>
+              <button  type="primary" :loading="searchSureLoading" :disabled="searchDisabled" @click="searchSureBtn">{{ searchBtnText }}</button>
             </div>
           </div>
           <div class="noDataTip" v-if="noData">
@@ -288,6 +288,7 @@
         searchBox: false,        // 拉去订单tip
         tabIndex_: 1,           // tip tab
         searchSureLoading: false,
+        searchDisabled: false,
         searchString3: '',      // tip input
         searchBtnText: '确认查询',       // tip button text
         noData: false,
@@ -349,6 +350,7 @@
           this.searchBtnText = '确认查询';
           this.searchBox = false;
           this.searchSureLoading = false;
+          this.searchDisabled = false;
           this.dwimeX.SendCmd("close");
           if (this.orderLists.length == 0) {
             this.isPms = false;
@@ -373,7 +375,11 @@
         }
         let y = document.body.clientHeight - 420;
 
-        this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+        if (this.searchBox) {
+          this.dwimeX.SendCmd("pos(" + x + "," + y +")/show");
+        }else {
+          this.dwimeX.SendCmd("close");
+        }
       },
 
       boxInput(val) {
@@ -395,7 +401,6 @@
           try {
             xhr.send(null);
           } catch(e) {
-            alert("Please start \"DWMain\" first！");
             return null;
           }
 
@@ -420,6 +425,7 @@
           this.searchBtnText = '查询中';
           this.isPms = true;
           this.searchSureLoading = true;
+          this.searchDisabled = true;
           this.searchString = this.searchString3;
           this.page = 1;
           this.getPreOrder(1);
@@ -846,7 +852,7 @@
             }
             this.$message({
               message: body.data.data,
-              type: 'success'
+              type: body.data.data == '同步成功' ? 'success' : 'error'
             });
           },
           onfail: (body, headers) => {
@@ -925,6 +931,7 @@
                 if (body.data.data.list.length == 0) {
                   this.searchBtnText = '确认查询';
                   this.searchSureLoading = false;
+                  this.searchDisabled = false;
                   this.noData = true;
                   if (this.page > 1) {
                     this.page--;
@@ -957,6 +964,11 @@
                     this.searchString1 = body.data.data.list ? body.data.data.list[0].ownerInitials : '';
                   }
                 }
+
+                if (this.searchBox) {
+                  this.searchBoxFocus();
+                }
+
                 this.orderLists = body.data.data.list;
 
                 if (this.orderLists.length != 0) {
@@ -969,6 +981,7 @@
                 if (this.searchBox) {
                   this.searchBtnText = '确认查询';
                   this.searchSureLoading = false;
+                  this.searchDisabled = false;
                   this.noData = true;
                 }
             }
@@ -1790,6 +1803,7 @@
               letter-spacing: 3px;
               outline: none;
               box-shadow: none;
+              border: none;
             }
           }
         }
@@ -1807,7 +1821,7 @@
   }
 
   .noMsg {
-    padding-top: 150px;
+    margin-top: 150px;
     img {
       display: block;
       width: 180px;

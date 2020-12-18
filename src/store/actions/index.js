@@ -315,10 +315,46 @@ const actions = {
     })
   },
 
-  // 登录
+  // 验证码登录
   loginEntry (ctx,param){
     ctx.dispatch('request',{
       url: '/ecard/workWechat/channelLogin',
+      method: 'POST',
+      params: param.data,
+      onSuccess: body => {
+        param.onsuccess ? param.onsuccess(body) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 密码登录
+  loginEntryMima (ctx,param){
+    ctx.dispatch('request',{
+      url: '/ecard/workWechat/login',
+      method: 'POST',
+      params: param.data,
+      onSuccess: body => {
+        param.onsuccess ? param.onsuccess(body) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 密码修改
+  updatePassword (ctx,param){
+    ctx.dispatch('request',{
+      url: '/ecard/workWechat/updatePassword',
       method: 'POST',
       params: param.data,
       onSuccess: body => {
@@ -1248,6 +1284,25 @@ const actions = {
   getStatisticNum(ctx, param) {
     ctx.dispatch('resource_', {
       url: '/ecard/hotel/check/in/out/statistic',
+      body: param.data,
+      method: 'POST',
+      emulateJSON: false,
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(response) => {
+        param.onfail ? param.onfail(response.body, response.headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+ // 操作日志
+  getoperationLog(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/operation/log/query/by/page',
       body: param.data,
       method: 'POST',
       emulateJSON: false,

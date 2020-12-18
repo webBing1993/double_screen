@@ -29,15 +29,16 @@
           <!--<div class="tuichu" @click="quitTipShow">-->
             <!--<img src="../../assets/tuichu.png" alt="">-->
           <!--</div>-->
-          <div class="warpper_ownInfo">
+          <div class="tuichu">
             <el-dropdown trigger="click">
                 <span class="el-dropdown-link">
-                  设置
+                  更多
                 </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-s-home"  @click.native="printTipShow(2)">续住模式</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-switch-button" @click.native="quitTipShow">退出系统</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-tickets" v-if="getAllConfigList.operateLog" @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -144,6 +145,7 @@
           isQyPay: false,     // 交易管理
           isRztCheck: false, // 公安验证
           independentTrande: false, // 独立支付
+          operateLog: false,  // 操作日志
         },  // 权限
         searchVal: 0,
         windowUrl: '',
@@ -551,6 +553,8 @@
           this.unhandleList();
         }else if (item.tag == 'sp_independent_trade') {
           this.getAllConfigList.independentTrande = true;
+        }else if (item.tag == 'sp_operate_log') {
+          this.getAllConfigList.operateLog = true;
         }
       });
       setTimeout(() => {
@@ -601,7 +605,7 @@
           padding: 0 20px;
           display: flex;
           align-items: center;
-          margin-right: 60px;
+          margin-right: 25px;
           line-height: 1;
           img {
             display: inline-block;
@@ -622,7 +626,7 @@
         .tabs {
           height: 100%;
           .tab {
-            margin-right: 30px;
+            margin-right: 45px;
             height: 100%;
             position: relative;
             color: #909399;
@@ -705,17 +709,14 @@
         }
         .tuichu {
           margin-right: 20px;
-        }
-        .warpper_ownInfo {
-          margin-right: 60px;
-          span {
-            display: inline-block;
-            font-size: 24px;
-            border: 1px solid #909399;
-            border-radius: 8px;
-            padding: 10px 20px;
-            background: #fff;
+          .el-dropdown {
+            border: 1px solid #9A9A9A;
+            padding: 12px 22px;
+            font-size: 26px;
+            border-radius: 10px;
             color: #1AAD19;
+            font-weight: bold;
+            letter-spacing: 2px;
           }
         }
       }

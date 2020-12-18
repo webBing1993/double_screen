@@ -76,6 +76,11 @@ const router = new Router({
       path: '/doSth',
       name: 'doSth',
       component: resolve => require(['../components/home/doSth.vue'],resolve),
+    },
+    {
+      path: '/opertaionLog',
+      name: 'opertaionLog',
+      component: resolve => require(['../components/home/opertaionLog.vue'],resolve),
     }
   ]
 });

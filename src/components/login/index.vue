@@ -23,7 +23,7 @@
                   <input name="phone" type="tel" min="1" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
                 </div>
                 <div class="list">
-                  <input type="number" placeholder="请输入6位密码" v-model="password" @focus="onFocus_"  maxlength="6"/>
+                  <input type="number" placeholder="请输入6位密码" v-model="password" @focus="onFocus1"  maxlength="6"/>
                   <el-button :plain="true" class="btns" @click="forgotBtn">忘记密码</el-button>
                 </div>
                 <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >确认登录</el-button>
@@ -49,7 +49,7 @@
                   <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
                 </div>
                 <div class="list listLast">
-                  <input type="number" placeholder="请输入6位数字新密码" v-model="resetPassword" @focus="onFocus1"  maxlength="6"/>
+                  <input type="number" placeholder="请输入6位数字新密码" v-model="resetPassword" @focus="onFocus2"  maxlength="6"/>
                 </div>
                 <el-button type="primary" class="loginBtn" :loading="resetBtnLoading"  @click="resetBtn()" >确认修改</el-button>
               </div>
@@ -72,6 +72,7 @@
 <script>
   import {mapState,mapActions} from 'vuex';
   import ElCol from "element-ui/packages/col/src/col";
+  import crypto from '../../tool/aes'
 
   export default {
     name: 'login',
@@ -98,13 +99,20 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'getCode', 'loginEntry', 'getAllConfig'
+        'goto', 'getCode', 'loginEntry', 'getAllConfig', 'loginEntryMima', 'updatePassword'
       ]),
 
       // tab click
       tabChange(index) {
+        this.code = '';
         this.tabIndex = index;
         this.phoneCode = 0;
+        this.resetPassword = '';
+        if (index == 1) {
+          this.time = 0;
+          this.btntxt = "获取验证码";
+          this.disabled = false;
+        }
       },
 
       // 键盘清除事件
@@ -126,12 +134,16 @@
           }else {
               return;
           }
-        }else {
+        }else if (type == 1) {
           if (this.code.length < 6) {
             this.code += item;
           }else {
 
           }
+        }else if (type == 2) {
+            this.password += item;
+        }else {
+            this.resetPassword += item;
         }
       },
 
@@ -140,8 +152,12 @@
         event.preventDefault();
         if (type == 0) {
           this.phone = this.phone.substr(0, this.phone.length - 1);
-        }else {
+        }else if (type ==1) {
           this.code = this.code.substr(0, this.code.length - 1);
+        }else if (type == 2) {
+          this.password = this.password.substr(0, this.code.length - 1);
+        }else {
+          this.resetPassword = this.resetPassword.substr(0, this.code.length - 1);
         }
       },
 
@@ -175,44 +191,23 @@
         this.phoneCode = 2;
       },
 
-      onBlur () {
-        this.phoneCode = 0;
-      },
-
-      //获取键盘值
-      getInputValue(val){
-        console.log(val)
-        if(val==='del'){
-          this.phone=this.phone.toString().substr(0,this.phone.toString().length-1);
-          console.log(this.phone)
-        }else{
-          if(this.phone==null){
-            this.phone=''
-          }
-          this.phone+=val
-        }
-      },
-
-      getInputValue_(val){
-        console.log(val)
-        if(val==='del'){
-          this.code=this.code.toString().substr(0,this.code.toString().length-1);
-          console.log(this.phone)
-        }else{
-          if(this.code==null){
-            this.code=''
-          }
-          this.code+=val
-        }
+      onFocus2(){
+        this.phoneCode = 3;
       },
 
       //验证手机号码部分
       sendcode(){
         let reg = 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/;
         if(this.phone == ''){
-          this.$message('请输入手机号码');
+          this.$toast({
+            message: '请输入手机号码',
+            iconClass: 'icon ',
+          });
         }else if(!reg.test(this.phone)){
-          this.$message.error('手机格式不正确');
+          this.$toast({
+            message: '手机格式不正确',
+            iconClass: 'icon ',
+          });
         }else{
           this.time = 60;
           this.disabled = true;
@@ -267,79 +262,237 @@
       login(){
         let reg = 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/;
         if(this.phone == ''){
-          this.$message('请输入手机号码');
+          this.$toast({
+            message: '请输入手机号码',
+            iconClass: 'icon ',
+          });
+          return
         }else if(!reg.test(this.phone)){
-          this.$message.error('手机格式不正确');
-          if (this.code == '') {
-            this.$message('请输入验证码');
-          }else if (this.code.length > 6) {
-            this.$message('请输入６位数验证码');
-          }
+          this.$toast({
+            message: '手机格式不正确',
+            iconClass: 'icon ',
+          });
+          return
         }else {
-          if (this.code == '') {
-            this.$message('请输入验证码');
-          } else if (this.code.length != 6) {
-            this.$message('请输入６位数验证码');
-          } else {
-            this.loginLoading = true;
-            this.loginEntry({
-              data: {
-                phone: this.phone,
-                code: this.code
-              },
-              onsuccess: body => {
-                console.log('body:',body);
-                if (body.data.code == 0 && body.data.data) {
-                  sessionStorage.setItem('avatar',body.data.data.avatar);
-                  sessionStorage.setItem('name',body.data.data.name);
-                  sessionStorage.session_id = body.data.data.token;
-                  sessionStorage.hotel_id = body.data.data.hotelId;
-                  sessionStorage.hotel_Name = body.data.data.hotelName;
-                  let userId = body.data.data.userId;
-                  this.getAllConfig({
-                    onsuccess: body => {
-                      this.loginLoading = false;
-                      if(body.data.data != null) {
-                        sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
-                        this.goto('/home');
-                        setTimeout(() => {
-                          this.SendParameter(userId);
-                        }, 1500);
-                      }else {
-                        this.$message.error('该账号无权限');
-                      }
-                      setTimeout(() =>{
+          if (this.tabIndex == 2) {
+            if (this.code == '') {
+              this.$toast({
+                message: '请输入验证码',
+                iconClass: 'icon ',
+              });
+              return
+            } else if (this.code.length != 6) {
+              this.$toast({
+                message: '请输入６位数验证码',
+                iconClass: 'icon ',
+              });
+              return
+            } else {
+              this.loginLoading = true;
+              this.loginEntry({
+                data: {
+                  phone: this.phone,
+                  code: this.code
+                },
+                onsuccess: body => {
+                  console.log('body:',body);
+                  if (body.data.code == 0 && body.data.data) {
+                    sessionStorage.setItem('avatar',body.data.data.avatar);
+                    sessionStorage.setItem('name',body.data.data.name);
+                    sessionStorage.session_id = body.data.data.token;
+                    sessionStorage.hotel_id = body.data.data.hotelId;
+                    sessionStorage.hotel_Name = body.data.data.hotelName;
+                    let userId = body.data.data.userId;
+                    this.getAllConfig({
+                      onsuccess: body => {
                         this.loginLoading = false;
-                      },1000);
-                    },
-                    onfail: body => {
-                      this.loginLoading = false;
-                    },
-                    onerror: body => {
-                      this.loginLoading = false;
-                    }
-                  });
-                }else {
+                        if(body.data.data != null) {
+                          sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
+                          this.goto('/home');
+                          setTimeout(() => {
+                            this.SendParameter(userId);
+                          }, 1500);
+                        }else {
+                          this.$toast({
+                            message: '该账号无权限',
+                            iconClass: 'icon ',
+                          });
+                        }
+                        setTimeout(() =>{
+                          this.loginLoading = false;
+                        },1000);
+                      },
+                      onfail: body => {
+                        this.loginLoading = false;
+                      },
+                      onerror: body => {
+                        this.loginLoading = false;
+                      }
+                    });
+                  }else {
+                    this.loginLoading = false;
+                    this.$toast({
+                      message: body.data.msg,
+                      iconClass: 'icon ',
+                    });
+                  }
+                },
+                onfail: body => {
                   this.loginLoading = false;
-                  this.$message.error(body.data.msg);
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
+                  });
+                },
+                onerror: body => {
+                  this.loginLoading = false;
                 }
-              },
-              onfail: body => {
-                this.loginLoading = false;
-                this.$message.error(body.data.msg);
-              },
-              onerror: body => {
-                this.loginLoading = false;
-              }
-            })
+              })
+            }
+          }else {
+            if (this.password == '') {
+              this.$toast({
+                message: '请输入密码',
+                iconClass: 'icon ',
+              });
+              return
+            } else if (this.password.length != 6) {
+              this.$toast({
+                message: '请输入６位数密码',
+                iconClass: 'icon ',
+              });
+              return
+            } else {
+              this.loginLoading = true;
+              this.loginEntryMima({
+                data: {
+                  phone: this.phone,
+                  password: crypto.jiami(this.password)
+                },
+                onsuccess: body => {
+                  console.log('body:',body);
+                  if (body.data.code == 0 && body.data.data) {
+                    sessionStorage.setItem('avatar',body.data.data.avatar);
+                    sessionStorage.setItem('name',body.data.data.name);
+                    sessionStorage.session_id = body.data.data.token;
+                    sessionStorage.hotel_id = body.data.data.hotelId;
+                    sessionStorage.hotel_Name = body.data.data.hotelName;
+                    let userId = body.data.data.userId;
+                    this.getAllConfig({
+                      onsuccess: body => {
+                        this.loginLoading = false;
+                        if(body.data.data != null) {
+                          sessionStorage.setItem('subPermissions', JSON.stringify(body.data.data[0].subPermissions));
+                          this.goto('/home');
+                          setTimeout(() => {
+                            this.SendParameter(userId);
+                          }, 1500);
+                        }else {
+                          this.$toast({
+                            message: '该账号无权限',
+                            iconClass: 'icon ',
+                          });
+                        }
+                        setTimeout(() =>{
+                          this.loginLoading = false;
+                        },1000);
+                      },
+                      onfail: body => {
+                        this.loginLoading = false;
+                      },
+                      onerror: body => {
+                        this.loginLoading = false;
+                      }
+                    });
+                  }else {
+                    this.loginLoading = false;
+                    this.$toast({
+                      message: body.data.msg,
+                      iconClass: 'icon ',
+                    });
+                  }
+                },
+                onfail: body => {
+                  this.loginLoading = false;
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
+                  });
+                },
+                onerror: body => {
+                  this.loginLoading = false;
+                }
+              })
+            }
           }
         }
       },
 
       // 确认修改
       resetBtn() {
-//          this.resetBtnLoading = true;
-        this.resetUser = false;
+        if (this.code == '') {
+          this.$toast({
+            message: '请输入验证码',
+            iconClass: 'icon ',
+          });
+          return
+        } else if (this.code.length != 6) {
+          this.$toast({
+            message: '请输入６位数验证码',
+            iconClass: 'icon ',
+          });
+          return
+        }else if (this.resetPassword == '') {
+          this.$toast({
+            message: '请输入新密码',
+            iconClass: 'icon ',
+          });
+          return
+        } else if (this.resetPassword.length != 6) {
+          this.$toast({
+            message: '请输入６位数新密码',
+            iconClass: 'icon ',
+          });
+          return
+        }else {
+          this.resetBtnLoading = true;
+          this.updatePassword({
+            data: {
+              phone: this.phone,
+              code: this.code,
+              password: crypto.jiami(this.resetPassword),
+            },
+            onsuccess: body => {
+                if (body.data.code == 0) {
+                  this.$toast({
+                    message: '密码设置成功，请重新登录',
+                    iconClass: 'icon ',
+                  });
+                  this.resetUser = false;
+                }else {
+                  this.$toast({
+                    message: body.data.msg,
+                    iconClass: 'icon ',
+                  });
+                }
+              this.resetBtnLoading = false;
+            },
+            onfail: body => {
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+              this.resetBtnLoading = false;
+            },
+            onerror: body => {
+              this.$toast({
+                message: body.data.msg,
+                iconClass: 'icon ',
+              });
+              this.resetBtnLoading = false;
+            }
+          })
+        }
       },
 
       // 忘记密码
