@@ -45,7 +45,12 @@
                     <div class="item_tab" @click="changePayStatus(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="payStatus == 1">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span :class="payStatus == 1 ? 'active' : ''">分房支付</span>
+                      <span :class="payStatus == 1 ? 'active' : ''">统一支付</span>
+                    </div>
+                    <div class="item_tab" @click="changePayStatus(2)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="payStatus == 2">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span :class="payStatus == 2 ? 'active' : ''">分房支付</span>
                     </div>
                     <div class="item_tab"></div>
                   </div>
@@ -294,7 +299,7 @@
     },
     methods: {
       ...mapActions([
-         'getcodeList', 'checkInGetOptions', 'checkInPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule', 'getRooms'
+         'getcodeList', 'checkInTeamGetOptions', 'checkInTeamPostOptions', 'getOrderFree', 'updatePaidMode', 'cardRule', 'getRooms'
       ]),
 
       // 查看备注
@@ -405,13 +410,15 @@
       checkIn() {
         this.loadingSure = true;
         if (this.changeItem.type == 0) {
-          this.checkInPostOptions({
-            orderId: this.$route.params.id,
+          this.checkInTeamPostOptions({
             data: {
+              orderId: this.$route.params.id,
               sendCard: this.isfaka,
               printRc: this.isrcpdf,
               needPhoneNum: this.isphone,
-              hotelId: sessionStorage.hotel_id
+              hotelId: sessionStorage.hotel_id,
+              payAll: this.payStatus == 1 ? true : false,
+              needPay: this.payStatus != 0 ? true : false,
             },
             onsuccess: body => {
               if (body.data.code == 0) {
@@ -461,7 +468,7 @@
 
       // 初始化获取设置列表
       getCheckList() {
-          this.checkInGetOptions({
+          this.checkInTeamGetOptions({
             orderId: this.$route.params.id,
             onsuccess: body => {
               this.$emit('checkOutLoading', 1);
@@ -470,6 +477,7 @@
                     this.isfaka = body.data.data.sendCard ? body.data.data.sendCard : false;
                     this.isrcpdf = body.data.data.printRc ? body.data.data.printRc : false;
                     this.isphone = body.data.data.needPhoneNum ? body.data.data.needPhoneNum : false;
+                    this.payStatus = body.data.data.needPay ? body.data.data.payAll ? 1 : 2 : 0;
                  }
               }
               this.checkInShow = true;
@@ -620,7 +628,7 @@
       this.getRoomsList();
       if (this.changeItem.type == 0) {
         this.getCheckList();
-        this.getCode();
+//        this.getCode();
       }else {
         this.getOrderFreeList();
       }

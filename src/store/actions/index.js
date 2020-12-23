@@ -386,6 +386,40 @@ const actions = {
     })
   },
 
+  // 获取酒店续住配置
+  extendInfo(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/config/extend/info',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 修改酒店续住配置
+  extendUpdate(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/config/extend/update',
+      method: 'PUT',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //查看是否对接PMS
   getPmsFlag(ctx, param) {
     ctx.dispatch('resource', {
@@ -1139,7 +1173,7 @@ const actions = {
     })
   },
 
-  // 团队订单获取投屏选项
+  // 团队订单获取投屏选项 废弃
   checkInGetOptions(ctx, param){
     ctx.dispatch('resource', {
       url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
@@ -1156,10 +1190,45 @@ const actions = {
     })
   },
 
-  // 团队订单办理入住
+  // 团队订单获取投屏选项
+  checkInTeamGetOptions(ctx, param){
+    ctx.dispatch('resource', {
+      url: "/ecard/orders/config/"+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 团队订单办理入住 废弃
   checkInPostOptions(ctx, param){
     ctx.dispatch('resource_', {
       url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 团队订单办理入住
+  checkInTeamPostOptions(ctx, param){
+    ctx.dispatch('resource_', {
+      url: "/ecard/orders/config/update",
       method: 'POST',
       body: param.data,
       onSuccess: (body, headers,code) => {

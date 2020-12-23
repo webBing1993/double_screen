@@ -580,6 +580,7 @@
         secoundTip: false,     // 完成预授权二次tip
         secoundTip1: false,     // 完成二次tip
         accountItem: {},
+        spTradeBills: false,    // 报表权限
       }
     },
     filters: {
@@ -1525,6 +1526,8 @@
       list.forEach(item => {
         if (item.tag == 'sp_trade_manager') {
           this.tradeManager = true;
+        }else if (item.tag == 'sp_trade_bills') {
+          this.spTradeBills = true;
         }
       });
       this.paymentList(1);

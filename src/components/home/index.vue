@@ -35,8 +35,8 @@
                   更多
                 </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-s-home"  @click.native="printTipShow(2)">续住模式</el-dropdown-item>
+                <!--<el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>-->
+                <el-dropdown-item icon="el-icon-s-home" v-if="extendConfig"  @click.native="printTipShow(2)">续住模式</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-tickets" v-if="getAllConfigList.operateLog" @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -65,12 +65,9 @@
         <div class="content" v-if="item.doType == 1">
           【{{ item.roomNo }}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
         </div>
-        <!--<div class="content" v-if="wuka">-->
-          <!--发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看-->
-        <!--</div>-->
-        <!--<div class="content" v-if="manka">-->
-          <!--回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看-->
-        <!--</div>-->
+        <div class="content" v-else-if="item.doType == 2">
+          房号【{{item.roomNo}}】客人旅业退房失败
+        </div>
         <div class="content" v-else-if="item.doType == 4">
           收款成功！收款金额{{ item.totalFeeStr }}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
         </div>
@@ -83,11 +80,14 @@
         <div class="content" v-else-if="item.doType == 7">
           房号【{{item.roomNo}}】客人插卡退房成功，房态已改为脏房请及时打扫
         </div>
+        <div class="content" v-else-if="item.doType == 8">
+          房号【{{item.roomNo}}】挂帐失败
+        </div>
         <div class="btns" v-if="item.doType != 5 && item.doType != 7">
           <span class="knowBtn" @click="checkOut(item.id, index, 1)">我知道了</span>
           <span class="lookDetail" @click="lookDetail(item, index)">查看详情</span>
         </div>
-        <div class="btns" v-if="item.doType == 5 || item.doType == 7">
+        <div class="btns" v-if="item.doType == 5 || item.doType == 7 || item.doType == 8 || item.doType == 2">
           <span class="lookDetail" @click="checkOut(item.id, index, 2)">我知道了</span>
         </div>
       </div>
@@ -161,14 +161,14 @@
         onlyItem: {},    // 临时退房数据
         tipArr: [],
         printTip: false,     // 续住选择tip
-        tipStatus: 1,        // 续住选择
+        tipStatus: 'EX_PRICE',        // 续住选择
         tipLists: [
           {
-            id: 1,
+            id: 'EX_PRICE',
             label: '按前一天价格续住'
           },
           {
-            id: 2,
+            id: 'RATE_CODE',
             label: '按订单房价码续住'
           }
         ],       // 续住tip
@@ -199,11 +199,12 @@
           },
         ],        // 上门散客房价
         tipStatusType: 1,     // 区分是续住模式2还是散客房价码模式1
+        extendConfig: false,    // 续住权限
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'creditDoSth'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'creditDoSth', 'extendInfo', 'extendUpdate'
       ]),
 
       // tab切换
@@ -255,7 +256,30 @@
 
       // tip sure
       tipSure() {
+        if (this.tipStatusType == 1) {
 
+        }else {
+            this.extendUpdate({
+              data: {
+                  mode: this.tipStatus
+              },
+              onsuccess: body => {
+                  if (body.data.errcode == 0) {
+                    this.$toast({
+                      message: "续住模式修改成功",
+                      iconClass: 'icon ',
+                    });
+                    this.tipCancel();
+                  }
+              },
+              onfail: body => {
+
+              },
+              onerror: body => {
+
+              }
+            })
+        }
       },
 
       // 语音播报
@@ -303,7 +327,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.creditcheckout.length == 0 && body.data.data.checkoutsuccess.length == 0) {
+              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.creditcheckout.length == 0 && body.data.data.checkoutsuccess.length == 0 && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0 && ((body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0) || !body.data.data.AUTO_SETTLE_PAY)) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
@@ -315,6 +339,12 @@
                         item.doType = 1;
                     });
                     arr = [...body.data.data.checkoutapply, ...arr];
+                  }
+                  if (body.data.data.lvyeCheckout.length != 0) {
+                    body.data.data.lvyeCheckout.forEach(item => {
+                      item.doType = 2;
+                    });
+                    arr = [...body.data.data.lvyeCheckout, ...arr];
                   }
                   if (body.data.data.pmspay.length != 0) {
 //                    this.findItem(body.data.data, 4);
@@ -343,6 +373,12 @@
                       item.doType = 7;
                     });
                     arr = [...body.data.data.checkoutsuccess, ...arr];
+                  }
+                  if (body.data.data.AUTO_CREDIT_ACCOUNT.length != 0) {
+                    body.data.data.AUTO_CREDIT_ACCOUNT.forEach(item => {
+                      item.doType = 8;
+                    });
+                    arr = [...body.data.data.AUTO_CREDIT_ACCOUNT, ...arr];
                   }
                   console.log('arr', arr);
                   if (doSthList.length != 0) {
@@ -396,6 +432,8 @@
             this.quithouse = true;
             if (this.onlyItem.doType == 1) {
               this.speckText(checkOutList[0].roomNo+'房间客人申请退房，房卡已回收，请及时处理');
+            }else if (this.onlyItem.doType == 2) {
+              this.speckText('房号'+checkOutList[0].roomNo+'客人旅业退房失败');
             }else if (this.onlyItem.doType == 4) {
               this.speckText('收款成功！收款金额'+checkOutList[0].totalFeeStr+'元，自动入账失败，请手工至PMS系统处理入账');
             }else if (this.onlyItem.doType == 5) {
@@ -404,6 +442,8 @@
               this.speckText('房号'+checkOutList[0].roomNo+'退款计划失败，'+checkOutList[0].remark);
             }else if (this.onlyItem.doType == 7) {
               this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房态已改为脏房请及时打扫');
+            }else if (this.onlyItem.doType == 8) {
+              this.speckText('房号'+checkOutList[0].roomNo+'挂帐失败');
             }
           }, 500)
         })
@@ -536,6 +576,24 @@
         this.initWebSocket();
       },
 
+
+      // 是否支持续住
+      isConfigExtend() {
+        this.extendInfo({
+          onsuccess: body => {
+            if (body.data.errcode == 0) {
+              this.extendConfig = true;
+            }
+          },
+          onfail: body => {
+
+          },
+          onerror: body => {
+
+          }
+        })
+      },
+
     },
 
     mounted () {
@@ -566,6 +624,7 @@
         }
       },500);
       this.homeIndexShow = true;
+//      this.isConfigExtend();
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
