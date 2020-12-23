@@ -620,33 +620,42 @@
               }else {
                 this.isFreeDeposit = 2;
               }
-              if (body.data.data.cashFeeShow == '免押') {
-                this.cashFee = 0;
-                this.cashFeeTrue = true;
+              if (body.data.data == null || !body.data.data) {
+                this.$toast({
+                  message: "订单已取消",
+                  iconClass: 'icon ',
+                });
+                this.page = 1;
+                this.getPreOrder(1);
               }else {
-                this.cashFeeTrue = false;
-                this.cashFee = body.data.data.cashFeeShow;
-              }
-              if (body.data.data.roomFeeShow == '预付房费') {
                 if (body.data.data.cashFeeShow == '免押') {
-                  this.roomFeeShow = body.data.data.totalFeeShow;
-                }else {
-                  this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                  this.cashFee = 0;
+                  this.cashFeeTrue = true;
+                } else {
+                  this.cashFeeTrue = false;
+                  this.cashFee = body.data.data.cashFeeShow;
                 }
-              }else {
-                this.roomFeeShow = body.data.data.roomFeeShow;
+                if (body.data.data.roomFeeShow == '预付房费') {
+                  if (body.data.data.cashFeeShow == '免押') {
+                    this.roomFeeShow = body.data.data.totalFeeShow;
+                  } else {
+                    this.roomFeeShow = parseFloat(body.data.data.totalFeeShow) - parseFloat(body.data.data.cashFeeShow);
+                  }
+                } else {
+                  this.roomFeeShow = body.data.data.roomFeeShow;
+                }
+                this.paidFeeShow = body.data.data.paidFeeShow;
+                this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
+                if (this.needPayRoomFeeShow < 0) {
+                  this.needPayRoomFeeShow = 0;
+                }
+                this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
+                item.loadingdaiSure = false;
+                this.checkInTip = true;
+                document.body.addEventListener('touchmove', this.bodyScroll, false);
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
               }
-              this.paidFeeShow = body.data.data.paidFeeShow;
-              this.needPayRoomFeeShow = parseFloat(this.roomFeeShow) - parseFloat(this.paidFeeShow);
-              if (this.needPayRoomFeeShow < 0) {
-                this.needPayRoomFeeShow = 0;
-              }
-              this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
-              item.loadingdaiSure = false;
-              this.checkInTip = true;
-              document.body.addEventListener('touchmove',this.bodyScroll,false);
-              document.body.style.position = 'fixed';
-              document.body.style.width = '100%';
             }else {
               item.loadingdaiSure = false;
             }
