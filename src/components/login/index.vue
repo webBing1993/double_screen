@@ -23,7 +23,7 @@
                   <input name="phone" type="tel" min="1" placeholder="请输入11位手机号" v-model="phone" @focus="onFocus" maxlength="11"/>
                 </div>
                 <div class="list">
-                  <input type="number" placeholder="请输入6位密码" v-model="password" @focus="onFocus1"  maxlength="6"/>
+                  <input type="password" placeholder="请输入6位密码" v-model="password" @focus="onFocus1"  maxlength="6"/>
                   <el-button :plain="true" class="btns" @click="forgotBtn">忘记密码</el-button>
                 </div>
                 <el-button type="primary" class="loginBtn" :loading="loginLoading"  @click="login()" >确认登录</el-button>
@@ -49,7 +49,7 @@
                   <input type="number" placeholder="请输入6位验证码" v-model="code" @focus="onFocus_"  maxlength="6"/>
                 </div>
                 <div class="list listLast">
-                  <input type="number" placeholder="请输入6位数字新密码" v-model="resetPassword" @focus="onFocus2"  maxlength="6"/>
+                  <input type="password" placeholder="请输入6位数字新密码" v-model="resetPassword" @focus="onFocus2"  maxlength="6"/>
                 </div>
                 <el-button type="primary" class="loginBtn" :loading="resetBtnLoading"  @click="resetBtn()" >确认修改</el-button>
               </div>
@@ -141,9 +141,17 @@
 
           }
         }else if (type == 2) {
+          if (this.password.length < 6) {
             this.password += item;
+          }else {
+
+          }
         }else {
+          if (this.resetPassword.length < 6) {
             this.resetPassword += item;
+          }else {
+
+          }
         }
       },
 
@@ -155,9 +163,9 @@
         }else if (type ==1) {
           this.code = this.code.substr(0, this.code.length - 1);
         }else if (type == 2) {
-          this.password = this.password.substr(0, this.code.length - 1);
+          this.password = this.password.substr(0, this.password.length - 1);
         }else {
-          this.resetPassword = this.resetPassword.substr(0, this.code.length - 1);
+          this.resetPassword = this.resetPassword.substr(0, this.resetPassword.length - 1);
         }
       },
 
@@ -339,10 +347,10 @@
                 },
                 onfail: body => {
                   this.loginLoading = false;
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
+//                  this.$toast({
+//                    message: body.data.msg,
+//                    iconClass: 'icon ',
+//                  });
                 },
                 onerror: body => {
                   this.loginLoading = false;
@@ -414,10 +422,10 @@
                 },
                 onfail: body => {
                   this.loginLoading = false;
-                  this.$toast({
-                    message: body.data.msg,
-                    iconClass: 'icon ',
-                  });
+//                  this.$toast({
+//                    message: body.data.msg,
+//                    iconClass: 'icon ',
+//                  });
                 },
                 onerror: body => {
                   this.loginLoading = false;

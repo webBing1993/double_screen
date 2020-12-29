@@ -36,7 +36,7 @@
                 </span>
               <el-dropdown-menu slot="dropdown">
                 <!--<el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>-->
-                <el-dropdown-item icon="el-icon-s-home" v-if="extendConfig"  @click.native="printTipShow(2)">续住模式</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-s-home" v-if="!extendConfig" @click.native="printTipShow(2)">续住模式</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-tickets" v-if="getAllConfigList.operateLog" @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -83,11 +83,17 @@
         <div class="content" v-else-if="item.doType == 8">
           房号【{{item.roomNo}}】挂帐失败
         </div>
+        <div class="content" v-else-if="item.doType == 9">
+          【{{item.roomNo}}】房间脏房入住，请及时打扫
+        </div>
+        <div class="content" v-else-if="item.doType == 10">
+          房号【{{item.roomNo}}】续住失败，房费已支付，请及时处理
+        </div>
         <div class="btns" v-if="item.doType != 5 && item.doType != 7">
           <span class="knowBtn" @click="checkOut(item.id, index, 1)">我知道了</span>
           <span class="lookDetail" @click="lookDetail(item, index)">查看详情</span>
         </div>
-        <div class="btns" v-if="item.doType == 5 || item.doType == 7 || item.doType == 8 || item.doType == 2">
+        <div class="btns" v-if="item.doType == 5 || item.doType == 7 || item.doType == 8 || item.doType == 2 || item.doType == 9 || item.doType == 10">
           <span class="lookDetail" @click="checkOut(item.id, index, 2)">我知道了</span>
         </div>
       </div>
@@ -251,7 +257,7 @@
       // tip cancel
       tipCancel() {
         this.printTip = false;
-        this.tipStatus = 1;
+//        this.tipStatus = 1;
       },
 
       // tip sure
@@ -264,12 +270,19 @@
                   mode: this.tipStatus
               },
               onsuccess: body => {
-                  if (body.data.errcode == 0) {
-                    this.$toast({
-                      message: "续住模式修改成功",
-                      iconClass: 'icon ',
-                    });
-                    this.tipCancel();
+                  if (body.data.code == 0) {
+                      if (body.data.data) {
+                        this.$toast({
+                          message: "续住模式修改成功",
+                          iconClass: 'icon ',
+                        });
+                        this.tipCancel();
+                      }else {
+                        this.$toast({
+                          message: "续住模式修改失败",
+                          iconClass: 'icon ',
+                        });
+                      }
                   }
               },
               onfail: body => {
@@ -327,7 +340,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.creditcheckout.length == 0 && body.data.data.checkoutsuccess.length == 0 && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0 && ((body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0) || !body.data.data.AUTO_SETTLE_PAY)) {
+              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && (!body.data.data.lvyeCheckout || (body.data.data.lvyeCheckout && body.data.data.lvyeCheckout.length == 0)) && body.data.data.creditcheckout.length == 0 && (!body.data.data.checkoutsuccess || (body.data.data.checkoutsuccess && body.data.data.checkoutsuccess.length == 0)) && (!body.data.data.AUTO_CREDIT_ACCOUNT || (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0)) && (!body.data.data.AUTO_SETTLE_PAY || (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0)) && body.data.data.pmscheckin.length == 0 && (!body.data.data.CONTINUE_LIVE || (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length == 0)) && (!body.data.data.DIRTY_ROOM || (body.data.data.DIRTY_ROOM && body.data.data.DIRTY_ROOM.length == 0)) && (!body.data.data.RULVYE || (body.data.data.RULVYE && body.data.data.RULVYE.length == 0))) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
@@ -340,7 +353,7 @@
                     });
                     arr = [...body.data.data.checkoutapply, ...arr];
                   }
-                  if (body.data.data.lvyeCheckout.length != 0) {
+                  if (body.data.data.lvyeCheckout && body.data.data.lvyeCheckout.length != 0) {
                     body.data.data.lvyeCheckout.forEach(item => {
                       item.doType = 2;
                     });
@@ -374,13 +387,25 @@
                     });
                     arr = [...body.data.data.checkoutsuccess, ...arr];
                   }
-                  if (body.data.data.AUTO_CREDIT_ACCOUNT.length != 0) {
+                  if (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length != 0) {
                     body.data.data.AUTO_CREDIT_ACCOUNT.forEach(item => {
                       item.doType = 8;
                     });
                     arr = [...body.data.data.AUTO_CREDIT_ACCOUNT, ...arr];
                   }
-                  console.log('arr', arr);
+                  if (body.data.data.DIRTY_ROOM && body.data.data.DIRTY_ROOM.length != 0) {
+                    body.data.data.DIRTY_ROOM.forEach(item => {
+                      item.doType = 9;
+                    });
+                    arr = [...body.data.data.DIRTY_ROOM, ...arr];
+                  }
+                  if (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length != 0) {
+                    body.data.data.CONTINUE_LIVE.forEach(item => {
+                      item.doType = 10;
+                    });
+                    arr = [...body.data.data.CONTINUE_LIVE, ...arr];
+                  }
+                  console.log('arr', arr, doSthList);
                   if (doSthList.length != 0) {
                     let result = [];
                     for(var i = 0; i < arr.length; i++){
@@ -444,6 +469,10 @@
               this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房态已改为脏房请及时打扫');
             }else if (this.onlyItem.doType == 8) {
               this.speckText('房号'+checkOutList[0].roomNo+'挂帐失败');
+            }else if (this.onlyItem.doType == 9) {
+              this.speckText(checkOutList[0].roomNo+'房间脏房入住，请及时打扫');
+            }else if (this.onlyItem.doType == 10) {
+              this.speckText('房号'+checkOutList[0].roomNo+'续住失败，房费已支付，请及时处理');
             }
           }, 500)
         })
@@ -582,7 +611,8 @@
         this.extendInfo({
           onsuccess: body => {
             if (body.data.errcode == 0) {
-              this.extendConfig = true;
+              this.extendConfig = body.data.data ? body.data.data.extend == 'true' ? true: false : false;
+              this.tipStatus = body.data.data ? body.data.data.mode : 'EX_PRICE';
             }
           },
           onfail: body => {
@@ -624,7 +654,7 @@
         }
       },500);
       this.homeIndexShow = true;
-//      this.isConfigExtend();
+      this.isConfigExtend();
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {

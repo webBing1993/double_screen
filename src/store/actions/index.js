@@ -37,11 +37,12 @@ const actions = {
       if (response.data.code == 0) {
         param.onSuccess && param.onSuccess(response)
       }
-      else if (response.data.errcode !== 0) {
+      else if (response.data.code == 10004) {
         Vue.prototype.$toast({
           message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
+        jsObj.LogOut();
         param.onFail && param.onFail(response)
       }
       else {
@@ -98,7 +99,7 @@ const actions = {
           message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
-        router.replace('/');
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
@@ -154,7 +155,11 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
-        router.replace('/');
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
@@ -210,7 +215,11 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
-        router.replace('/');
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
@@ -265,7 +274,11 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
-        router.replace('/');
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         Vue.prototype.$toast({
@@ -405,9 +418,10 @@ const actions = {
 
   // 修改酒店续住配置
   extendUpdate(ctx, param) {
-    ctx.dispatch('resource', {
+    ctx.dispatch('resource_', {
       url: '/ecard/hotel/config/extend/update',
       method: 'PUT',
+      body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },

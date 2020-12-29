@@ -128,6 +128,39 @@
                 </el-button>
               </div>
             </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='脏房入住'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn">请及时打扫</div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='PMS续住失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn">续住失败，房费已支付，请及时处理</div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='旅业登记失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>住客信息：</span><span v-if="item.guestList" v-for="i in item.guestList">【{{i.name}}/{{i.idcard}}/{{i.address}} 】</span></div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
           </div>
           <div class="noMsg" v-if="doSthLists.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
@@ -155,7 +188,7 @@
         doSthLists: [],  // 代办未处理列表
         doSthLists_: [],  // 代办未处理列表
         tabNums: {
-          checkInNum: 0,    // 入住待办数量(PMS入住失败、脏房入住)
+          checkInNum: 0,    // 入住待办数量(PMS入住失败、脏房入住、PMS续住失败)
           quitNum: 0,       // 退房待办数量(退房申请)
           payNum: 0,        // 账务待办数量(入账失败、挂账失败、结算失败退款计划失败)
           lvyeNum: 0,       // 旅业待办数量(旅业登记入住失败、退房失败)
@@ -177,13 +210,13 @@
           let arr = [];
           if (this.doSthLists_.length != 0) {
             this.doSthLists_.forEach(item => {
-                if (index == 1 && item.doSthTitle == 'PMS入住失败') {
+                if ((index == 1 && item.doSthTitle == 'PMS入住失败') || (index == 1 && item.doSthTitle == '脏房入住') || (index == 1 && item.doSthTitle == 'PMS续住失败')) {
                     arr.push(item)
                 }else if (index == 2 && item.doSthTitle == '退房申请') {
                     arr.push(item)
                 }else if ((index == 3 && item.doSthTitle == '自动挂账失败') || (index == 3 && item.doSthTitle == 'PMS入账失败') || (index == 3 && item.doSthTitle == '退款计划失败')) {
                     arr.push(item);
-                }else if (index == 4 && item.doSthTitle == '旅业退房失败') {
+                }else if ((index == 4 && item.doSthTitle == '旅业退房失败') || (index == 4 && item.doSthTitle == '旅业登记失败')) {
                     arr.push(item);
                 }
             })
@@ -223,15 +256,21 @@
               let lvyeChangeRoom = [];  // 旅业换房
               let autoSettleAccount = [];   // 自动挂账失败
               let autoSettlePay = [];   // 退款计划失败
+              let continueLive = [];    // PMS续住失败
+              let dirtyRoom = [];       // 脏房入住
+              let rulvye = [];          // 旅业登记
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
               checkoutapply = body.data.data.checkoutapply != null ? body.data.data.checkoutapply : [];
-              lvyeCheckout = body.data.data.lvyeCheckout;
+              lvyeCheckout = body.data.data.LVYECHECKOUT ? body.data.data.LVYECHECKOUT : [];
               lvyeChangeRoom = body.data.data.LVYECHANGEROOM ? body.data.data.LVYECHANGEROOM : [];
               autoSettleAccount = body.data.data.AUTO_CREDIT_ACCOUNT ? body.data.data.AUTO_CREDIT_ACCOUNT : [];
               autoSettlePay = body.data.data.AUTO_SETTLE_PAY ? body.data.data.AUTO_SETTLE_PAY : [];
+              continueLive = body.data.data.CONTINUE_LIVE ? body.data.data.CONTINUE_LIVE : [];
+              dirtyRoom = body.data.data.DIRTY_ROOM ? body.data.data.DIRTY_ROOM : [];
+              rulvye = body.data.data.RULVYE ? body.data.data.RULVYE : [];
               checkoutapply.forEach(item => {
                 item.doSthTitle = '退房申请';
                 item.createTime = item.applyTime;
@@ -260,13 +299,21 @@
               autoSettlePay.forEach(item => {
                 item.doSthTitle = '退款计划失败';
               });
-              this.doSthLists_ = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay);
+              dirtyRoom.forEach(item => {
+                item.doSthTitle = '脏房入住';
+              });
+              continueLive.forEach(item => {
+                item.doSthTitle = 'PMS续住失败';
+              });
+              rulvye.forEach(item => {
+                item.doSthTitle = '旅业登记失败';
+              });
+              this.doSthLists_ = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay, dirtyRoom, continueLive, rulvye);
               this.tabChange(this.tabIndex);
-              this.tabNums.checkInNum = pmscheckin.length;
+              this.tabNums.checkInNum = pmscheckin.length + dirtyRoom.length + continueLive.length;
               this.tabNums.quitNum = checkoutapply.length;
               this.tabNums.payNum = pmspay.length + autoSettleAccount.length + autoSettlePay.length;
-              this.tabNums.lvyeNum = lvyeCheckout.length;
-              console.log('this.doSthLists',this.doSthLists);
+              this.tabNums.lvyeNum = lvyeCheckout.length + rulvye.length;
             }
             this.showList = true;
           },
@@ -370,7 +417,7 @@
         })
       },
 
-      // 旅业退房、换房失败
+      // 旅业退房、换房失败、脏房入住、PMS续住失败、旅业登记失败
       lvyeCheckout(id, subOrderId) {
         this.loadingShow = true;
         this.updateCheckpmslvStatus({

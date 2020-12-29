@@ -52,7 +52,6 @@
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span :class="payStatus == 2 ? 'active' : ''">分房支付</span>
                     </div>
-                    <div class="item_tab"></div>
                   </div>
                 </div>
                 <div class="h6"></div>
@@ -249,9 +248,13 @@
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
         payStatus: -1,    // 支付方式
+        payStatus_: -1,   // 临时
         isfaka: false,   // 是否发卡
+        isfaka_: false,   // 临时
         isrcpdf: false,  // 是否需要RC单
+        isrcpdf_: false,  // 临时
         isphone: false,  // 是否需要手机号
+        isphone_: false,  // 临时
         loadingCancel: false, // 取消办理按钮加载状态
         loadingSure: false,  // 办理入住按钮加载状态
         changeItem: '',   // 临时数据
@@ -263,6 +266,7 @@
         cashFeeTrue: false,  // 判断是否有无押金配置
         isFreeDeposit: 1,
         payMode: 0,  // 判断房费支付状态
+        payMode_: 0, // 临时的
         cardShow: false,  // 发卡dab权限
         rcShow: false,    // rc单dab权限
         tabIndex_: -1,    // 房型选择
@@ -326,7 +330,8 @@
 
       // 选择支付方式
       changePayStatus(index) {
-          this.payStatus = index;
+          this.payStatus_ = index;
+          this.checkCommon();
       },
 
       // 房型选择
@@ -378,17 +383,19 @@
       // 办理选择
       changeStatus(type) {
         if (type == 1) {
-          this.isfaka = !this.isfaka;
+          this.isfaka_ = !this.isfaka;
         }else if (type == 2) {
-          this.isrcpdf = !this.isrcpdf;
+          this.isrcpdf_ = !this.isrcpdf;
         }else {
-          this.isphone = !this.isphone;
+          this.isphone_ = !this.isphone;
         }
+        this.checkCommon();
       },
 
       // 房费更改
       payModeChange(index) {
-        this.payMode = index;
+        this.payMode_ = index;
+        this.checkCommon();
       },
 
       // 选择是否免押金
@@ -408,49 +415,66 @@
 
       // 开始办理
       checkIn() {
-        this.loadingSure = true;
+        if (this.changeItem.type == 0) {
+          this.SendTeamOrderMsg(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false);
+        }else {
+          this.SendParameter('SendMessage@' + this.changeItem.id + '');
+        }
+        this.gobanck();
+      },
+
+      // 状态修改common
+      checkCommon() {
         if (this.changeItem.type == 0) {
           this.checkInTeamPostOptions({
             data: {
               orderId: this.$route.params.id,
-              sendCard: this.isfaka,
-              printRc: this.isrcpdf,
-              needPhoneNum: this.isphone,
+              sendCard: this.isfaka_,
+              printRc: this.isrcpdf_,
+              needMobile: this.isphone_,
               hotelId: sessionStorage.hotel_id,
-              payAll: this.payStatus == 1 ? true : false,
-              needPay: this.payStatus != 0 ? true : false,
+              payAll: this.payStatus_ == 1 ? true : false,
+              needPay: this.payStatus_ != 0 ? true : false,
             },
             onsuccess: body => {
               if (body.data.code == 0) {
-                this.SendTeamOrderMsg(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false)
+                if (body.data.data) {
+                  this.payStatus = this.payStatus_;
+                  this.isphone = this.isphone_;
+                  this.isrcpdf = this.isrcpdf_;
+                  this.isfaka = this.isfaka_;
+                }else {
+                  this.$toast({
+                    message: '修改失败',
+                    iconClass: 'icon ',
+                  });
+                }
               }
-              this.loadingSure = false;
-              this.gobanck();
             },onfail: body => {
-              this.loadingSure = false;
             },
             onerror: body => {
-              this.loadingSure = false;
             }
           });
         }else {
           this.updatePaidMode({
             orderId: this.changeItem.id,
             isFreeDeposit: this.isFreeDeposit == 1 ? true : false,
-            modeId: this.payMode,
+            modeId: this.payMode_,
             onsuccess: body => {
-//              this.loadingShow = false;
               if (body.data.code == 0) {
-                this.loadingSure = false;
-                this.SendParameter('SendMessage@'+this.changeItem.id+'');
-                this.gobanck();
+                  if (body.data.data) {
+                    this.payMode = this.payMode_;
+                  }else {
+                    this.$toast({
+                      message: '修改失败',
+                      iconClass: 'icon ',
+                    });
+                  }
               }
             },
             onfail: (body, headers) => {
-              this.loadingSure = false;
             },
             onerror: body => {
-              this.loadingSure = false;
             }
           });
         }
@@ -476,8 +500,12 @@
                  if (body.data.data != null) {
                     this.isfaka = body.data.data.sendCard ? body.data.data.sendCard : false;
                     this.isrcpdf = body.data.data.printRc ? body.data.data.printRc : false;
-                    this.isphone = body.data.data.needPhoneNum ? body.data.data.needPhoneNum : false;
+                    this.isphone = body.data.data.needMobile ? body.data.data.needMobile : false;
                     this.payStatus = body.data.data.needPay ? body.data.data.payAll ? 1 : 2 : 0;
+                    this.isfaka_ = this.isfaka;
+                    this.isrcpdf_ = this.isrcpdf;
+                    this.isphone_ = this.isphone;
+                    this.payStatus_ = this.payStatus;
                  }
               }
               this.checkInShow = true;
@@ -528,6 +556,7 @@
                 this.needPayRoomFeeShow = 0;
               }
               this.payMode = body.data.data.payMode != null ? body.data.data.payMode : 0;
+              this.payMode_ = this.payMode;
               this.checkInShow = true;
             }else {
               this.checkInShow = true;
