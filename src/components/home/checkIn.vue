@@ -1126,14 +1126,14 @@
         transform: translate(-50%, -50%);
         z-index: 12;
         .title {
-          font-size: 36px;
+          font-size: 28px;
           color: #333333;
           letter-spacing: 3.27px;
           margin-bottom: 71px;
         }
         .lists {
           padding: 0 9px;
-          font-size: 36px;
+          font-size: 20px;
           color: #666;
           text-align: left;
         }
