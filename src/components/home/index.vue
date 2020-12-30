@@ -703,7 +703,7 @@
             margin-right: 10px;
           }
           span {
-            font-size: 26px;
+            font-size: 20px;
             color: #fff;
             font-family: "Microsoft Himalaya";
             margin-top: 10px;
@@ -719,7 +719,7 @@
             height: 100%;
             position: relative;
             color: #909399;
-            font-size: 26px;
+            font-size: 20px;
             display: inline-flex;
             align-items: center;
             i {
@@ -801,7 +801,7 @@
           .el-dropdown {
             border: 1px solid #9A9A9A;
             padding: 12px 22px;
-            font-size: 26px;
+            font-size: 20px;
             border-radius: 10px;
             color: #1AAD19;
             font-weight: bold;
@@ -882,7 +882,7 @@
       right: 352px;
       padding: 40px;
       .content {
-        font-size: 24px;
+        font-size: 20px;
         color: #303133;
         text-align: left;
         span {
@@ -897,7 +897,7 @@
           border-radius: 32px;
           width: 160px;
           height: 64px;
-          font-size: 22px;
+          font-size: 20px;
           display: inline-block;
           text-align: center;
           line-height: 64px;
@@ -935,7 +935,7 @@
         z-index: 12;
         .title {
           font-family: MicrosoftYaHei;
-          font-size: 36px;
+          font-size: 28px;
           color: #333333;
           letter-spacing: 3.27px;
           margin-bottom: 71px;
@@ -956,7 +956,7 @@
               text-align: left;
             }
             /deep/ .el-radio__label {
-              font-size: 32px;
+              font-size: 20px;
               font-family: MicrosoftYaHei;
               letter-spacing: 2px;
               color: #666666;
@@ -1024,8 +1024,8 @@
       display: flex;
       align-items: center;
       width: 100%;
-      font-size: 24px;
-      line-height: 56px;
+      font-size: 20px;
+      line-height: 36px;
       cursor: pointer;
     }
     .el-dropdown-menu__item:not(.is-disabled):hover {

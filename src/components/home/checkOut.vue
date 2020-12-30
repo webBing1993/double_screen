@@ -1180,17 +1180,17 @@
         .goback {
           img {
             width: 18px;
-            height: 30px;
+            height: 22px;
             display: inline-flex;
-            margin-right: 10px;
+            margin-right: 7px;
           }
           span {
             color: #1AAD19;
-            font-size: 30px;
+            font-size: 24px;
           }
         }
         .roomNo {
-          font-size: 30px;
+          font-size: 24px;
           color: #000;
           margin-left: 117px;
           margin-right: 300px;
@@ -1200,7 +1200,7 @@
           top: 50%;
           right: 530px;
           transform: translateY(-50%);
-          font-size: 24px;
+          font-size: 20px;
           color: #fff;
           background-image: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);
           box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
@@ -1210,7 +1210,7 @@
             width: 100%;
             height: 100%;
             display: block;
-            font-size: 24px;
+            font-size: 20px;
             background: transparent;
             border: none;
             padding: 14px 50px;
@@ -1247,7 +1247,7 @@
                 margin-right: 16px;
               }
               span {
-                font-size: 24px;
+                font-size: 20px;
                 color: #000;
                 display: inline-flex;
               }
@@ -1259,7 +1259,7 @@
         }
         .remark {
           color: #303133;
-          font-size: 24px;
+          font-size: 20px;
           text-align: left;
         }
       }
@@ -1273,7 +1273,7 @@
             padding: 25px 80px 25px 60px;
             .list {
               color: #000;
-              font-size: 30px;
+              font-size: 20px;
               font-weight: bold;
             }
             .list:last-of-type {
@@ -1312,11 +1312,11 @@
                 width: 100%;
               }
               span:first-of-type {
-                font-size: 26px;
+                font-size: 20px;
                 color: #000;
               }
               span:nth-of-type(2) {
-                font-size: 24px;
+                font-size: 20px;
                 color: #909399;
                 margin-top: 20px;
               }
@@ -1382,7 +1382,7 @@
         }
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 0;
           font-weight: bold;
@@ -1407,7 +1407,7 @@
             padding: 24px 0;
             border-bottom: 1px solid #D8D8D8;
             p {
-              font-size: 30px;
+              font-size: 20px;
               display: flex;
               justify-content: space-between;
               align-items: center;
@@ -1435,7 +1435,7 @@
             height: 78px;
             text-align: center;
             line-height: 78px;
-            font-size: 30px;
+            font-size: 28px;
             color:#F5222D;
           }
           span:last-of-type {

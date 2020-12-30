@@ -648,12 +648,12 @@
             color: #303133;
             font-size: 20px;
             margin-right: 30px;
-            font-weight: bold;
             cursor: pointer;
           }
           span.active {
-            background-color: #C8E1C8;
-            border: 1px solid #1AAD19;
+            font-weight: bold;
+            /*background-color: #C8E1C8;*/
+            /*border: 1px solid #1AAD19;*/
             color: #1AAD19;
           }
         }
@@ -739,7 +739,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -932,7 +932,7 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
     }
   }

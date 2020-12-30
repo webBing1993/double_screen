@@ -1119,12 +1119,12 @@
             /*background: #FFFFFF;*/
             /*box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);*/
             /*border-radius: 40px;*/
-            color: #303133;
+            color: #909399;
             font-size: 20px;
             margin-right: 30px;
-            font-weight: bold;
           }
           .active {
+            font-weight: bold;
             /*background-color: #C8E1C8;*/
             /*border: 1px solid #1AAD19;*/
             color: #1AAD19;
@@ -1154,7 +1154,6 @@
           span {
             color: #1AAD19;
             font-size: 20px;
-            font-weight: bold;
           }
         }
       }
@@ -1297,7 +1296,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -1329,7 +1328,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }
@@ -1502,7 +1501,7 @@
         transform: translate(-50%, -50%);
         .tig_title {
           color: #0B0B0B;
-          font-size: 36px;
+          font-size: 28px;
           position: relative;
           padding: 60px 50px;
           font-weight: bold;
@@ -1526,7 +1525,7 @@
           border-top: 1px solid #D8D8D8;
           color:#4378BA;
           padding: 38px 0;
-          font-size: 32px;
+          font-size: 28px;
           text-shadow: 0 2px 4px rgba(0,0,0,0.04);
           display: flex;
           justify-content: space-between;
@@ -1581,7 +1580,7 @@
           padding: 30px 10px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 18px;
+          font-size: 20px;
           text-align: center;
           font-weight: bold;
         }
@@ -1593,7 +1592,7 @@
             width: 100%;
             position: relative;
             padding: 15px 0;
-            font-size: 16px;
+            font-size: 20px;
             text-align: center;
             color: #1AAD19;
             cursor: pointer;
@@ -1626,14 +1625,14 @@
           padding: 40px 0;
           border-bottom: 1px solid #D8D8D8;
           color: #303133;
-          font-size: 40px;
+          font-size: 28px;
           font-family: PingFangSC-Semibold;
           .checkIn_close {
             position: absolute;
             top: 50%;
             right: 0;
             transform: translateY(-50%);
-            font-size: 30px;
+            font-size: 24px;
             color: #1AAD19;
           }
         }
@@ -1645,7 +1644,7 @@
             .title {
               color: #303133;
               font-weight: bold;
-              font-size: 26px;
+              font-size: 20px;
               text-shadow: 0 2px 3px rgba(0,0,0,0.04);
               width: 358px;
               text-align: left;
@@ -1664,7 +1663,7 @@
               width: 100%;
               .item_tab {
                 position: relative;
-                font-size: 22px;
+                font-size: 20px;
                 color: #000;
                 line-height: 64px;
                 height: 64px;
@@ -1746,9 +1745,9 @@
               color: #303133;
               font-size: 20px;
               margin-right: 30px;
-              font-weight: bold;
             }
             .active {
+              font-weight: bold;
               color: #1AAD19;
             }
           }
@@ -1792,7 +1791,7 @@
               margin-left: 30px;
               width: 80%;
               font-family: SourceHanSansCN-Normal;
-              font-size: 22px;
+              font-size: 20px;
               color: #000000;
               border: none;
               background-color: transparent;
@@ -1837,7 +1836,7 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
     }
   }

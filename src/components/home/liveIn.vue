@@ -626,14 +626,12 @@
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
-            color: #303133;
+            color: #909399;
             font-size: 20px;
             margin-right: 30px;
-            font-weight: bold;
           }
           .active {
-            background-color: #C8E1C8;
-            border: 1px solid #1AAD19;
+            font-weight: bold;
             color: #1AAD19;
           }
         }
@@ -661,7 +659,6 @@
           span {
             color: #1AAD19;
             font-size: 20px;
-            font-weight: bold;
           }
         }
       }
@@ -798,7 +795,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -830,7 +827,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }
@@ -1178,7 +1175,7 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
     }
   }

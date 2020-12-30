@@ -700,7 +700,7 @@
             display: inline-flex;
             align-items: center;
             img {
-              width: 22px;
+              width: 18px;
               height: 22px;
               display: inline-flex;
               margin-right: 7px;
@@ -735,13 +735,13 @@
                 margin-bottom: 30px;
                 width: 100%;
                 .name {
-                  font-size: 24px;
+                  font-size: 20px;
                   color: #888888;
                   margin-right: 28px;
                   width: 84px;
                 }
                 .value {
-                  font-size: 28px;
+                  font-size: 20px;
                   color: #333333;
                   width: calc(100% - 76px);
                   span.remark_content {
@@ -776,12 +776,12 @@
                 align-items: center;
                 justify-content: flex-start;
                 .name {
-                  font-size: 24px;
+                  font-size: 20px;
                   color: #888888;
                   margin-right: 19px;
                 }
                 .value {
-                  font-size: 32px;
+                  font-size: 20px;
                   color: #333333;
                 }
               }
@@ -798,13 +798,13 @@
                 .title {
                   color: #303133;
                   font-weight: bold;
-                  font-size: 32px;
+                  font-size: 20px;
                   color: #333333;
                   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.04);
                   text-align: left;
                   span:first-of-type {
                     display: inline-block;
-                    font-size: 24px;
+                    font-size: 20px;
                     color: #888888;
                     font-weight: normal;
                   }
@@ -818,13 +818,13 @@
               .list {
                 padding: 38px 0 58px;
                 .title {
-                  font-size: 24px;
+                  font-size: 20px;
                   color: #888888;
                   padding-left: 57px;
                   text-align: left;
                   .value {
                     font-weight: bold;
-                    font-size: 32px;
+                    font-size: 20px;
                     color: #333333;
                   }
                 }
@@ -836,7 +836,7 @@
                   margin-top: 25px;
                   .item_tab {
                     position: relative;
-                    font-size: 28px;
+                    font-size: 20px;
                     color: #888;
                     line-height: 89px;
                     height: 89px;
@@ -874,7 +874,7 @@
                 width: 390px;
                 height: 80px;
                 border-radius: 50px;
-                font-size: 28px;
+                font-size: 20px;
                 color: #fff;
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
               }
@@ -911,7 +911,7 @@
           padding: 40px 84px;
           text-align: left;
           .tab {
-            font-size: 28px;
+            font-size: 20px;
             color: #888888;
             margin-right: 60px;
           }
@@ -944,7 +944,7 @@
                   margin-top: 9px;
                   .li {
                     margin-top: 7px;
-                    font-size: 24px;
+                    font-size: 20px;
                     color: #888888;
                     text-align: left;
                   }
@@ -959,7 +959,7 @@
                   height: 41px;
                   text-align: center;
                   line-height: 41px;
-                  font-size: 24px;
+                  font-size: 20px;
                   color: #FFFFFF;
                 }
               }
@@ -971,7 +971,7 @@
             left: 50%;
             transform: translateX(-50%);
             color: #888;
-            font-size: 24px;
+            font-size: 20px;
           }
         }
         .btns {

@@ -300,7 +300,7 @@
             margin-right: 10px;
           }
           span {
-            font-size: 26px;
+            font-size: 20px;
             color: #fff;
           }
         }
@@ -311,7 +311,7 @@
             height: 100%;
             position: relative;
             color: #000;
-            font-size: 26px;
+            font-size: 20px;
             display: inline-flex;
             align-items: center;
           }
@@ -343,7 +343,7 @@
           /deep/ .el-table th {
             border-bottom: 0;
             background-color: #4A90E2;
-            font-size: 28px;
+            font-size: 20px;
             color: #FFFFFF;
             font-weight: bold;
           }
@@ -360,7 +360,7 @@
             padding-left: 58px;
           }
           /deep/ .el-table td .cell {
-            font-size: 24px;
+            font-size: 20px;
             color: #333333;
             padding: 32px 10px;
           }
@@ -371,7 +371,7 @@
             background-color: #f7f7f7;
           }
           /deep/ .el-table__empty-text {
-            font-size: 24px;
+            font-size: 20px;
             color: #333333;
             display: none;
           }
@@ -381,7 +381,7 @@
             white-space: nowrap;
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 20px;
             color: #333333;
             display: block;
             width: 100%;
@@ -431,7 +431,7 @@
         margin: 0 auto;
       }
       p {
-        font-size: 26px;
+        font-size: 20px;
         margin-top: 20px;
       }
     }
@@ -449,7 +449,7 @@
       right: 15px;
     }
     /deep/ .el-input__clear {
-      font-size: 24px;
+      font-size: 20px;
     }
     /deep/ .el-date-editor .el-range__icon, /deep/ .el-date-editor .el-range__close-icon {
       display: none;
@@ -465,14 +465,14 @@
       background: #F7F7F7;
       border-radius: 31px;
       width: 182px;
-      font-size: 24px;
+      font-size: 20px;
       color: #1BAC18;
       padding: 14px 0;
       height: auto;
     }
     /deep/ .el-range-separator {
       width: 10%;
-      font-size: 24px;
+      font-size: 20px;
     }
   }
 

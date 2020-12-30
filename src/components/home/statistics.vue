@@ -357,7 +357,7 @@
               margin: 14,
               textStyle: {
 //                color: '#333',
-                fontSize: 24
+                fontSize: 20
               }
             }
           },
@@ -386,7 +386,7 @@
                 position: 'top',
                 textStyle: {
                   color: '#888',
-                  fontSize: 24
+                  fontSize: 20
                 }
               },
               data:[
@@ -460,21 +460,21 @@
                   rich: {
                     a: {
                       color: '#5690FF',
-                      fontSize: 24,
+                      fontSize: 20,
                       lineHeight: 20
                     },
                     b: {
-                      fontSize: 24,
+                      fontSize: 20,
                       lineHeight: 36,
                       align: 'left'
                     },
                     c: {
-                      fontSize: 24,
+                      fontSize: 20,
                       color: '#888888',
                       align: 'left'
                     },
                     ped: {
-                      fontSize: 24,
+                      fontSize: 20,
                       lineHeight: 36,
                       align: 'left'
                     },
@@ -525,21 +525,21 @@
                   rich: {
                     a: {
                       color: '#5690FF',
-                      fontSize: 26,
+                      fontSize: 20,
                       lineHeight: 20
                     },
                     b: {
-                      fontSize: 26,
+                      fontSize: 20,
                       lineHeight: 36,
                       align: 'left'
                     },
                     c: {
-                      fontSize: 26,
+                      fontSize: 20,
                       color: '#888888',
                       align: 'left'
                     },
                     ped: {
-                      fontSize: 26,
+                      fontSize: 20,
                       lineHeight: 36,
                       align: 'left'
                     },
@@ -697,9 +697,9 @@
       background: #85ACF7;
       border-radius: 18px;
       padding: 55px 0 85px 50px;
-      margin-bottom: 25px;
+      margin-bottom: 31px;
       .title {
-        font-size: 26px;
+        font-size: 20px;
         color: #FFFFFF;
         margin-bottom: 42px;
         text-align: left;
@@ -735,7 +735,7 @@
           background-color: transparent;
           padding: 4px 0;
           border: none;
-          font-size: 24px;
+          font-size: 20px;
           color: #FFFFFF;
           text-align: center;
           height: 40px;
@@ -755,11 +755,11 @@
       background: #FFFFFF;
       box-shadow: 0 3px 16px 0 rgba(0,0,0,0.08);
       border-radius: 18px;
-      padding-bottom: 34px;
+      padding-bottom: 42px;
       .title {
         padding: 57px 0 57px 52px;
         text-align: left;
-        font-size: 26px;
+        font-size: 20px;
         color: #333333;
         font-weight: bold;
       }
@@ -775,7 +775,7 @@
       .title {
         padding: 57px 0 42px 50px;
         text-align: left;
-        font-size: 26px;
+        font-size: 20px;
         color: #333333;
         font-weight: bold;
       }
@@ -806,7 +806,7 @@
       /deep/ .el-table th {
         background: #F7F7F7;
         padding: 30px 0;
-        font-size: 24px;
+        font-size: 20px;
         color: #888888;
         font-weight: normal;
       }
@@ -817,7 +817,7 @@
         padding: 40px 0;
       }
       /deep/ .el-table td .cell {
-        font-size: 22px;
+        font-size: 20px;
       }
       /deep/ .el-table td:nth-of-type(2) .cell {
         color: #888888;
@@ -829,7 +829,7 @@
         text-align: center;
       }
       /deep/ .el-table__empty-text {
-        font-size: 24px;
+        font-size: 20px;
       }
       .ownImg {
         display: inline-flex;
@@ -862,13 +862,13 @@
         .title_left {
           text-align: left;
           .name {
-            font-size: 26px;
+            font-size: 20px;
             color: #888;
             margin-bottom: 6px;
             font-weight: bold;
           }
           .value {
-            font-size: 38px;
+            font-size: 28px;
             color: #333333;
             font-weight: bold;
           }
@@ -942,7 +942,7 @@
   /deep/ .el-input__inner {
     background-color: #85ACF7;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     color: #FFFFFF;
     text-align: center;
   }

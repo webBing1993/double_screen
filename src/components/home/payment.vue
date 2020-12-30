@@ -1559,7 +1559,6 @@
       span {
         color: #303133;
         font-size: 20px;
-        font-weight: bold;
       }
       .time_change {
         background-color: #FFFFFF;
@@ -1875,7 +1874,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -1907,7 +1906,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }
@@ -2079,7 +2078,7 @@
         transform: translate(-50%, -50%);
         .payTig_title {
           color: #303133;
-          font-size: 30px;
+          font-size: 28px;
           position: relative;
           padding: 30px 40px;
           img {
@@ -2103,7 +2102,7 @@
           margin: 0 auto;
           .content_title {
             color: #303133;
-            font-size: 30px;
+            font-size: 28px;
             position: relative;
             padding: 30px 40px;
           }
@@ -2113,7 +2112,7 @@
               border: 1px solid #979797;
               outline: none;
               text-align: center;
-              font-size: 26px;
+              font-size: 24px;
               height: 68px;
               line-height: 68px;
             }
@@ -2125,19 +2124,19 @@
               -moz-appearance: textfield;
             }
             input:-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
           }
@@ -2176,7 +2175,7 @@
             text-align: center;
             height: 78px;
             width: 100%;
-            font-size: 26px;
+            font-size: 28px;
             color: #fff;
             cursor: pointer;
           }
@@ -2211,7 +2210,7 @@
         }
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 28px;
           position: relative;
           padding: 30px 0;
           font-weight: bold;
@@ -2228,7 +2227,7 @@
           }
         }
         .title1 {
-          font-size: 30px;
+          font-size: 24px;
           text-align: left;
         }
         .refundTitle {
@@ -2247,7 +2246,7 @@
               color: #4A90E2;
             }
             span {
-              font-size: 26px;
+              font-size: 20px;
               color: #000;
             }
           }
@@ -2267,7 +2266,7 @@
             height: 78px;
             text-align: center;
             line-height: 78px;
-            font-size: 30px;
+            font-size: 28px;
             color:#F5222D;
           }
           span:last-of-type {
@@ -2277,7 +2276,7 @@
             height: 78px;
             text-align: center;
             line-height: 78px;
-            font-size: 30px;
+            font-size: 28px;
             color: #fff;
           }
           span.refund {
@@ -2325,7 +2324,7 @@
         .content {
           p {
             color: #303133;
-            font-size: 30px;
+            font-size: 20px;
             text-align: center;
             padding: 40px 0;
           }
@@ -2357,7 +2356,7 @@
           padding: 50px 30px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 26px;
+          font-size: 20px;
           text-align: center;
           font-weight: bold;
         }
@@ -2369,7 +2368,7 @@
             width: 50%;
             position: relative;
             padding: 30px 0;
-            font-size: 24px;
+            font-size: 28px;
             text-align: center;
             color: #909399;
           }
@@ -2378,7 +2377,7 @@
             border-width: 0;
             border-radius: 20px;
             color: #1AAD19;
-            font-size: 24px;
+            font-size: 28px;
             width: 50%;
             span {
               color: #1AAD19;
@@ -2409,7 +2408,7 @@
         transform: translate(-50%, -50%);
         .pay_title {
           color: #303133;
-          font-size: 30px;
+          font-size: 28px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -2430,7 +2429,7 @@
           padding: 20px 0 60px;
           p {
             color: #000;
-            font-size: 30px;
+            font-size: 20px;
             padding: 0 40px;
             text-align: left;
             span {
@@ -2446,7 +2445,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 28px;
           color: #fff;
         }
       }
@@ -2463,7 +2462,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 28px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -2482,7 +2481,7 @@
           padding: 30px 40px;
           .list {
             padding: 30px 0 0;
-            font-size: 30px;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2498,7 +2497,7 @@
         .tip {
           padding: 0 35px;
           text-align: left;
-          font-size: 26px;
+          font-size: 20px;
           color: #303133;
         }
         .btn {
@@ -2509,7 +2508,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 28px;
           color: #fff;
         }
       }
@@ -2536,7 +2535,7 @@
       transform: translate(-50%, -50%);
       .title {
         color: #303133;
-        font-size: 30px;
+        font-size: 28px;
         position: relative;
         padding: 30px 40px;
         border-bottom: 1px solid #D8D8D8;
@@ -2545,7 +2544,7 @@
         padding: 0 40px;
         .list {
           padding: 24px 0;
-          font-size: 30px;
+          font-size: 20px;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -2554,7 +2553,7 @@
       }
       p {
         color:#F5222D;
-        font-size: 28px;
+        font-size: 20px;
         padding: 0 40px;
       }
       .btns {
@@ -2568,7 +2567,7 @@
           width: 280px;
           height: 78px;
           text-align: center;
-          font-size: 30px;
+          font-size: 28px;
           color:#F5222D;
           background-color: #fff;
         }
@@ -2578,7 +2577,7 @@
           width: 380px;
           height: 78px;
           text-align: center;
-          font-size: 30px;
+          font-size: 28px;
           color: #fff;
         }
       }
@@ -2619,13 +2618,13 @@
         .pmsAbnormal_fr {
           .title {
             color: #000;
-            font-size: 36px;
+            font-size: 28px;
             margin-bottom: 33px;
             text-align: left;
           }
           .content {
             color: #303133;
-            font-size: 30px;
+            font-size: 20px;
             text-align: left;
           }
         }
@@ -2670,12 +2669,12 @@
       }
       .title {
         color: #000;
-        font-size: 36px;
+        font-size: 28px;
         margin-bottom: 33px;
       }
       .content {
         color: #303133;
-        font-size: 30px;
+        font-size: 20px;
       }
       .know_btn {
         margin-top: 57px;
@@ -2704,7 +2703,7 @@
   }
 
   /deep/ .el-input__icon {
-    font-size: 24px;
+    font-size: 20px;
     line-height: 56px;
   }
 
@@ -2726,7 +2725,7 @@
   }
 
   /deep/ .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
-    font-size: 24px;
+    font-size: 20px;
     font-family: '黑色';
   }
 
@@ -2738,7 +2737,7 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
     }
   }

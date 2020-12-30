@@ -483,13 +483,13 @@
           align-items: center;
           img {
             width: 18px;
-            height: 30px;
+            height: 24px;
             display: inline-flex;
-            margin-right: 10px;
+            margin-right: 7px;
           }
           span {
             color: #1AAD19;
-            font-size: 30px;
+            font-size: 24px;
           }
         }
       }
@@ -501,7 +501,7 @@
           display: flex;
           align-items: center;
           span {
-            font-size: 30px;
+            font-size: 20px;
             color: #000;
             text-align: left;
           }
@@ -515,19 +515,19 @@
             line-height: 72px;
             padding-left: 30px;
             width: 480px;
-            font-size: 30px;
+            font-size: 20px;
             color: #000;
             background-color: #fff;
             outline: none;
           }
           .tig {
             margin-left: 44px;
-            font-size: 28px;
+            font-size: 20px;
             color: #F5222D;
           }
         }
         .outTime {
-          font-size: 30px;
+          font-size: 20px;
           color: #000;
           text-align: left;
           margin-bottom: 30px;
@@ -539,7 +539,7 @@
           .outtime {
             display: inline-block;
             width: 480px;
-            font-size: 30px;
+            font-size: 20px;
             color: #000;
             border: 1px solid #979797;
             height: 72px;
@@ -558,7 +558,7 @@
           }
         }
         .time_origin {
-          font-size: 28px;
+          font-size: 20px;
           color: #000000;
           opacity: .4;
           text-align: left;
@@ -712,7 +712,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }

@@ -487,7 +487,7 @@
             margin-right: 10px;
           }
           span {
-            font-size: 26px;
+            font-size: 20px;
             color: #fff;
           }
         }
@@ -498,12 +498,12 @@
             height: 100%;
             position: relative;
             color: #000;
-            font-size: 26px;
+            font-size: 20px;
             display: inline-flex;
             align-items: center;
             cursor: pointer;
             /deep/ .el-badge__content {
-              font-size: 24px;
+              font-size: 20px;
               height: 30px;
               line-height: 30px;
               border-radius: 50%;
@@ -575,7 +575,7 @@
                 font-size: 20px;
               }
               .title {
-                font-size: 24px;
+                font-size: 20px;
                 color: #000;
                 font-weight: bold;
                 margin-right: 30px;
