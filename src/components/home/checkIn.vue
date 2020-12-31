@@ -26,11 +26,11 @@
               </div>
             </div>
             <div class="h6"></div>
-            <div class="checkIn_content" v-if="changeItem.type == 0">
+            <div class="checkIn_content checkIn_content1" v-if="changeItem.type == 0">
               <div class="checkIn_money">
                 <span class="money_list">
                   <span class="name">总房费</span>
-                  <span class="value">¥4000</span>
+                  <span class="value">¥{{(changeItem.totalfee/100).toFixed(2)}}</span>
                 </span>
               </div>
               <div class="lists">
@@ -73,6 +73,23 @@
                       <img src="../../assets/weixuan.png" alt="" v-else>
                       <span :class="isphone ? 'active' : ''">房间手机号</span>
                     </div>
+                  </div>
+                </div>
+                <div class="h6"></div>
+                <div class="list">
+                  <div class="title"><span>应付押金</span></div>
+                  <div class="tabs">
+                    <div class="item_tab" @click="changeFreeDeposit(1)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="isFreeDeposit == 1">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span :class="isFreeDeposit == 1 ? 'active' : ''">不收押金</span>
+                    </div>
+                    <div class="item_tab" @click="changeFreeDeposit(2)">
+                      <img src="../../assets/xuanzhongle.png" alt="" v-if="isFreeDeposit == 2">
+                      <img src="../../assets/weixuan.png" alt="" v-else>
+                      <span :class="isFreeDeposit == 2 ? 'active' : ''">收押金</span>
+                    </div>
+                    <div class="item_tab"></div>
                   </div>
                 </div>
               </div>
@@ -406,6 +423,7 @@
           this.changeItem.isFreeDeposit = false;
         }
         this.isFreeDeposit = num;
+        this.checkCommon();
       },
 
       // 打印二维码tip show
@@ -435,6 +453,7 @@
               hotelId: sessionStorage.hotel_id,
               payAll: this.payStatus_ == 1 ? true : false,
               needPay: this.payStatus_ != 0 ? true : false,
+              deposit: this.isFreeDeposit == 2 ? true : false,
             },
             onsuccess: body => {
               if (body.data.code == 0) {
@@ -502,6 +521,7 @@
                     this.isrcpdf = body.data.data.printRc ? body.data.data.printRc : false;
                     this.isphone = body.data.data.needMobile ? body.data.data.needMobile : false;
                     this.payStatus = body.data.data.needPay ? body.data.data.payAll ? 1 : 2 : 0;
+                    this.isFreeDeposit = body.data.data.deposit ? 2 : 1;
                     this.isfaka_ = this.isfaka;
                     this.isrcpdf_ = this.isrcpdf;
                     this.isphone_ = this.isphone;
@@ -894,6 +914,14 @@
                 background-color: #d7d7d7;
                 color: #a4a4a4;
                 border: none;
+              }
+            }
+          }
+          .checkIn_content1 {
+            padding: 22px 0;
+            .lists {
+              .list {
+                padding: 25px 0;
               }
             }
           }
