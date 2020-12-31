@@ -89,7 +89,7 @@
         <div class="content" v-else-if="item.doType == 10">
           房号【{{item.roomNo}}】续住失败，房费已支付，请及时处理
         </div>
-        <div class="btns" v-if="item.doType != 5 && item.doType != 7">
+        <div class="btns" v-if="item.doType == 1 || item.doType == 4 || item.doType == 6">
           <span class="knowBtn" @click="checkOut(item.id, index, 1)">我知道了</span>
           <span class="lookDetail" @click="lookDetail(item, index)">查看详情</span>
         </div>
@@ -874,7 +874,7 @@
     }
     .quitHouse {
       background: #FFFFFF;
-      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.40);
+      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.2);
       border-radius: 14px;
       width: 676px;
       position: fixed;
