@@ -671,8 +671,8 @@
         item.loadingBanli = true;
         this.changeItem = item;
         // 先判断A屏正在办理ing
-        this.getOrderProcess();
-//        this.showOrderInfo(true);
+//        this.getOrderProcess();
+        this.showOrderInfo(true);
         this.$nextTick(() => {
           setTimeout(() => {
             item.loadingBanli = false;

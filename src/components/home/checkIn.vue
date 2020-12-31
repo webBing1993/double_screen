@@ -838,15 +838,15 @@
                     position: relative;
                     font-size: 20px;
                     color: #888;
-                    line-height: 60px;
-                    height: 60px;
+                    line-height: 80px;
+                    height: 80px;
                     width: 182px;
                     text-align: center;
                     img {
                       position: absolute;
                       z-index: 1;
                       width: 182px;
-                      height: 60px;
+                      height: 80px;
                       left: 0;
                       top: 0;
                     }
