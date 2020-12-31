@@ -1347,13 +1347,15 @@
         }
       }
       .change_tabs {
-        padding: 0 15px;
+        padding: 0 30px;
         .tab {
           .input {
             padding: 30px 0;
             position: relative;
             input {
-              border: 1px solid #9A9A9A;
+              /*border: 1px solid #9A9A9A;*/
+              background-color: #f7f7f7;
+              border: none;
               border-radius: 44px;
               padding-right: 60px;
               padding-left: 30px;
@@ -1401,11 +1403,11 @@
           border-radius: 12px;
           width: 78px;
           height: 56px;
-          font-size: 36px;
+          font-size: 24px;
           line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 42px 22px 0;
+          margin: 0 30px 22px 0;
           cursor: pointer;
           -moz-user-select:none;
           -ms-user-select: none;
@@ -1423,7 +1425,7 @@
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -1441,7 +1443,7 @@
           text-align: center;
           background-color: #f0f0f0;
           border-radius: 12px;
-          font-size: 34px;
+          font-size: 24px;
           margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
@@ -1452,15 +1454,15 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 28px;
-          color: #EC8B2F;
+          font-size: 20px;
+          color: #666;
         }
         span:last-of-type {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -1492,7 +1494,7 @@
       .tig_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 540px;
         padding: 0 25px;
         position: fixed;
         z-index: 12;
@@ -1501,9 +1503,9 @@
         transform: translate(-50%, -50%);
         .tig_title {
           color: #0B0B0B;
-          font-size: 28px;
+          font-size: 24px;
           position: relative;
-          padding: 60px 50px;
+          padding: 120px 50px;
           font-weight: bold;
           p {
             width : auto;  // 必设
@@ -1525,7 +1527,7 @@
           border-top: 1px solid #D8D8D8;
           color:#4378BA;
           padding: 38px 0;
-          font-size: 28px;
+          font-size: 20px;
           text-shadow: 0 2px 4px rgba(0,0,0,0.04);
           display: flex;
           justify-content: space-between;

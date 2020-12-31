@@ -726,12 +726,13 @@
               font-style:normal;
               background-color: #F5222D;
               border-radius: 50%;
-              font-size: 20px;
+              font-size: 16px;
               color: #fff;
               margin-left: 6px;
               width: 28px;
               height: 28px;
               line-height: 28px;
+              letter-spacing: 0;
             }
           }
           .active {
@@ -826,17 +827,17 @@
       .quit_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 375px;
+        width: 540px;
         position: fixed;
         z-index: 9999999999;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         .quit_title {
-          padding: 50px 30px;
+          padding: 120px 50px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 26px;
+          font-size: 24px;
           text-align: center;
           font-weight: bold;
         }
@@ -848,7 +849,7 @@
             width: 50%;
             position: relative;
             padding: 30px 0;
-            font-size: 24px;
+            font-size: 20px;
             text-align: center;
           }
           span:first-of-type {
@@ -995,9 +996,9 @@
           justify-content: space-between;
           button {
             width: 278px;
-            height: 80px;
+            height: 68px;
             border-radius: 45px;
-            font-size: 28px;
+            font-size: 24px;
             font-family: MicrosoftYaHei-Bold;
             letter-spacing: 4.04px;
             border: none;

@@ -1186,11 +1186,11 @@
           }
           span {
             color: #1AAD19;
-            font-size: 24px;
+            font-size: 20px;
           }
         }
         .roomNo {
-          font-size: 24px;
+          font-size: 20px;
           color: #000;
           margin-left: 117px;
           margin-right: 300px;
@@ -1238,6 +1238,8 @@
           justify-content: flex-start;
           margin-bottom: 30px;
           .namePhone, .roomsNo {
+            display: inline-flex;
+            align-items: center;
             span {
               display: inline-flex;
               align-items: center;
@@ -1327,12 +1329,12 @@
                 color: #1AAD19;
               }
               .btn {
-                width: 200px;
-                height: 80px;
+                width: 160px;
+                height: 64px;
                 color: #1AAD19;
                 border-color: #d7d7d7;
                 background-color: #f8f8f8;
-                font-size: 28px;
+                font-size: 20px;
                 border-radius: 10px;
               }
               .primaryColor {
@@ -1375,7 +1377,7 @@
         transform: translate(-50%, -50%);
         white-space: pre-wrap;
         .detail_content {
-          width: 960px;
+          width: 620px;
           max-height: 90vh;
           overflow-y: scroll;
           -webkit-overflow-scrolling: touch;
@@ -1404,7 +1406,7 @@
         }
         .lists {
           .list {
-            padding: 24px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #D8D8D8;
             p {
               font-size: 20px;
@@ -1450,8 +1452,8 @@
           }
           span.refund {
             width: 400px;
-            background-color: transparent;
-            color:#F5222D;
+            background-color: #F5222D;
+            color:#fff;
           }
         }
       }
@@ -1472,7 +1474,7 @@
       .payTigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1500,21 +1502,21 @@
           border-radius: 20px 20px 0 0;
         }
         .payTig_content {
-          width: 680px;
+          width: 620px;
           margin: 0 auto;
           .content_title {
             color: #303133;
-            font-size: 30px;
+            font-size: 24px;
             position: relative;
             padding: 30px 40px;
           }
           .payTig_input {
             input {
-              width: 678px;
+              width: 470px;
               border: 1px solid #979797;
               outline: none;
               text-align: center;
-              font-size: 26px;
+              font-size: 24px;
               height: 68px;
               line-height: 68px;
             }
@@ -1526,35 +1528,36 @@
               -moz-appearance: textfield;
             }
             input:-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
           }
           .payTig_keyBoard {
             span {
               border-radius: 3.6px;
-              width: 214px;
+              width: 144px;
               height: 70px;
               line-height: 70px;
               text-align: center;
-              background-color: #D8D8D8;
-              font-size: 29px;
+              background-color: #f7f7f7;
+              font-size: 24px;
               margin: 20px 15px 0 0;
               cursor: pointer;
               display: inline-block;
               font-weight: bold;
+              color: #333;
             }
             span:nth-of-type(3n) {
               margin-right: 0;
@@ -1575,10 +1578,10 @@
             background: #1AAD19;
             border-radius: 44px;
             text-align: center;
-            height: 78px;
             cursor: pointer;
-            width: 100%;
-            font-size: 26px;
+            height: 68px;
+            width: 70%;
+            font-size: 24px;
             color: #fff;
           }
         }
@@ -1601,12 +1604,13 @@
         z-index: 12;
         left: 50%;
         top: 50%;
+        width: 540px;
         transform: translate(-50%, -50%);
         .quit_title {
-          padding: 50px 100px;
+          padding: 120px 50px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 26px;
+          font-size: 24px;
           text-align: center;
           font-weight: bold;
         }
@@ -1618,7 +1622,7 @@
             width: 50%;
             position: relative;
             padding: 30px 0;
-            font-size: 24px;
+            font-size: 20px;
             text-align: center;
             color: #909399;
           }
@@ -1704,7 +1708,7 @@
       .secoundTip_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1776,7 +1780,7 @@
       .pmsAbnormal {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1845,7 +1849,7 @@
       .pmsAbnormal {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1902,7 +1906,7 @@
       .balance_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;

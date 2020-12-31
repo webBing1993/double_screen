@@ -730,6 +730,7 @@
         justify-content: space-between;
         /deep/ .ivu-date-picker {
           height: 40px;
+          margin: 0 auto;
         }
         /deep/ .ivu-input {
           background-color: transparent;

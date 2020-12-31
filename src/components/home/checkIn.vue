@@ -161,7 +161,7 @@
             <div class="scrollTip" v-if="scrollTip && rooms_.length >= 6">上拉加载更多</div>
           </div>
           <div class="btns" v-if="changeItem.type == 0">
-            <button type="info" class="printBtn" @click="printTipShow">打印二维码</button>
+            <!--<button type="info" class="printBtn" @click="printTipShow">打印二维码</button>-->
             <el-button type="primary" class="checkInBtn" :loading="loadingSure" @click="checkIn()">开始办理</el-button>
           </div>
           <div class="btns" v-else>
@@ -707,7 +707,7 @@
             }
             span {
               color: #888;
-              font-size: 24px;
+              font-size: 20px;
             }
           }
           .doPrint {
@@ -838,15 +838,15 @@
                     position: relative;
                     font-size: 20px;
                     color: #888;
-                    line-height: 89px;
-                    height: 89px;
+                    line-height: 60px;
+                    height: 60px;
                     width: 182px;
                     text-align: center;
                     img {
                       position: absolute;
                       z-index: 1;
                       width: 182px;
-                      height: 89px;
+                      height: 60px;
                       left: 0;
                       top: 0;
                     }
@@ -936,7 +936,7 @@
                 margin-bottom: 24px;
                 .list_title {
                   font-weight: bold;
-                  font-size: 32px;
+                  font-size: 28px;
                   color: #1BAC18;
                   text-align: left;
                 }
@@ -984,20 +984,20 @@
             border: none;
             box-shadow: 0 2px 13px 0 rgba(0,0,0,0.08);
             border-radius: 60px;
-            width: 425px;
-            height: 80px;
-            font-size: 28px;
+            width: 400px;
+            height: 68px;
+            font-size: 24px;
             color: #666666;
             letter-spacing: 4px;
             outline: none;
           }
           .checkInBtn {
             outline: none;
-            width: 425px;
-            height: 80px;
+            width: 400px;
+            height: 68px;
             background: #1BAC18;
             border-radius: 60px;
-            font-size: 28px;
+            font-size: 24px;
             color: #FFFFFF;
             letter-spacing: 4px;
             margin: 0 auto;
@@ -1032,7 +1032,7 @@
         transform: translate(-50%, -50%);
         z-index: 12;
         .title {
-          font-size: 36px;
+          font-size: 28px;
           color: #333333;
           letter-spacing: 3.27px;
           margin-bottom: 71px;
@@ -1050,7 +1050,7 @@
               text-align: left;
             }
             /deep/ .el-radio__label {
-              font-size: 32px;
+              font-size: 20px;
               letter-spacing: 2px;
               color: #666666;
               margin-left: 42px;
@@ -1085,10 +1085,9 @@
           justify-content: space-between;
           button {
             width: 278px;
-            height: 80px;
+            height: 68px;
             border-radius: 45px;
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 24px;
             letter-spacing: 4.04px;
             border: none;
             outline: none;

@@ -457,6 +457,7 @@
 
   .doSthIndex {
     width: 100vw;
+    padding-top: 100px;
     .header {
       background: #FFFFFF;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
@@ -482,9 +483,9 @@
           margin-right: 60px;
           img {
             display: inline-block;
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
+            width: 18px;
+            height: 22px;
+            margin-right: 7px;
           }
           span {
             font-size: 20px;
@@ -497,21 +498,24 @@
             margin-right: 40px;
             height: 100%;
             position: relative;
-            color: #000;
+            color: #909399;
             font-size: 20px;
             display: inline-flex;
             align-items: center;
             cursor: pointer;
             /deep/ .el-badge__content {
-              font-size: 20px;
-              height: 30px;
-              line-height: 30px;
+              font-size: 16px;
+              min-width: 28px;
+              height: 28px;
+              line-height: 28px;
               border-radius: 50%;
+              text-align: center;
               top: 0;
             }
             /deep/ .el-badge {
               display: inline-flex;
               align-items: center;
+              font-size: 16px;
             }
           }
           .active {
@@ -532,7 +536,6 @@
       }
     }
     .doSthContent {
-      margin-top: 100px;
       .changTabs {
         padding: 40px;
         text-align: left;
@@ -562,7 +565,7 @@
           box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.10);
           border-radius: 6px;
           text-align: left;
-          margin-bottom: 20px;
+          margin-top: 20px;
           .list_header {
             border-bottom: 1px solid #E5E5E5;
             padding: 20px 0;
@@ -645,7 +648,7 @@
       }
     }
     .noMsg {
-      padding-top: 400px;
+      padding-top: 200px;
       img {
         display: block;
         width: 180px;

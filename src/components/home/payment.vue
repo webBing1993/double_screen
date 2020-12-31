@@ -1644,7 +1644,7 @@
         }
         .ivu-date-picker-cells {
           width: 420px;
-          margin: 28px;
+          margin: 24px;
         }
         .ivu-picker-panel-icon-btn {
           width: 74px;
@@ -1885,7 +1885,7 @@
       .fast_title {
         position: relative;
         margin: 40px 0;
-        font-size: 28px;
+        font-size: 24px;
         color: #303133;
         text-align: center;
         font-weight: bold;
@@ -1925,13 +1925,14 @@
         }
       }
       .change_tabs {
-        padding: 0 15px;
+        padding: 0 30px;
         .tab {
           .input {
             padding: 30px 0;
             position: relative;
             input {
-              border: 1px solid #9A9A9A;
+              background-color: #f7f7f7;
+              border: none;
               border-radius: 44px;
               padding-left: 30px;
               padding-right: 60px;
@@ -1979,11 +1980,11 @@
           border-radius: 12px;
           width: 78px;
           height: 56px;
-          font-size: 36px;
+          font-size: 24px;
           line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 42px 22px 0;
+          margin: 0 30px 22px 0;
           cursor: pointer;
           -moz-user-select:none;
           -ms-user-select: none;
@@ -2001,7 +2002,7 @@
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -2019,7 +2020,7 @@
           text-align: center;
           background-color: #f0f0f0;
           border-radius: 12px;
-          font-size: 34px;
+          font-size: 24px;
           margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
@@ -2030,15 +2031,15 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 28px;
-          color: #EC8B2F;
+          font-size: 20px;
+          color: #666;
         }
         span:last-of-type {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -2070,7 +2071,7 @@
       .payTigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -2078,7 +2079,7 @@
         transform: translate(-50%, -50%);
         .payTig_title {
           color: #303133;
-          font-size: 28px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           img {
@@ -2098,17 +2099,17 @@
           border-radius: 20px 20px 0 0;
         }
         .payTig_content {
-          width: 680px;
+          width: 620px;
           margin: 0 auto;
           .content_title {
             color: #303133;
-            font-size: 28px;
+            font-size: 24px;
             position: relative;
             padding: 30px 40px;
           }
           .payTig_input {
             input {
-              width: 678px;
+              width: 470px;
               border: 1px solid #979797;
               outline: none;
               text-align: center;
@@ -2143,16 +2144,17 @@
           .payTig_keyBoard {
             span {
               border-radius: 3.6px;
-              width: 214px;
+              width: 144px;
               height: 70px;
               line-height: 70px;
               text-align: center;
-              background-color: #D8D8D8;
-              font-size: 29px;
+              background-color: #f7f7f7;
+              font-size: 24px;
               margin: 20px 15px 0 0;
               cursor: pointer;
               display: inline-block;
               font-weight: bold;
+              color: #333;
             }
             span:nth-of-type(3n) {
               margin-right: 0;
@@ -2173,9 +2175,9 @@
             background: #1AAD19;
             border-radius: 44px;
             text-align: center;
-            height: 78px;
-            width: 100%;
-            font-size: 28px;
+            height: 68px;
+            width: 70%;
+            font-size: 24px;
             color: #fff;
             cursor: pointer;
           }
@@ -2203,14 +2205,14 @@
         transform: translate(-50%, -50%);
         white-space: pre-wrap;
         .detail_content {
-          width: 960px;
+          width: 620px;
           max-height: 90vh;
           overflow-y: scroll;
           -webkit-overflow-scrolling: touch;
         }
         .title {
           color: #303133;
-          font-size: 28px;
+          font-size: 24px;
           position: relative;
           padding: 30px 0;
           font-weight: bold;
@@ -2235,7 +2237,7 @@
         }
         .lists {
           .list {
-            margin-top: 30px;
+            /*margin-top: 30px;*/
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2262,27 +2264,27 @@
           span:first-of-type {
             border: 1px solid #F5222D;
             border-radius: 44px;
-            width: 280px;
-            height: 78px;
+            width: 240px;
+            height: 68px;
             text-align: center;
-            line-height: 78px;
-            font-size: 28px;
+            line-height: 68px;
+            font-size: 24px;
             color:#F5222D;
           }
           span:last-of-type {
             background: #1AAD19;
             border-radius: 44px;
-            width: 280px;
-            height: 78px;
+            width: 240px;
+            height: 68px;
             text-align: center;
-            line-height: 78px;
-            font-size: 28px;
+            line-height: 68px;
+            font-size: 24px;
             color: #fff;
           }
           span.refund {
             width: 400px;
-            background-color: transparent;
-            color:#F5222D;
+            background-color: #F5222D;
+            color:#fff;
           }
         }
       }
@@ -2303,7 +2305,7 @@
       .sweeping_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 800px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -2368,7 +2370,7 @@
             width: 50%;
             position: relative;
             padding: 30px 0;
-            font-size: 28px;
+            font-size: 24px;
             text-align: center;
             color: #909399;
           }
@@ -2377,7 +2379,7 @@
             border-width: 0;
             border-radius: 20px;
             color: #1AAD19;
-            font-size: 28px;
+            font-size: 24px;
             width: 50%;
             span {
               color: #1AAD19;
@@ -2408,7 +2410,7 @@
         transform: translate(-50%, -50%);
         .pay_title {
           color: #303133;
-          font-size: 28px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -2424,7 +2426,7 @@
           }
         }
         .pay_cantiner {
-          width: 680px;
+          width: 620px;
           margin: 0 auto;
           padding: 20px 0 60px;
           p {
@@ -2445,7 +2447,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 28px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -2454,7 +2456,7 @@
       .secoundTip_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -2462,7 +2464,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 28px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -2508,7 +2510,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 28px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -2527,7 +2529,7 @@
     .pmsAbnormal {
       background: #FFFFFF;
       border-radius: 20px;
-      width: 960px;
+      width: 620px;
       position: fixed;
       z-index: 12;
       left: 50%;
@@ -2535,7 +2537,7 @@
       transform: translate(-50%, -50%);
       .title {
         color: #303133;
-        font-size: 28px;
+        font-size: 24px;
         position: relative;
         padding: 30px 40px;
         border-bottom: 1px solid #D8D8D8;
@@ -2564,10 +2566,10 @@
         .btn1 {
           border: 1px solid #F5222D;
           border-radius: 44px;
-          width: 280px;
+          width: 240px;
           height: 78px;
           text-align: center;
-          font-size: 28px;
+          font-size: 24px;
           color:#F5222D;
           background-color: #fff;
         }
@@ -2577,7 +2579,7 @@
           width: 380px;
           height: 78px;
           text-align: center;
-          font-size: 28px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -2596,7 +2598,7 @@
     .pmsAbnormal {
       background: #FFFFFF;
       border-radius: 20px;
-      width: 960px;
+      width: 620px;
       position: fixed;
       z-index: 12;
       left: 50%;
@@ -2618,7 +2620,7 @@
         .pmsAbnormal_fr {
           .title {
             color: #000;
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 33px;
             text-align: left;
           }
@@ -2654,7 +2656,7 @@
     .balance_content {
       background: #FFFFFF;
       border-radius: 20px;
-      width: 960px;
+      width: 620px;
       position: fixed;
       z-index: 12;
       left: 50%;
@@ -2669,7 +2671,7 @@
       }
       .title {
         color: #000;
-        font-size: 28px;
+        font-size: 24px;
         margin-bottom: 33px;
       }
       .content {
@@ -2808,7 +2810,7 @@
   }
   /deep/ .el-date-picker .el-picker-panel__content {
     width: 420px;
-    margin: 28px;
+    margin: 24px;
   }
   /deep/ .el-date-table th , .el-date-table td{
     color: #303133;

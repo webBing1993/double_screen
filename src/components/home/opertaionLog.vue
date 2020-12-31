@@ -295,9 +295,9 @@
           margin-right: 60px;
           img {
             display: inline-block;
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
+            width: 18px;
+            height: 22px;
+            margin-right: 7px;
           }
           span {
             font-size: 20px;
@@ -310,7 +310,7 @@
             margin-right: 40px;
             height: 100%;
             position: relative;
-            color: #000;
+            color: #909399;
             font-size: 20px;
             display: inline-flex;
             align-items: center;
@@ -436,10 +436,12 @@
       }
     }
     /deep/ .el-input--prefix .el-input__inner {
-      padding: 8px 67px 8px 91px;
+      padding: 7px 67px 7px 91px;
       height: auto;
       background: #F7F7F7;
       border-radius: 31px;
+      font-size: 20px;
+      border: none;
     }
     /deep/ .el-input__icon {
       margin-left: 50px;
