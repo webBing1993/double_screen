@@ -55,7 +55,7 @@
               <div class="lists" v-if="orderDetail.refundVO.roomFeeStr != '预付房费'">
                 <div class="list">
                   <span>房费</span>
-                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : '工行支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : orderDetail.deposits[0].payFlag == 8 ? '工行支付' : '昆仑支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.roomFeeStr}}元</span>
@@ -65,7 +65,7 @@
               <div class="lists">
                 <div class="list">
                   <span>押金</span>
-                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : '工行支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : orderDetail.deposits[0].payFlag == 8 ? '工行支付' : '昆仑支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.refundFeeStr}}元</span>
@@ -79,7 +79,7 @@
               <div class="lists">
                 <div class="list">
                   <span>房费/押金</span>
-                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : '工行支付' }}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : orderDetail.deposits[0].payFlag == 8 ? '工行支付' : '昆仑支付' }}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
