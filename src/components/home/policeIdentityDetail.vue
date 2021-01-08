@@ -801,7 +801,7 @@
           margin-right: 0;
         }
         span:last-of-type {
-          width: 194px;
+          width: 180px;
           margin-right: 0;
           display: inline-flex;
           align-items: center;
