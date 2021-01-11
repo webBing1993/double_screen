@@ -1185,8 +1185,16 @@
                 this.page = 1;
                 this.paymentList(1);
               }else if(body.data.code == 20003){
-                this.showPmsAbnormal = true;
                 this.secoundTip1 = false;
+                if (this.detailVal.roomNo) {
+                  this.showPmsAbnormal = true;
+                }else {
+                  this.payTig = false;
+                  this.isScreen = true;
+                  this.loadingShow = true;
+                  this.page = 1;
+                  this.paymentList(1);
+                }
               }else if (body.data.code == 10006) {
                 this.$toast({
                   message: body.data.msg,
