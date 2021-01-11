@@ -22,7 +22,7 @@
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
                 <div class="list_origin">预订人：{{item.orderOwner ? item.orderOwner : '-'}}</div>
-                <div class="list_time"></div>
+                <div class="list_time" v-if="item.partnership">同住码：{{ item.partnership }}</div>
               </div>
               <div class="list_content">
                 <div class="list_cell">
