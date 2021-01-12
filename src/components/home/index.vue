@@ -353,7 +353,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && (!body.data.data.lvyeCheckout || (body.data.data.lvyeCheckout && body.data.data.lvyeCheckout.length == 0)) && body.data.data.creditcheckout.length == 0 && (!body.data.data.checkoutsuccess || (body.data.data.checkoutsuccess && body.data.data.checkoutsuccess.length == 0)) && (!body.data.data.AUTO_CREDIT_ACCOUNT || (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0)) && (!body.data.data.AUTO_SETTLE_PAY || (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0)) && body.data.data.pmscheckin.length == 0 && (!body.data.data.CONTINUE_LIVE || (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length == 0)) && (!body.data.data.DIRTY_ROOM || (body.data.data.DIRTY_ROOM && body.data.data.DIRTY_ROOM.length == 0)) && (!body.data.data.RULVYE || (body.data.data.RULVYE && body.data.data.RULVYE.length == 0))) {
+              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && (!body.data.data.LVYECHECKOUT || (body.data.data.LVYECHECKOUT && body.data.data.LVYECHECKOUT.length == 0)) && body.data.data.creditcheckout.length == 0 && (!body.data.data.checkoutsuccess || (body.data.data.checkoutsuccess && body.data.data.checkoutsuccess.length == 0)) && (!body.data.data.AUTO_CREDIT_ACCOUNT || (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0)) && (!body.data.data.AUTO_SETTLE_PAY || (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0)) && body.data.data.pmscheckin.length == 0 && (!body.data.data.CONTINUE_LIVE || (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length == 0)) && (!body.data.data.DIRTY_ROOM || (body.data.data.DIRTY_ROOM && body.data.data.DIRTY_ROOM.length == 0)) && (!body.data.data.RULVYE || (body.data.data.RULVYE && body.data.data.RULVYE.length == 0))) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
@@ -366,11 +366,11 @@
                     });
                     arr = [...body.data.data.checkoutapply, ...arr];
                   }
-                  if (body.data.data.lvyeCheckout && body.data.data.lvyeCheckout.length != 0) {
-                    body.data.data.lvyeCheckout.forEach(item => {
+                  if (body.data.data.LVYECHECKOUT && body.data.data.LVYECHECKOUT.length != 0) {
+                    body.data.data.LVYECHECKOUT.forEach(item => {
                       item.doType = 2;
                     });
-                    arr = [...body.data.data.lvyeCheckout, ...arr];
+                    arr = [...body.data.data.LVYECHECKOUT, ...arr];
                   }
                   if (body.data.data.pmspay.length != 0) {
 //                    this.findItem(body.data.data, 4);
