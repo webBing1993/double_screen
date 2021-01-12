@@ -36,7 +36,7 @@
                 </span>
               <el-dropdown-menu slot="dropdown">
                 <!--<el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>-->
-                <el-dropdown-item icon="el-icon-s-home" v-if="!extendConfig" @click.native="printTipShow(2)">续住模式</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-s-home" v-if="extendConfig" @click.native="printTipShow(2)">续住模式</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-tickets" v-if="getAllConfigList.operateLog" @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -168,6 +168,7 @@
         tipArr: [],
         printTip: false,     // 续住选择tip
         tipStatus: 'EX_PRICE',        // 续住选择
+        tipStatus_: '',        // 续住原选择
         tipLists: [
           {
             id: 'EX_PRICE',
@@ -250,8 +251,12 @@
 
       // tip show
       printTipShow(type) {
-        this.tipStatusType = type;
-        this.printTip = true;
+        if (type == 2) {
+          this.isConfigExtend(2);
+        }else {
+          this.tipStatusType = type;
+          this.printTip = true;
+        }
       },
 
       // tip cancel
@@ -265,33 +270,41 @@
         if (this.tipStatusType == 1) {
 
         }else {
-            this.extendUpdate({
-              data: {
+            if (this.tipStatus_ == this.tipStatus) {
+              this.$toast({
+                message: "保存成功",
+                iconClass: 'icon ',
+              });
+              this.tipCancel();
+            }else {
+              this.extendUpdate({
+                data: {
                   mode: this.tipStatus
-              },
-              onsuccess: body => {
+                },
+                onsuccess: body => {
                   if (body.data.code == 0) {
-                      if (body.data.data) {
-                        this.$toast({
-                          message: "续住模式修改成功",
-                          iconClass: 'icon ',
-                        });
-                        this.tipCancel();
-                      }else {
-                        this.$toast({
-                          message: "续住模式修改失败",
-                          iconClass: 'icon ',
-                        });
-                      }
+                    if (body.data.data) {
+                      this.$toast({
+                        message: "续住模式修改成功",
+                        iconClass: 'icon ',
+                      });
+                      this.tipCancel();
+                    }else {
+                      this.$toast({
+                        message: "续住模式修改失败",
+                        iconClass: 'icon ',
+                      });
+                    }
                   }
-              },
-              onfail: body => {
+                },
+                onfail: body => {
 
-              },
-              onerror: body => {
+                },
+                onerror: body => {
 
-              }
-            })
+                }
+              })
+            }
         }
       },
 
@@ -607,12 +620,17 @@
 
 
       // 是否支持续住
-      isConfigExtend() {
+      isConfigExtend(type) {
         this.extendInfo({
           onsuccess: body => {
-            if (body.data.errcode == 0) {
+            if (body.data.code == 0) {
               this.extendConfig = body.data.data ? body.data.data.extend == 'true' ? true: false : false;
               this.tipStatus = body.data.data ? body.data.data.mode : 'EX_PRICE';
+              this.tipStatus_ = body.data.data ? body.data.data.mode : '';
+              if (type == 2) {
+                this.tipStatusType = 2;
+                this.printTip = true;
+              }
             }
           },
           onfail: body => {
@@ -654,7 +672,7 @@
         }
       },500);
       this.homeIndexShow = true;
-      this.isConfigExtend();
+      this.isConfigExtend(1);
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
