@@ -476,6 +476,8 @@
                     message: '密码设置成功，请重新登录',
                     iconClass: 'icon ',
                   });
+                  this.code = '';
+                  this.resetPassword = '';
                   this.resetUser = false;
                 }else {
                   this.$toast({
@@ -510,6 +512,8 @@
 
       // 返回
       goBackBtn() {
+        this.code = '';
+        this.resetPassword = '';
         this.resetUser = false;
       },
 
