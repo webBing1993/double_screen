@@ -1030,6 +1030,23 @@ const actions = {
     })
   },
 
+  // pms退房申请
+  updateCheckoutRoomApply(ctx, param){
+    ctx.dispatch('resource', {
+      url: "/checkoutRoomApply/update/status/"+param.id,
+      method: 'POST',
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   // pms入住失败处理状态
   updateCheckinfailedStatus(ctx, param){
     ctx.dispatch('resource', {

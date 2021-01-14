@@ -30,7 +30,7 @@
                 <div class="checkOut">客人申请退房，房卡已回收，请及时处理</div>
               </div>
               <div class="list_fr">
-                <!--<span @click="pmsCheckIn(item.id)">处理完成</span>-->
+                <el-button @click="checkoutRoomApply(item.id)" v-if="item.applyBy && item.applyBy == 'PMSINCARDOUT'" :disabled="loadingShow">处理完成</el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='发卡失败'">
@@ -201,7 +201,7 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay', 'updateCheckpmslvStatus'
+        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay', 'updateCheckpmslvStatus', 'updateCheckoutRoomApply'
       ]),
 
       // tab
@@ -357,6 +357,24 @@
       pmsPayDetail(orderId, payFlowId) {
         sessionStorage.setItem('pmsPayDetail', orderId+"-"+payFlowId);
         this.goto(-1);
+      },
+
+      // pms退房申请处理
+      checkoutRoomApply(id) {
+        this.loadingShow = true;
+        this.updateCheckoutRoomApply({
+          id: id,
+          onsuccess: (body) => {
+            if(body.data.code == 0){
+              this.doSthList();
+            }else {
+              this.loadingShow = false;
+            }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
+          }
+        })
       },
 
       // pms 入住失败处理事件
