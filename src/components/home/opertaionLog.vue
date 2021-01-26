@@ -253,7 +253,7 @@
     },
     mounted () {
       this.loadingShow = true;
-      this.dateArr.push(new Date(new Date(new Date().getTime() - 3600 * 1000 * 24 * 30).toLocaleDateString()), new Date(new Date().toLocaleDateString()));
+      this.dateArr.push(new Date(new Date().toLocaleDateString()), new Date(new Date().toLocaleDateString()));
       this.getLog();
     },
     beforeRouteLeave (to, from, next) {
