@@ -11,15 +11,17 @@
           <div class="roomNo">
             <span>当前房间：{{orderDetail.subOrderVos[0].roomNo}}</span>
           </div>
-          <div class="header_fr">
+          <div class="header_fr" v-if="changeItem.status != 'CHECKIN'">
+            <div class="replayList dirtyBtn">
+              <el-button type="danger" @click="dirtyCancel()">取消</el-button>
+            </div>
+          </div>
+          <div class="header_fr" v-else>
             <div :class="(!pmsFlag || !showRC) ? 'replayList replayList_' : 'replayList'">
               <el-button type="primary" :loading="makeLoading" @click="makeKa()">制卡</el-button>
             </div>
             <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
               <span>打印RC单</span>
-            </div>
-            <div class="replayList dirtyBtn" v-if="changeItem.status != 'CHECKIN'">
-              <el-button type="danger" @click="dirtyCancel()">取消</el-button>
             </div>
             <div class="replayList quitCurrent" @click="quit=true;">
               <span>退房</span>
