@@ -11,17 +11,19 @@
           <div class="roomNo">
             <span>当前房间：{{orderDetail.subOrderVos[0].roomNo}}</span>
           </div>
-          <div :class="(!pmsFlag || !showRC) ? 'replayList replayList_' : 'replayList'">
-            <el-button type="primary" :loading="makeLoading" @click="makeKa()">制卡</el-button>
-          </div>
-          <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
-            <span>打印RC单</span>
-          </div>
-          <div class="replayList dirtyBtn" v-if="changeItem.status != 'CHECKIN'">
-            <el-button type="danger" @click="dirtyCancel()">取消</el-button>
-          </div>
-          <div class="replayList quitCurrent" @click="quit=true;">
-            <span>退房</span>
+          <div class="header_fr">
+            <div :class="(!pmsFlag || !showRC) ? 'replayList replayList_' : 'replayList'">
+              <el-button type="primary" :loading="makeLoading" @click="makeKa()">制卡</el-button>
+            </div>
+            <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
+              <span>打印RC单</span>
+            </div>
+            <div class="replayList dirtyBtn" v-if="changeItem.status != 'CHECKIN'">
+              <el-button type="danger" @click="dirtyCancel()">取消</el-button>
+            </div>
+            <div class="replayList quitCurrent" @click="quit=true;">
+              <span>退房</span>
+            </div>
           </div>
         </div>
         <div class="roomInfo">
@@ -1257,17 +1259,19 @@
           margin-left: 117px;
           margin-right: 300px;
         }
-        .replayList {
+        .header_fr {
           position: absolute;
           top: 50%;
-          right: 730px;
+          right: 80px;
           transform: translateY(-50%);
+        }
+        .replayList {
           font-size: 20px;
           color: #fff;
           background-image: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);
           box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
           border-radius: 32px;
-
+          margin-left: 80px;
           .el-button--primary, .el-button--danger {
             width: 100%;
             height: 100%;
@@ -1285,19 +1289,15 @@
         }
         .quitCurrent {
           background: #1AAD19;
-          right: 80px;
           padding: 8px 50px;
         }
         .dirtyBtn {
-          right: 280px;
         }
         .rcBtn {
-          right: 480px;
           padding: 8px 50px;
           background: linear-gradient(-51deg, #D59640 4%, #F3CA8A 92%);
         }
         .replayList_ {
-          right: 280px;
         }
       }
       .roomInfo {
