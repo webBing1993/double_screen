@@ -84,7 +84,7 @@
           房号【{{item.roomNo}}】挂帐失败
         </div>
         <div class="content" v-else-if="item.doType == 9">
-          【{{item.roomNo}}】房间脏房入住，请及时打扫
+          【{{item.roomNo}}】房间客人已登记，房态为脏房请及时打扫
         </div>
         <div class="content" v-else-if="item.doType == 10">
           房号【{{item.roomNo}}】续住失败，房费已支付，请及时处理
@@ -353,7 +353,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && (!body.data.data.LVYECHECKOUT || (body.data.data.LVYECHECKOUT && body.data.data.LVYECHECKOUT.length == 0)) && body.data.data.creditcheckout.length == 0 && (!body.data.data.checkoutsuccess || (body.data.data.checkoutsuccess && body.data.data.checkoutsuccess.length == 0)) && (!body.data.data.AUTO_CREDIT_ACCOUNT || (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0)) && (!body.data.data.AUTO_SETTLE_PAY || (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0)) && body.data.data.pmscheckin.length == 0 && (!body.data.data.CONTINUE_LIVE || (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length == 0)) && (!body.data.data.DIRTY_ROOM || (body.data.data.DIRTY_ROOM && body.data.data.DIRTY_ROOM.length == 0)) && (!body.data.data.RULVYE || (body.data.data.RULVYE && body.data.data.RULVYE.length == 0))) {
+              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && (!body.data.data.LVYECHECKOUT || (body.data.data.LVYECHECKOUT && body.data.data.LVYECHECKOUT.length == 0)) && body.data.data.creditcheckout.length == 0 && (!body.data.data.checkoutsuccess || (body.data.data.checkoutsuccess && body.data.data.checkoutsuccess.length == 0)) && (!body.data.data.AUTO_CREDIT_ACCOUNT || (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0)) && (!body.data.data.AUTO_SETTLE_PAY || (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0)) && body.data.data.pmscheckin.length == 0 && (!body.data.data.CONTINUE_LIVE || (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length == 0)) && (!body.data.data.TEMPCHECKIN || (body.data.data.TEMPCHECKIN && body.data.data.TEMPCHECKIN.length == 0)) && (!body.data.data.RULVYE || (body.data.data.RULVYE && body.data.data.RULVYE.length == 0))) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
@@ -406,11 +406,11 @@
                     });
                     arr = [...body.data.data.AUTO_CREDIT_ACCOUNT, ...arr];
                   }
-                  if (body.data.data.DIRTY_ROOM && body.data.data.DIRTY_ROOM.length != 0) {
-                    body.data.data.DIRTY_ROOM.forEach(item => {
+                  if (body.data.data.TEMPCHECKIN && body.data.data.TEMPCHECKIN.length != 0) {
+                    body.data.data.TEMPCHECKIN.forEach(item => {
                       item.doType = 9;
                     });
-                    arr = [...body.data.data.DIRTY_ROOM, ...arr];
+                    arr = [...body.data.data.TEMPCHECKIN, ...arr];
                   }
                   if (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length != 0) {
                     body.data.data.CONTINUE_LIVE.forEach(item => {

@@ -4,8 +4,16 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">按房号排</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">按离店时间</span>
+            <el-select v-model="orderByFiled" placeholder="排序方式" @change="tabSelect">
+              <el-option
+                v-for="item in statusLists"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+                <span>{{ item.name }}</span>
+              </el-option>
+            </el-select>
+            <span :class="tabIndex ? 'active tab' : 'tab'" @click="tabClick()" :style="tabIndex ? tabImg[1] : tabImg[0]">脏房预入住</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -22,7 +30,8 @@
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
                 <div class="list_origin">预订人：{{item.orderOwner ? item.orderOwner : '-'}}</div>
-                <div class="list_time" v-if="item.partnership">同住码：{{ item.partnership }}</div>
+                <div class="list_time" v-if="item.status == 'CHECKIN' && item.partnership">同住码：{{ item.partnership }}</div>
+                <div class="list_red" v-if="item.status != 'CHECKIN'">脏房预入住</div>
               </div>
               <div class="list_content">
                 <div class="list_cell">
@@ -45,8 +54,8 @@
                     <p class="name">
                       <span v-for="(i, index) in item.guestList">{{i.name}}/{{i.gender}}/{{i.idCardNo | idCard}}</span>
                     </p>
-                    <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 "  @click="add(item)">添加同住人</el-button>
-                    <div class="tongbu_status add_status" v-else>人数已满</div>
+                    <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 && item.status == 'CHECKIN' "  @click="add(item)">添加同住人</el-button>
+                    <div class="tongbu_status add_status" v-else-if="(item.guestList.length >= item.maxGuest || item.guestList.length >= 4) && item.status == 'CHECKIN'">人数已满</div>
                     <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">详单</el-button>
                   </div>
                 </div>
@@ -154,6 +163,16 @@
         showList: false,
         showList_: false,
         tigOrderShow: false,
+        statusLists: [
+          {
+            name: '按房号排',
+            value: 'room_no ASC',
+          },
+          {
+            name: '按离店时间',
+            value: 'out_time ASC',
+          }
+        ],
         tabImg: [
           {
             backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
@@ -166,7 +185,7 @@
             backgroundSize: "100% 100%",
           }
         ],    // tab bg
-        tabIndex: 1,  // tab切换
+        tabIndex: false,  // tab切换
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
         searchString2: '',  // 数字搜索
@@ -213,18 +232,22 @@
         })
       },
 
-      // tab切换
-      tabClick (index) {
-        this.tabIndex = index;
+      // tab下拉
+      tabSelect (val) {
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = false;
-        if(index == 1){
-          this.orderByFiled = 'room_no ASC';   //按房间号排序
-        }else{
-          this.orderByFiled = 'out_time ASC';  //按时间排序
-        }
+        this.page = 1;
+        this.getPreOrder(1);
+      },
+
+      tabClick () {
+        this.tabIndex = !this.tabIndex;
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
+        this.showList = false;
+        this.showList_ = false;
         this.page = 1;
         this.getPreOrder(1);
       },
@@ -394,7 +417,7 @@
             pageSize: 4,
             statusList:'4',
             orderByClause: this.orderByFiled||'',
-            checkInStatus:'CHECKIN',
+            checkInStatus: this.tabIndex ? 'CHECKIN_TEMP' : 'IN',
             hotelId: sessionStorage.hotel_id,
             searchString: this.searchString,
           },
@@ -621,8 +644,58 @@
         align-items: center;
         .tabs {
           padding: 40px 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: flex-start;
+          .el-select {
+            width: 35%;
+            margin-right: 30px;
+            /deep/ .el-input {
+              .el-select__caret {
+                line-height: 56px;
+              }
+            }
+            /deep/ .el-input__inner {
+              background: #FFFFFF;
+              box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
+              border-radius: 40px;
+              height: 56px;
+              line-height: 56px;
+              padding: 0 40px;
+              cursor: pointer;
+              font-size: 20px;
+              font-weight: 700;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+            /deep/ .el-input__inner:-moz-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__inner:-ms-input-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__inner::-moz-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__inner::-webkit-input-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__suffix {
+              padding-right: 15px;
+            }
+            /deep/ .el-icon-arrow-up:before {
+              font-size: 30px;
+            }
+          }
           .tab {
-            padding: 18px 30px;
+            padding: 13px 30px;
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
@@ -701,6 +774,9 @@
               div {
                 color: #909399;
                 font-size: 20px;
+              }
+              .list_red {
+                color:#F5222D;
               }
             }
             .list_content {
@@ -1178,6 +1254,21 @@
     p {
       font-size: 20px;
       margin-top: 20px;
+    }
+  }
+
+  .el-scrollbar {
+    .el-select-dropdown__wrap {
+      max-height: 350px;
+      .el-select-dropdown__list {
+        .el-select-dropdown__item {
+          display: block;
+          font-size: 20px;
+          padding: 15px 20px;
+          height: auto;
+          line-height: inherit;
+        }
+      }
     }
   }
 

@@ -17,6 +17,9 @@
           <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
             <span>打印RC单</span>
           </div>
+          <div class="replayList dirtyBtn" v-if="changeItem.status != 'CHECKIN'">
+            <el-button type="danger" @click="dirtyCancel()">取消</el-button>
+          </div>
           <div class="replayList quitCurrent" @click="quit=true;">
             <span>退房</span>
           </div>
@@ -419,6 +422,20 @@
         </div>
       </div>
 
+      <!-- 脏房取消-->
+      <div class="dirtyBox" v-if="dirtyBox">
+        <div class="shadow"></div>
+        <div class="dirtyContent">
+          <div class="title">取消入住</div>
+          <div class="tip">是否确认取消入住？</div>
+          <div class="dirtyTip">如需要退房费押金请至交易管理进行操作</div>
+          <div class="btns">
+            <el-button type="primary" class="cancle" @click="dirtyCancle()">否</el-button>
+            <el-button type="primary" :loading="dirtySureLoading" class="sure" @click="dirtySureClick()">是</el-button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -476,11 +493,13 @@
         secoundTip: false,     // 完成预授权二次tip
         secoundTip1: false,     // 完成二次tip
         payType: false,       // true为关联多房 一起付
+        dirtyBox: false,      // 脏房取消弹框
+        dirtySureLoading: false,    // 脏房取消确定loading
       }
     },
     methods: {
       ...mapActions([
-          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit', 'unionPayInfo'
+          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit', 'unionPayInfo', 'dirtyCheckIn'
       ]),
 
       // 返回上一页
@@ -1109,6 +1128,49 @@
         this.rcTip = false;
       },
 
+      // 脏房取消
+      dirtyCancel() {
+        this.dirtySureLoading = false;
+        this.dirtyBox = true;
+      },
+
+      // 脏房取消否
+      dirtyCancle() {
+        this.dirtySureLoading = false;
+        this.dirtyBox = false;
+      },
+
+      // 脏房取消是
+      dirtySureClick() {
+        this.dirtySureLoading = true;
+        this.dirtyCheckIn({
+          checkinId: this.changeItem.checkInRoomId,
+          suborderId: this.changeItem.subOrderId ? this.changeItem.subOrderId : '',
+          onsuccess: body => {
+              if (body.data.code == 0) {
+                  if (body.data.data) {
+                    this.$message({
+                      message: '取消成功',
+                      type: 'success'
+                    });
+                    this.gobanck();
+                  }else {
+                    this.$message({
+                      message: '取消失败',
+                      type: 'error'
+                    });
+                  }
+              }
+              this.dirtySureLoading = false;
+          },
+          onfail: body => {
+            this.dirtySureLoading = false;
+          },
+          onerror: body => {
+            this.dirtySureLoading = false;
+          }
+        })
+      },
 
       //是否配置RC单打印
       initRCConfig(){
@@ -1198,7 +1260,7 @@
         .replayList {
           position: absolute;
           top: 50%;
-          right: 530px;
+          right: 730px;
           transform: translateY(-50%);
           font-size: 20px;
           color: #fff;
@@ -1206,7 +1268,7 @@
           box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
           border-radius: 32px;
 
-          .el-button--primary {
+          .el-button--primary, .el-button--danger {
             width: 100%;
             height: 100%;
             display: block;
@@ -1215,14 +1277,22 @@
             border: none;
             padding: 14px 50px;
           }
+          .el-button--danger {
+            background-color: #F56C6C;
+            border-color: #F56C6C;
+            border-radius: 32px;
+          }
         }
         .quitCurrent {
           background: #1AAD19;
           right: 80px;
           padding: 8px 50px;
         }
-        .rcBtn {
+        .dirtyBtn {
           right: 280px;
+        }
+        .rcBtn {
+          right: 480px;
           padding: 8px 50px;
           background: linear-gradient(-51deg, #D59640 4%, #F3CA8A 92%);
         }
@@ -1587,7 +1657,7 @@
         }
       }
     }
-    .quit, .countinuedQuit, .payCancle ,.secoundTip {
+    .quit, .countinuedQuit, .payCancle ,.secoundTip, .dirtyBox {
       .shadow {
         position: fixed;
         z-index: 10;
@@ -1662,7 +1732,7 @@
         transform: translate(-50%, -50%);
         .pay_title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -1683,7 +1753,7 @@
           padding: 20px 0 60px;
           p {
             color: #000;
-            font-size: 30px;
+            font-size: 20px;
             padding: 0 40px;
             text-align: left;
             span {
@@ -1699,7 +1769,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -1716,7 +1786,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -1735,7 +1805,7 @@
           padding: 30px 40px;
           .list {
             padding: 30px 0 0;
-            font-size: 30px;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1751,7 +1821,7 @@
         .tip {
           padding: 0 35px;
           text-align: left;
-          font-size: 26px;
+          font-size: 20px;
           color: #303133;
         }
         .btn {
@@ -1762,7 +1832,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -1788,7 +1858,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -1797,7 +1867,7 @@
           padding: 0 40px;
           .list {
             padding: 24px 0;
-            font-size: 30px;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1806,7 +1876,7 @@
         }
         p {
           color:#F5222D;
-          font-size: 28px;
+          font-size: 20px;
           padding: 0 40px;
         }
         .btns {
@@ -1820,7 +1890,7 @@
             width: 280px;
             height: 78px;
             text-align: center;
-            font-size: 30px;
+            font-size: 24px;
             color:#F5222D;
             background-color: #fff;
           }
@@ -1830,7 +1900,7 @@
             width: 380px;
             height: 78px;
             text-align: center;
-            font-size: 30px;
+            font-size: 24px;
             color: #fff;
           }
         }
@@ -1871,13 +1941,13 @@
           .pmsAbnormal_fr {
             .title {
               color: #000;
-              font-size: 36px;
+              font-size: 24px;
               margin-bottom: 33px;
               text-align: left;
             }
             .content {
               color: #303133;
-              font-size: 30px;
+              font-size: 20px;
               text-align: left;
             }
           }
@@ -1921,12 +1991,12 @@
         }
         .title {
           color: #000;
-          font-size: 36px;
+          font-size: 24px;
           margin-bottom: 33px;
         }
         .content {
           color: #303133;
-          font-size: 30px;
+          font-size: 20px;
         }
         .know_btn {
           margin-top: 57px;
@@ -1974,7 +2044,7 @@
       }
       .rc_title {
         color: #000;
-        font-size: 36px;
+        font-size: 24px;
       }
       .rc_content {
         padding: 0 200px;
@@ -1992,15 +2062,65 @@
           border-radius: 44px;
           font-size: 24px;
           width: 360px;
-          height: 88px;
+          height: 68px;
         }
         .rc_sure {
           width: 360px;
-          height: 88px;
+          height: 68px;
           color: #fff;
           background: #1AAD19;
           border-radius: 44px;
           font-size: 24px;
+        }
+      }
+    }
+    .dirtyBox {
+      .dirtyContent {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        width: 540px;
+        transform: translate(-50%, -50%);
+        .title {
+          color: #303133;
+          font-size: 24px;
+          position: relative;
+          padding: 30px 40px;
+        }
+        .tip {
+          font-size: 20px;
+          color: #1AAD19;
+          margin-bottom: 10px;
+        }
+        .dirtyTip {
+          font-size: 20px;
+          color: #303133;
+        }
+        .btns {
+          padding: 47px 40px 40px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .cancle {
+            background-color: transparent;
+            border: 2px solid #F5222D;
+            color: #F5222D;
+            border-radius: 44px;
+            font-size: 24px;
+            width: 240px;
+            height: 68px;
+          }
+          .sure {
+            width: 240px;
+            height: 68px;
+            color: #fff;
+            background: #1AAD19;
+            border-radius: 44px;
+            font-size: 24px;
+          }
         }
       }
     }

@@ -131,7 +131,7 @@
             <div class="list_content" v-else-if="item.doSthTitle=='脏房入住'">
               <div class="list_fl">
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
-                <div class="roomIn">请及时打扫</div>
+                <div class="roomIn">客人已登记，请及时打扫</div>
               </div>
               <div class="list_fr">
                 <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
@@ -269,7 +269,7 @@
               autoSettleAccount = body.data.data.AUTO_CREDIT_ACCOUNT ? body.data.data.AUTO_CREDIT_ACCOUNT : [];
               autoSettlePay = body.data.data.AUTO_SETTLE_PAY ? body.data.data.AUTO_SETTLE_PAY : [];
               continueLive = body.data.data.CONTINUE_LIVE ? body.data.data.CONTINUE_LIVE : [];
-              dirtyRoom = body.data.data.DIRTY_ROOM ? body.data.data.DIRTY_ROOM : [];
+              dirtyRoom = body.data.data.TEMPCHECKIN ? body.data.data.TEMPCHECKIN : [];
               rulvye = body.data.data.RULVYE ? body.data.data.RULVYE : [];
               checkoutapply.forEach(item => {
                 item.doSthTitle = '退房申请';

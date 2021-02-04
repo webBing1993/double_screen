@@ -872,6 +872,23 @@ const actions = {
     })
   },
 
+  // 脏房取消事件
+  dirtyCheckIn(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/workWechat/room/cancel/dirty/checkin/'+param.checkinId+'?suborderId='+param.suborderId,
+      method: 'PUT',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //获取支付纪录
   getChargeRecard(ctx, param){
     ctx.dispatch('resource', {
