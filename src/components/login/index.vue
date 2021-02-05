@@ -95,6 +95,7 @@
         loginLoading: false,
         resetUser: false,     // 是否修改密码
         resetBtnLoading: false,
+        androidScreen: false,   // 判断是否是Android的双屏
       }
     },
     methods: {
@@ -518,12 +519,26 @@
       },
 
       SendParameter(type) {
-        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
-        jsObj.IdentityUserInfo();
+        if (this.androidScreen) {
+          jsObj.IdentityUserInfo(type);
+        }else {
+          jsObj.sendParameter = new Date().getSeconds() + "@" + type;
+          jsObj.IdentityUserInfo();
+        }
       },
     },
 
     beforeMount () {
+      let userAgentInfo = navigator.userAgent;
+      console.log('userAgentInfo:',userAgentInfo);
+      let Agents = ["Android-DualScreen"];
+      let this_ = this;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) != -1) {
+          this_.androidScreen = true;
+          break;
+        }
+      }
       jsObj.getBrowserFinish();
       jsObj.GetDeviceId();      // 获取deviceId
     },

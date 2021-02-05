@@ -304,6 +304,7 @@
           }
         ],       // 打印tip
         remarkTip: false,    // 订单备注tip
+        androidScreen: false,   // 判断是否是Android的双屏
       }
     },
     filters: {
@@ -436,7 +437,7 @@
         if (this.changeItem.type == 0) {
           this.SendTeamOrderMsg(this.changeItem.id, this.changeItem.subOrderId, this.isfaka, this.isrcpdf, this.isphone, false);
         }else {
-          this.SendParameter('SendMessage@' + this.changeItem.id + '');
+          this.SendParameter(this.changeItem.id);
         }
         this.gobanck();
       },
@@ -500,13 +501,21 @@
       },
 
       SendParameter(type) {
-        jsObj.sendParameter = new Date().getSeconds() + "@" + type;
-        jsObj.SendMessage();
+        if (this.androidScreen) {
+          jsObj.SendMessage(type);
+        }else {
+          jsObj.sendParameter = new Date().getSeconds() + "@SendMessage@" + type + '';
+          jsObj.SendMessage();
+        }
       },
 
       SendTeamOrderMsg(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
-        jsObj.sendParameter = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
-        jsObj.SendTeamOrderMessage();
+        if (this.androidScreen) {
+          jsObj.SendTeamOrderMessage(orderId, subOrderId, fakaStatus, phoneStatus, rcStatus, status);
+        }else {
+          jsObj.sendParameter = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+          jsObj.SendTeamOrderMessage();
+        }
       },
 
       // 初始化获取设置列表
@@ -665,6 +674,16 @@
 
     mounted () {
       this.loadingShow = true;
+      let userAgentInfo = navigator.userAgent;
+      console.log('userAgentInfo:',userAgentInfo);
+      let Agents = ["Android-DualScreen"];
+      let this_ = this;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) != -1) {
+          this_.androidScreen = true;
+          break;
+        }
+      }
       this.checkInShow = false;
       this.getCard('support_room_card');
       this.getCard('rc_status');
