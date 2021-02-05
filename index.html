@@ -244,6 +244,11 @@
       showOrderInfo(isTrue);
     }
 
+    function showOrderInfo1(isTrue) {
+      console.log('isTrue111', isTrue);
+      showOrderInfo2(isTrue);
+    }
+
     // 检查A屏是否启动
     function startUpDevice(value) {
       startUpDevice(value);
@@ -255,9 +260,11 @@
     }
 
     // 判断当前在A屏还是B屏
-    function getAppLocation(val) {
+      function getAppLocation(val) {
+      console.log('getAppLocation', val);
       sessionStorage.setItem('getAppLocation', val);
     }
+    console.log('我进来了1');
 
   </script>
 

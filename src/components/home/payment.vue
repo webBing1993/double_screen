@@ -2853,6 +2853,9 @@
           height: auto;
           line-height: inherit;
         }
+        .el-select-dropdown__item.selected {
+          color: #1AAD19;
+        }
       }
     }
   }

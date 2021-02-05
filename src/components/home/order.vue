@@ -1077,6 +1077,7 @@
       this.getPreOrder(this.page);
       this.$route.meta.isBack = false;
       window.showOrderInfo = this.showOrderInfo;
+      window.showOrderInfo2 = this.showOrderInfo;
       window.startUpDevice = this.startUpDevice;
     },
     beforeRouteEnter(to,from,next){
