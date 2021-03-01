@@ -4,8 +4,16 @@
       <div class="order_fl">
         <div class="header">
           <div class="tabs">
-            <span :class="tabIndex == 1 ? 'active tab' : 'tab'" @click="tabClick(1)" :style="tabIndex == 1 ? tabImg[1] : tabImg[0]">按房号排</span>
-            <span :class="tabIndex == 2 ? 'active tab' : 'tab'" @click="tabClick(2)" :style="tabIndex == 2 ? tabImg[1] : tabImg[0]">按离店时间</span>
+            <el-select v-model="orderByFiled" placeholder="排序方式" @change="tabSelect">
+              <el-option
+                v-for="item in statusLists"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+                <span>{{ item.name }}</span>
+              </el-option>
+            </el-select>
+            <span :class="tabIndex ? 'active tab' : 'tab'" @click="tabClick()" :style="tabIndex ? tabImg[1] : tabImg[0]">脏房预入住</span>
           </div>
           <div class="synchronismReplay">
             <div class="synchronism" @click="getRefreshList" v-if="pmsFlag">
@@ -22,7 +30,8 @@
             <div class="list" v-for="item in orderLists">
               <div class="list_header">
                 <div class="list_origin">预订人：{{item.orderOwner ? item.orderOwner : '-'}}</div>
-                <div class="list_time"></div>
+                <div class="list_time" v-if="item.status == 'CHECKIN' && item.partnership">同住码：{{ item.partnership }}</div>
+                <div class="list_red" v-if="item.status != 'CHECKIN'">脏房预入住</div>
               </div>
               <div class="list_content">
                 <div class="list_cell">
@@ -45,8 +54,8 @@
                     <p class="name">
                       <span v-for="(i, index) in item.guestList">{{i.name}}/{{i.gender}}/{{i.idCardNo | idCard}}</span>
                     </p>
-                    <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 "  @click="add(item)">添加同住人</el-button>
-                    <div class="tongbu_status add_status" v-else>人数已满</div>
+                    <el-button type="primary" class="tongbu_status" :loading="item.tongbuLoading"  v-if="item.guestList.length < item.maxGuest && item.guestList.length < 4 && item.status == 'CHECKIN' "  @click="add(item)">添加同住人</el-button>
+                    <div class="tongbu_status add_status" v-else-if="(item.guestList.length >= item.maxGuest || item.guestList.length >= 4) && item.status == 'CHECKIN'">人数已满</div>
                     <el-button type="primary" class="banli_status" :loading="item.quitLoading"  @click="gotoCheckOut(item)">详单</el-button>
                   </div>
                 </div>
@@ -154,6 +163,16 @@
         showList: false,
         showList_: false,
         tigOrderShow: false,
+        statusLists: [
+          {
+            name: '按房号排',
+            value: 'room_no ASC',
+          },
+          {
+            name: '按离店时间',
+            value: 'out_time ASC',
+          }
+        ],
         tabImg: [
           {
             backgroundImage: "url(" + require("../../assets/anniuweixuan.png") + ")",
@@ -166,7 +185,7 @@
             backgroundSize: "100% 100%",
           }
         ],    // tab bg
-        tabIndex: 1,  // tab切换
+        tabIndex: false,  // tab切换
         searchString: '',  // 搜索
         searchString1: '',  // 字母搜索
         searchString2: '',  // 数字搜索
@@ -182,6 +201,7 @@
         fakaTig: false,   // 发卡提示选择
         timer: null,
         cardShow: false,  // 发卡dab配置
+        androidScreen: false,   // 判断是否是Android的双屏
       }
     },
     filters: {
@@ -213,18 +233,22 @@
         })
       },
 
-      // tab切换
-      tabClick (index) {
-        this.tabIndex = index;
+      // tab下拉
+      tabSelect (val) {
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.showList = false;
         this.showList_ = false;
-        if(index == 1){
-          this.orderByFiled = 'room_no ASC';   //按房间号排序
-        }else{
-          this.orderByFiled = 'out_time ASC';  //按时间排序
-        }
+        this.page = 1;
+        this.getPreOrder(1);
+      },
+
+      tabClick () {
+        this.tabIndex = !this.tabIndex;
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
+        this.showList = false;
+        this.showList_ = false;
         this.page = 1;
         this.getPreOrder(1);
       },
@@ -394,7 +418,7 @@
             pageSize: 4,
             statusList:'4',
             orderByClause: this.orderByFiled||'',
-            checkInStatus:'CHECKIN',
+            checkInStatus: this.tabIndex ? 'CHECKIN_TEMP' : 'IN',
             hotelId: sessionStorage.hotel_id,
             searchString: this.searchString,
           },
@@ -560,8 +584,12 @@
       },
 
       SendTeamOrderMsg(orderId, subOrderId, fakaStatus, rcStatus, phoneStatus, status) {
-        jsObj.sendParameter = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
-        jsObj.SendTeamOrderMessage();
+        if (this.androidScreen) {
+          jsObj.SendTeamOrderMessage(orderId, subOrderId, fakaStatus, phoneStatus, rcStatus, status);
+        }else {
+          jsObj.sendParameter = new Date().getSeconds() + "@SendTeamOrderMessage@" + orderId + '@' + subOrderId + '@' + fakaStatus + '@' + phoneStatus + '@' + rcStatus + '@' + status;
+          jsObj.SendTeamOrderMessage();
+        }
       },
 
       // 退房跳转
@@ -574,6 +602,16 @@
     },
 
     mounted () {
+      let userAgentInfo = navigator.userAgent;
+      console.log('userAgentInfo:',userAgentInfo);
+      let Agents = ["Android-DualScreen"];
+      let this_ = this;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) != -1) {
+          this_.androidScreen = true;
+          break;
+        }
+      }
       this.pmsFlag = sessionStorage.getItem('pmsFlag') == 'true' ? true : false;
       this.loadingText = '加载中...';
       this.getCard('support_room_card');
@@ -621,19 +659,67 @@
         align-items: center;
         .tabs {
           padding: 40px 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: flex-start;
+          .el-select {
+            width: 35%;
+            margin-right: 30px;
+            /deep/ .el-input {
+              .el-select__caret {
+                line-height: 56px;
+              }
+            }
+            /deep/ .el-input__inner {
+              background: #FFFFFF;
+              box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
+              border-radius: 40px;
+              height: 56px;
+              line-height: 56px;
+              padding: 0 40px;
+              cursor: pointer;
+              font-size: 20px;
+              font-weight: 700;
+              -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+            /deep/ .el-input__inner:-moz-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__inner:-ms-input-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__inner::-moz-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__inner::-webkit-input-placeholder {
+              color: #606266;
+              font-weight: 700;
+              font-size: 20px;
+            }
+            /deep/ .el-input__suffix {
+              padding-right: 15px;
+            }
+            /deep/ .el-icon-arrow-up:before {
+              font-size: 30px;
+            }
+          }
           .tab {
-            padding: 18px 30px;
+            padding: 13px 30px;
             background: #FFFFFF;
             box-shadow: 0 8px 22px 0 rgba(0,0,0,0.10);
             border-radius: 40px;
-            color: #303133;
+            color: #909399;
             font-size: 20px;
             margin-right: 30px;
-            font-weight: bold;
           }
           .active {
-            background-color: #C8E1C8;
-            border: 1px solid #1AAD19;
+            font-weight: bold;
             color: #1AAD19;
           }
         }
@@ -661,7 +747,6 @@
           span {
             color: #1AAD19;
             font-size: 20px;
-            font-weight: bold;
           }
         }
       }
@@ -705,6 +790,9 @@
                 color: #909399;
                 font-size: 20px;
               }
+              .list_red {
+                color:#F5222D;
+              }
             }
             .list_content {
               border-bottom: 1px solid #E5E5E5;
@@ -738,10 +826,10 @@
                 }
               }
               .list_cell:nth-of-type(2) {
-                width: 32%;
+                width: 26%;
               }
               .list_cell:last-of-type {
-                width: 49%;
+                width: 55%;
                 position: relative;
               }
             }
@@ -798,7 +886,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -830,7 +918,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }
@@ -849,13 +937,14 @@
         }
       }
       .change_tabs {
-        padding: 0 15px;
+        padding: 0 30px;
         .tab {
           .input {
             padding: 30px 0;
             position: relative;
             input {
-              border: 1px solid #9A9A9A;
+              background-color: #f7f7f7;
+              border: none;
               border-radius: 44px;
               padding-left: 30px;
               padding-right: 60px;
@@ -903,11 +992,11 @@
           border-radius: 12px;
           width: 78px;
           height: 56px;
-          font-size: 36px;
+          font-size: 24px;
           line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 42px 22px 0;
+          margin: 0 30px 22px 0;
           cursor: pointer;
           -moz-user-select:none;
           -ms-user-select: none;
@@ -919,13 +1008,13 @@
           margin-right: 0;
         }
         span:last-of-type {
-          width: 194px;
+          width: 180px;
           margin-right: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -943,7 +1032,7 @@
           text-align: center;
           background-color: #f0f0f0;
           border-radius: 12px;
-          font-size: 34px;
+          font-size: 24px;
           margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
@@ -954,15 +1043,15 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 28px;
-          color: #EC8B2F;
+          font-size: 20px;
+          color: #666;
         }
         span:last-of-type {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -994,7 +1083,7 @@
       .tig_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 540px;
         padding: 0 25px;
         position: fixed;
         z-index: 12;
@@ -1003,9 +1092,9 @@
         transform: translate(-50%, -50%);
         .tig_title {
           color: #0B0B0B;
-          font-size: 36px;
+          font-size: 24px;
           position: relative;
-          padding: 60px 50px;
+          padding: 120px 50px;
           font-weight: bold;
           p {
             width : auto;  // 必设
@@ -1027,7 +1116,7 @@
           border-top: 1px solid #D8D8D8;
           color:#4378BA;
           padding: 38px 0;
-          font-size: 32px;
+          font-size: 20px;
           text-shadow: 0 2px 4px rgba(0,0,0,0.04);
           display: flex;
           justify-content: space-between;
@@ -1072,7 +1161,7 @@
       .tig_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         padding: 0 25px;
         position: fixed;
         z-index: 12;
@@ -1081,7 +1170,7 @@
         transform: translate(-50%, -50%);
         .tig_title {
           color: #0B0B0B;
-          font-size: 36px;
+          font-size: 20px;
           position: relative;
           padding: 60px 50px;
           font-weight: bold;
@@ -1104,7 +1193,7 @@
             position: relative;
             width: 49.3%;
             padding: 38px 0;
-            font-size: 32px;
+            font-size: 20px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.04);
           }
           span:first-of-type {
@@ -1178,8 +1267,26 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
+    }
+  }
+
+  .el-scrollbar {
+    .el-select-dropdown__wrap {
+      max-height: 350px;
+      .el-select-dropdown__list {
+        .el-select-dropdown__item {
+          display: block;
+          font-size: 20px;
+          padding: 15px 20px;
+          height: auto;
+          line-height: inherit;
+        }
+        .el-select-dropdown__item.selected {
+          color: #1AAD19;
+        }
+      }
     }
   }
 

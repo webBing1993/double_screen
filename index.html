@@ -7,7 +7,7 @@
     <script src="static/js/vconsole.min.js"></script>
     <style>
       body {
-        font-family: '微软雅黑', SourceHanSansCN,'黑体', "PingFang SC",'Avenir', Helvetica, Arial, sans-serif;
+        /*font-family: '微软雅黑', SourceHanSansCN,'黑体', "PingFang SC",'Avenir', Helvetica, Arial, sans-serif;*/
       }
       .el-date-range-picker {
         width: 838px !important;
@@ -75,7 +75,7 @@
         width: 214px;
       }
       .el-dropdown-menu__item {
-        font-size: 24px !important;
+        font-size: 20px !important;
         color: #666 !important;
         padding: 25px 0 25px 34px !important;
       }
@@ -83,7 +83,7 @@
         margin-right: 18px !important;
       }
       .el-popper {
-        font-size: 24px !important;
+        font-size: 20px !important;
       }
     </style>
   </head>
@@ -160,35 +160,35 @@
       display: none;
     }
     .ivu-date-picker {
-      width: 480px;
+      width: 320px;
       height: 72px;
     }
     .ivu-input {
       height: 72px;
       border: 1px solid #979797;
       color: #303133;
-      font-size: 30px;
+      font-size: 20px;
       padding-left: 30px;
     }
     .ivu-input-suffix {
       display: none;
     }
     .ivu-input-suffix i {
-      font-size: 32px;
+      font-size: 24px;
       line-height: 72px;
     }
     .ivu-picker-panel-icon-btn i {
-      font-size: 32px;
+      font-size: 24px;
     }
     .ivu-date-picker-cells span {
-      width: 56px;
-      height: 56px;
-      line-height: 56px;
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
       text-align: center;
       margin: 5px 2px 2px 2px;
     }
     .ivu-date-picker-cells {
-      width: 420px;
+      width: 380px;
       margin: 28px;
     }
     .ivu-picker-panel-icon-btn {
@@ -200,7 +200,15 @@
       line-height: 48px;
     }
     .ivu-btn-small {
-      font-size: 32px;
+      font-size: 24px;
+    }
+    .ivu-btn-primary {
+      padding: 0 30px;
+      border-radius: 50px;
+    }
+    .ivu-date-picker-next-btn-arrow-double i:after,
+    .ivu-date-picker-prev-btn-arrow-double i:after {
+      margin-left: -18px;
     }
     .ivu-picker-panel-content .ivu-picker-panel-content .ivu-time-picker-cells-list {
       width: 239px;
@@ -247,7 +255,8 @@
     }
 
     // 判断当前在A屏还是B屏
-    function getAppLocation(val) {
+      function getAppLocation(val) {
+      console.log('getAppLocation', val);
       sessionStorage.setItem('getAppLocation', val);
     }
 

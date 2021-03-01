@@ -37,11 +37,12 @@ const actions = {
       if (response.data.code == 0) {
         param.onSuccess && param.onSuccess(response)
       }
-      else if (response.data.errcode !== 0) {
+      else if (response.data.code == 10004) {
         Vue.prototype.$toast({
           message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
+        jsObj.LogOut();
         param.onFail && param.onFail(response)
       }
       else {
@@ -98,7 +99,7 @@ const actions = {
           message: response.data.msg || response.data.errmsg,
           iconClass: 'icon ',
         });
-        router.replace('/');
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
@@ -154,7 +155,11 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
-        router.replace('/');
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
@@ -210,7 +215,11 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
-        router.replace('/');
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         // Vue.prototype.$message.error(response.data.msg);
@@ -265,7 +274,11 @@ const actions = {
         param.onSuccess && param.onSuccess(response)
       }
       else if (response.data.code === 10004) {
-        router.replace('/');
+        Vue.prototype.$toast({
+          message: response.data.msg || response.data.errmsg,
+          iconClass: 'icon ',
+        });
+        jsObj.LogOut();
       }
       else if (response.data.errcode != 0 || response.data.code != 0 || response.data.code != 10004) {
         Vue.prototype.$toast({
@@ -315,10 +328,46 @@ const actions = {
     })
   },
 
-  // 登录
+  // 验证码登录
   loginEntry (ctx,param){
     ctx.dispatch('request',{
       url: '/ecard/workWechat/channelLogin',
+      method: 'POST',
+      params: param.data,
+      onSuccess: body => {
+        param.onsuccess ? param.onsuccess(body) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 密码登录
+  loginEntryMima (ctx,param){
+    ctx.dispatch('request',{
+      url: '/ecard/workWechat/login',
+      method: 'POST',
+      params: param.data,
+      onSuccess: body => {
+        param.onsuccess ? param.onsuccess(body) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 密码修改
+  updatePassword (ctx,param){
+    ctx.dispatch('request',{
+      url: '/ecard/workWechat/updatePassword',
       method: 'POST',
       params: param.data,
       onSuccess: body => {
@@ -338,6 +387,41 @@ const actions = {
     ctx.dispatch('resource', {
       url: '/permission/getByUserId',
       method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 获取酒店续住配置
+  extendInfo(ctx, param) {
+    ctx.dispatch('resource', {
+      url: '/ecard/hotel/config/extend/info',
+      method: 'GET',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail: body => {
+        param.onfail ? param.onfail(body) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 修改酒店续住配置
+  extendUpdate(ctx, param) {
+    ctx.dispatch('resource_', {
+      url: '/ecard/hotel/config/extend/update',
+      method: 'PUT',
+      body: param.data,
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
       },
@@ -788,6 +872,23 @@ const actions = {
     })
   },
 
+  // 脏房取消事件
+  dirtyCheckIn(ctx, param){
+    ctx.dispatch('resource', {
+      url: '/ecard/workWechat/room/cancel/dirty/checkin/'+param.checkinId+'?suborderId='+param.suborderId,
+      method: 'PUT',
+      onSuccess: (body, headers) => {
+        param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
   //获取支付纪录
   getChargeRecard(ctx, param){
     ctx.dispatch('resource', {
@@ -936,6 +1037,23 @@ const actions = {
       method: 'GET',
       onSuccess: (body, headers) => {
         param.onsuccess ? param.onsuccess(body, headers) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // pms退房申请
+  updateCheckoutRoomApply(ctx, param){
+    ctx.dispatch('resource', {
+      url: "/checkoutRoomApply/update/status/"+param.id,
+      method: 'POST',
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
       },
       onFail:(body, headers) => {
         param.onfail ? param.onfail(body, headers) : null
@@ -1103,7 +1221,7 @@ const actions = {
     })
   },
 
-  // 团队订单获取投屏选项
+  // 团队订单获取投屏选项 废弃
   checkInGetOptions(ctx, param){
     ctx.dispatch('resource', {
       url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
@@ -1120,10 +1238,45 @@ const actions = {
     })
   },
 
-  // 团队订单办理入住
+  // 团队订单获取投屏选项
+  checkInTeamGetOptions(ctx, param){
+    ctx.dispatch('resource', {
+      url: "/ecard/orders/config/"+param.orderId,
+      method: 'GET',
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 团队订单办理入住 废弃
   checkInPostOptions(ctx, param){
     ctx.dispatch('resource_', {
       url: "/ecard/orders/group/order/"+param.orderId+"/checkInOptions",
+      method: 'POST',
+      body: param.data,
+      onSuccess: (body, headers,code) => {
+        param.onsuccess ? param.onsuccess(body, headers,code) : null
+      },
+      onFail:(body, headers) => {
+        param.onfail ? param.onfail(body, headers) : null
+      },
+      onError:(body, headers) => {
+        param.onerror ? param.onerror(body, headers) : null
+      },
+    })
+  },
+
+  // 团队订单办理入住
+  checkInTeamPostOptions(ctx, param){
+    ctx.dispatch('resource_', {
+      url: "/ecard/orders/config/update",
       method: 'POST',
       body: param.data,
       onSuccess: (body, headers,code) => {

@@ -11,14 +11,21 @@
           <div class="roomNo">
             <span>当前房间：{{orderDetail.subOrderVos[0].roomNo}}</span>
           </div>
-          <div :class="(!pmsFlag || !showRC) ? 'replayList replayList_' : 'replayList'">
-            <el-button type="primary" :loading="makeLoading" @click="makeKa()">制卡</el-button>
+          <div class="header_fr" v-if="changeItem.status != 'CHECKIN'">
+            <div class="replayList dirtyBtn">
+              <el-button type="danger" @click="dirtyCancel()">取消</el-button>
+            </div>
           </div>
-          <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
-            <span>打印RC单</span>
-          </div>
-          <div class="replayList quitCurrent" @click="quit=true;">
-            <span>退房</span>
+          <div class="header_fr" v-else>
+            <div :class="(!pmsFlag || !showRC) ? 'replayList replayList_' : 'replayList'">
+              <el-button type="primary" :loading="makeLoading" @click="makeKa()">制卡</el-button>
+            </div>
+            <div class="replayList rcBtn" @click="getPdfCode" v-if="pmsFlag && showRC">
+              <span>打印RC单</span>
+            </div>
+            <div class="replayList quitCurrent" @click="quit=true;">
+              <span>退房</span>
+            </div>
           </div>
         </div>
         <div class="roomInfo">
@@ -55,7 +62,7 @@
               <div class="lists" v-if="orderDetail.refundVO.roomFeeStr != '预付房费'">
                 <div class="list">
                   <span>房费</span>
-                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : '工行支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : orderDetail.deposits[0].payFlag == 8 ? '工行支付' : '昆仑支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.roomFeeStr}}元</span>
@@ -65,7 +72,7 @@
               <div class="lists">
                 <div class="list">
                   <span>押金</span>
-                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : '工行支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : orderDetail.deposits[0].payFlag == 8 ? '工行支付' : '昆仑支付'}}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.refundFeeStr}}元</span>
@@ -79,7 +86,7 @@
               <div class="lists">
                 <div class="list">
                   <span>房费/押金</span>
-                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : '工行支付' }}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
+                  <span>{{orderDetail.deposits[0].payFlag == 1 ? '微信支付' : orderDetail.deposits[0].payFlag == 2 ? '支付宝支付' : orderDetail.deposits[0].payFlag == 3 ? '翼支付' : orderDetail.deposits[0].payFlag == 8 ? '工行支付' : '昆仑支付' }}  {{datetimeparse(orderDetail.deposits[0].finishTime, 'yy/MM/dd hh:mm')}}</span>
                 </div>
                 <div class="list">
                   <span class="red">{{orderDetail.refundVO.totalFee/100}}元</span>
@@ -419,6 +426,20 @@
         </div>
       </div>
 
+      <!-- 脏房取消-->
+      <div class="dirtyBox" v-if="dirtyBox">
+        <div class="shadow"></div>
+        <div class="dirtyContent">
+          <div class="title">取消入住</div>
+          <div class="tip">是否确认取消入住？</div>
+          <div class="dirtyTip">如需要退房费押金请至交易管理进行操作</div>
+          <div class="btns">
+            <el-button type="primary" class="cancle" @click="dirtyCancle()">否</el-button>
+            <el-button type="primary" :loading="dirtySureLoading" class="sure" @click="dirtySureClick()">是</el-button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -476,11 +497,13 @@
         secoundTip: false,     // 完成预授权二次tip
         secoundTip1: false,     // 完成二次tip
         payType: false,       // true为关联多房 一起付
+        dirtyBox: false,      // 脏房取消弹框
+        dirtySureLoading: false,    // 脏房取消确定loading
       }
     },
     methods: {
       ...mapActions([
-          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit', 'unionPayInfo'
+          'accountCheckout', 'depositConsume', 'getCheckOutInfo', 'refundHandle', 'accountFeeInfo', 'getRcConfig', 'rcPrint', 'sendRealCard', 'roomCard', 'canclePreAuthorizedDeposit', 'unionPayInfo', 'dirtyCheckIn'
       ]),
 
       // 返回上一页
@@ -669,9 +692,9 @@
               this.chargeRecordObj = body.data.data
             }
             if (type == 1) {
-              this.payMoney = body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0;
+              this.payMoney = body.data.data ? body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0 : '';
             }else {
-              this.payMoney = body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0;
+              this.payMoney = body.data.data ? body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0 : '';
             }
             this.unionPayInfo({
               payFlowId: this.orderDetail.payFlowId,
@@ -1109,6 +1132,49 @@
         this.rcTip = false;
       },
 
+      // 脏房取消
+      dirtyCancel() {
+        this.dirtySureLoading = false;
+        this.dirtyBox = true;
+      },
+
+      // 脏房取消否
+      dirtyCancle() {
+        this.dirtySureLoading = false;
+        this.dirtyBox = false;
+      },
+
+      // 脏房取消是
+      dirtySureClick() {
+        this.dirtySureLoading = true;
+        this.dirtyCheckIn({
+          checkinId: this.changeItem.checkInRoomId,
+          suborderId: this.changeItem.subOrderId ? this.changeItem.subOrderId : '',
+          onsuccess: body => {
+              if (body.data.code == 0) {
+                  if (body.data.data) {
+                    this.$message({
+                      message: '取消成功',
+                      type: 'success'
+                    });
+                    this.gobanck();
+                  }else {
+                    this.$message({
+                      message: '取消失败',
+                      type: 'error'
+                    });
+                  }
+              }
+              this.dirtySureLoading = false;
+          },
+          onfail: body => {
+            this.dirtySureLoading = false;
+          },
+          onerror: body => {
+            this.dirtySureLoading = false;
+          }
+        })
+      },
 
       //是否配置RC单打印
       initRCConfig(){
@@ -1180,54 +1246,60 @@
         .goback {
           img {
             width: 18px;
-            height: 30px;
+            height: 22px;
             display: inline-flex;
-            margin-right: 10px;
+            margin-right: 7px;
           }
           span {
             color: #1AAD19;
-            font-size: 30px;
+            font-size: 20px;
           }
         }
         .roomNo {
-          font-size: 30px;
+          font-size: 20px;
           color: #000;
           margin-left: 117px;
           margin-right: 300px;
         }
-        .replayList {
+        .header_fr {
           position: absolute;
           top: 50%;
-          right: 530px;
+          right: 80px;
           transform: translateY(-50%);
-          font-size: 24px;
+        }
+        .replayList {
+          font-size: 20px;
           color: #fff;
           background-image: linear-gradient(141deg, #7BAEEF 0%, #4378BA 100%);
           box-shadow: 0 4px 10px 0 rgba(0,0,0,0.17);
           border-radius: 32px;
-
-          .el-button--primary {
+          margin-left: 80px;
+          .el-button--primary, .el-button--danger {
             width: 100%;
             height: 100%;
             display: block;
-            font-size: 24px;
+            font-size: 20px;
             background: transparent;
             border: none;
             padding: 14px 50px;
           }
+          .el-button--danger {
+            background-color: #F56C6C;
+            border-color: #F56C6C;
+            border-radius: 32px;
+          }
         }
         .quitCurrent {
           background: #1AAD19;
-          right: 80px;
           padding: 8px 50px;
         }
+        .dirtyBtn {
+        }
         .rcBtn {
-          right: 280px;
           padding: 8px 50px;
           background: linear-gradient(-51deg, #D59640 4%, #F3CA8A 92%);
         }
         .replayList_ {
-          right: 280px;
         }
       }
       .roomInfo {
@@ -1238,6 +1310,8 @@
           justify-content: flex-start;
           margin-bottom: 30px;
           .namePhone, .roomsNo {
+            display: inline-flex;
+            align-items: center;
             span {
               display: inline-flex;
               align-items: center;
@@ -1247,7 +1321,7 @@
                 margin-right: 16px;
               }
               span {
-                font-size: 24px;
+                font-size: 20px;
                 color: #000;
                 display: inline-flex;
               }
@@ -1259,7 +1333,7 @@
         }
         .remark {
           color: #303133;
-          font-size: 24px;
+          font-size: 20px;
           text-align: left;
         }
       }
@@ -1273,7 +1347,7 @@
             padding: 25px 80px 25px 60px;
             .list {
               color: #000;
-              font-size: 30px;
+              font-size: 20px;
               font-weight: bold;
             }
             .list:last-of-type {
@@ -1312,11 +1386,11 @@
                 width: 100%;
               }
               span:first-of-type {
-                font-size: 26px;
+                font-size: 20px;
                 color: #000;
               }
               span:nth-of-type(2) {
-                font-size: 24px;
+                font-size: 20px;
                 color: #909399;
                 margin-top: 20px;
               }
@@ -1327,12 +1401,12 @@
                 color: #1AAD19;
               }
               .btn {
-                width: 200px;
-                height: 80px;
+                width: 160px;
+                height: 64px;
                 color: #1AAD19;
                 border-color: #d7d7d7;
                 background-color: #f8f8f8;
-                font-size: 28px;
+                font-size: 20px;
                 border-radius: 10px;
               }
               .primaryColor {
@@ -1375,14 +1449,14 @@
         transform: translate(-50%, -50%);
         white-space: pre-wrap;
         .detail_content {
-          width: 960px;
+          width: 620px;
           max-height: 90vh;
           overflow-y: scroll;
           -webkit-overflow-scrolling: touch;
         }
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 0;
           font-weight: bold;
@@ -1404,10 +1478,10 @@
         }
         .lists {
           .list {
-            padding: 24px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #D8D8D8;
             p {
-              font-size: 30px;
+              font-size: 20px;
               display: flex;
               justify-content: space-between;
               align-items: center;
@@ -1435,7 +1509,7 @@
             height: 78px;
             text-align: center;
             line-height: 78px;
-            font-size: 30px;
+            font-size: 28px;
             color:#F5222D;
           }
           span:last-of-type {
@@ -1450,8 +1524,8 @@
           }
           span.refund {
             width: 400px;
-            background-color: transparent;
-            color:#F5222D;
+            background-color: #F5222D;
+            color:#fff;
           }
         }
       }
@@ -1472,7 +1546,7 @@
       .payTigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1500,21 +1574,21 @@
           border-radius: 20px 20px 0 0;
         }
         .payTig_content {
-          width: 680px;
+          width: 620px;
           margin: 0 auto;
           .content_title {
             color: #303133;
-            font-size: 30px;
+            font-size: 24px;
             position: relative;
             padding: 30px 40px;
           }
           .payTig_input {
             input {
-              width: 678px;
+              width: 470px;
               border: 1px solid #979797;
               outline: none;
               text-align: center;
-              font-size: 26px;
+              font-size: 24px;
               height: 68px;
               line-height: 68px;
             }
@@ -1526,35 +1600,36 @@
               -moz-appearance: textfield;
             }
             input:-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
           }
           .payTig_keyBoard {
             span {
               border-radius: 3.6px;
-              width: 214px;
+              width: 144px;
               height: 70px;
               line-height: 70px;
               text-align: center;
-              background-color: #D8D8D8;
-              font-size: 29px;
+              background-color: #f7f7f7;
+              font-size: 24px;
               margin: 20px 15px 0 0;
               cursor: pointer;
               display: inline-block;
               font-weight: bold;
+              color: #333;
             }
             span:nth-of-type(3n) {
               margin-right: 0;
@@ -1575,16 +1650,16 @@
             background: #1AAD19;
             border-radius: 44px;
             text-align: center;
-            height: 78px;
             cursor: pointer;
-            width: 100%;
-            font-size: 26px;
+            height: 68px;
+            width: 70%;
+            font-size: 24px;
             color: #fff;
           }
         }
       }
     }
-    .quit, .countinuedQuit, .payCancle ,.secoundTip {
+    .quit, .countinuedQuit, .payCancle ,.secoundTip, .dirtyBox {
       .shadow {
         position: fixed;
         z-index: 10;
@@ -1601,12 +1676,13 @@
         z-index: 12;
         left: 50%;
         top: 50%;
+        width: 540px;
         transform: translate(-50%, -50%);
         .quit_title {
-          padding: 50px 100px;
+          padding: 120px 50px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 26px;
+          font-size: 24px;
           text-align: center;
           font-weight: bold;
         }
@@ -1618,7 +1694,7 @@
             width: 50%;
             position: relative;
             padding: 30px 0;
-            font-size: 24px;
+            font-size: 20px;
             text-align: center;
             color: #909399;
           }
@@ -1658,7 +1734,7 @@
         transform: translate(-50%, -50%);
         .pay_title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -1679,7 +1755,7 @@
           padding: 20px 0 60px;
           p {
             color: #000;
-            font-size: 30px;
+            font-size: 20px;
             padding: 0 40px;
             text-align: left;
             span {
@@ -1695,7 +1771,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -1704,7 +1780,7 @@
       .secoundTip_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1712,7 +1788,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -1731,7 +1807,7 @@
           padding: 30px 40px;
           .list {
             padding: 30px 0 0;
-            font-size: 30px;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1747,7 +1823,7 @@
         .tip {
           padding: 0 35px;
           text-align: left;
-          font-size: 26px;
+          font-size: 20px;
           color: #303133;
         }
         .btn {
@@ -1758,7 +1834,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -1776,7 +1852,7 @@
       .pmsAbnormal {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1784,7 +1860,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -1793,7 +1869,7 @@
           padding: 0 40px;
           .list {
             padding: 24px 0;
-            font-size: 30px;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1802,7 +1878,7 @@
         }
         p {
           color:#F5222D;
-          font-size: 28px;
+          font-size: 20px;
           padding: 0 40px;
         }
         .btns {
@@ -1816,7 +1892,7 @@
             width: 280px;
             height: 78px;
             text-align: center;
-            font-size: 30px;
+            font-size: 24px;
             color:#F5222D;
             background-color: #fff;
           }
@@ -1826,7 +1902,7 @@
             width: 380px;
             height: 78px;
             text-align: center;
-            font-size: 30px;
+            font-size: 24px;
             color: #fff;
           }
         }
@@ -1845,7 +1921,7 @@
       .pmsAbnormal {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1867,13 +1943,13 @@
           .pmsAbnormal_fr {
             .title {
               color: #000;
-              font-size: 36px;
+              font-size: 24px;
               margin-bottom: 33px;
               text-align: left;
             }
             .content {
               color: #303133;
-              font-size: 30px;
+              font-size: 20px;
               text-align: left;
             }
           }
@@ -1902,7 +1978,7 @@
       .balance_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -1917,12 +1993,12 @@
         }
         .title {
           color: #000;
-          font-size: 36px;
+          font-size: 24px;
           margin-bottom: 33px;
         }
         .content {
           color: #303133;
-          font-size: 30px;
+          font-size: 20px;
         }
         .know_btn {
           margin-top: 57px;
@@ -1970,7 +2046,7 @@
       }
       .rc_title {
         color: #000;
-        font-size: 36px;
+        font-size: 24px;
       }
       .rc_content {
         padding: 0 200px;
@@ -1988,15 +2064,65 @@
           border-radius: 44px;
           font-size: 24px;
           width: 360px;
-          height: 88px;
+          height: 68px;
         }
         .rc_sure {
           width: 360px;
-          height: 88px;
+          height: 68px;
           color: #fff;
           background: #1AAD19;
           border-radius: 44px;
           font-size: 24px;
+        }
+      }
+    }
+    .dirtyBox {
+      .dirtyContent {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: fixed;
+        z-index: 12;
+        left: 50%;
+        top: 50%;
+        width: 540px;
+        transform: translate(-50%, -50%);
+        .title {
+          color: #303133;
+          font-size: 24px;
+          position: relative;
+          padding: 30px 40px;
+        }
+        .tip {
+          font-size: 20px;
+          color: #1AAD19;
+          margin-bottom: 10px;
+        }
+        .dirtyTip {
+          font-size: 20px;
+          color: #303133;
+        }
+        .btns {
+          padding: 47px 40px 40px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .cancle {
+            background-color: transparent;
+            border: 2px solid #F5222D;
+            color: #F5222D;
+            border-radius: 44px;
+            font-size: 24px;
+            width: 240px;
+            height: 68px;
+          }
+          .sure {
+            width: 240px;
+            height: 68px;
+            color: #fff;
+            background: #1AAD19;
+            border-radius: 44px;
+            font-size: 24px;
+          }
         }
       }
     }

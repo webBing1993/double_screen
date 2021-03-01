@@ -35,6 +35,8 @@
                   更多
                 </span>
               <el-dropdown-menu slot="dropdown">
+                <!--<el-dropdown-item icon="el-icon-s-finance"  @click.native="printTipShow(1)">上门散客房价</el-dropdown-item>-->
+                <el-dropdown-item icon="el-icon-s-home" v-if="extendConfig" @click.native="printTipShow(2)">续住模式</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-tickets" v-if="getAllConfigList.operateLog" @click.native="goto('/opertaionLog')">操作日志</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-switch-button" @click.native="quit=true;">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -63,12 +65,9 @@
         <div class="content" v-if="item.doType == 1">
           【{{ item.roomNo }}】房间客人申请退房，房卡已回收，请及时处理，可至右上角<span>待办事项</span>查看
         </div>
-        <!--<div class="content" v-if="wuka">-->
-          <!--发卡槽无卡，请及时补充卡片，可至右上角<span>待办事项</span>查看-->
-        <!--</div>-->
-        <!--<div class="content" v-if="manka">-->
-          <!--回收卡槽满，请及时清空，否则会导致无法正常发卡，可至右上角<span>待办事项</span>查看-->
-        <!--</div>-->
+        <div class="content" v-else-if="item.doType == 2">
+          房号【{{item.roomNo}}】客人旅业退房失败
+        </div>
         <div class="content" v-else-if="item.doType == 4">
           收款成功！收款金额{{ item.totalFeeStr }}元，自动入账失败，请手工至PMS系统处理入账，<span>点击查看详情</span>
         </div>
@@ -81,12 +80,43 @@
         <div class="content" v-else-if="item.doType == 7">
           房号【{{item.roomNo}}】客人插卡退房成功，房态已改为脏房请及时打扫
         </div>
-        <div class="btns" v-if="item.doType != 5 && item.doType != 7">
+        <div class="content" v-else-if="item.doType == 8">
+          房号【{{item.roomNo}}】挂帐失败
+        </div>
+        <div class="content" v-else-if="item.doType == 9">
+          【{{item.roomNo}}】房间客人已登记，房态为脏房请及时打扫
+        </div>
+        <div class="content" v-else-if="item.doType == 10">
+          房号【{{item.roomNo}}】续住失败，房费已支付，请及时处理
+        </div>
+        <div class="btns" v-if="item.doType == 1 || item.doType == 4 || item.doType == 6">
           <span class="knowBtn" @click="checkOut(item.id, index, 1)">我知道了</span>
           <span class="lookDetail" @click="lookDetail(item, index)">查看详情</span>
         </div>
-        <div class="btns" v-if="item.doType == 5 || item.doType == 7">
+        <div class="btns" v-if="item.doType == 5 || item.doType == 7 || item.doType == 8 || item.doType == 2 || item.doType == 9 || item.doType == 10">
           <span class="lookDetail" @click="checkOut(item.id, index, 2)">我知道了</span>
+        </div>
+      </div>
+
+      <!-- 选择续住类型/散客房价码-->
+      <div class="printTip" v-if="printTip">
+        <div class="shadow"></div>
+        <div class="tip_content">
+          <div class="title">{{ tipStatusType == 1 ? '请选择上门散客房价' : '请选择续住模式' }}</div>
+          <div class="lists" v-if="tipStatusType == 2">
+            <div class="list" v-for="item in tipLists">
+              <el-radio v-model="tipStatus" :label="item.id" border size="medium">{{ item.label }}</el-radio>
+            </div>
+          </div>
+          <div class="lists" v-else>
+            <div class="list" v-for="item in tipLists_">
+              <el-radio v-model="tipStatus" :label="item.id" border size="medium">{{ item.label }}</el-radio>
+            </div>
+          </div>
+          <div class="btns">
+            <button type="info" @click="tipCancel">取消</button>
+            <el-button type="primary" @click="tipSure()">确认</el-button>
+          </div>
         </div>
       </div>
 
@@ -136,11 +166,52 @@
         pmsOrderIdChange: 0,
         onlyItem: {},    // 临时退房数据
         tipArr: [],
+        printTip: false,     // 续住选择tip
+        tipStatus: 'EX_PRICE',        // 续住选择
+        tipStatus_: '',        // 续住原选择
+        tipLists: [
+          {
+            id: 'EX_PRICE',
+            label: '按前一天价格续住'
+          },
+          {
+            id: 'RATE_CODE',
+            label: '按订单房价码续住'
+          }
+        ],       // 续住tip
+        tipLists_: [
+          {
+            id: 1,
+            label: '房价码1'
+          },
+          {
+            id: 2,
+            label: '房价码2'
+          },
+          {
+            id: 3,
+            label: '房价码3'
+          },
+          {
+            id: 4,
+            label: '房价码4'
+          },
+          {
+            id: 5,
+            label: '房价码5'
+          },
+          {
+            id: 6,
+            label: '房价码6'
+          },
+        ],        // 上门散客房价
+        tipStatusType: 1,     // 区分是续住模式2还是散客房价码模式1
+        extendConfig: false,    // 续住权限
       }
     },
     methods: {
       ...mapActions([
-        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'creditDoSth'
+        'goto', 'replaceto', 'getTodoList', 'newIdentityList', 'creditDoSth', 'extendInfo', 'extendUpdate'
       ]),
 
       // tab切换
@@ -178,11 +249,75 @@
         jsObj.WalkInConfig();
       },
 
+      // tip show
+      printTipShow(type) {
+        if (type == 2) {
+          this.isConfigExtend(2);
+        }else {
+          this.tipStatusType = type;
+          this.printTip = true;
+        }
+      },
+
+      // tip cancel
+      tipCancel() {
+        this.printTip = false;
+//        this.tipStatus = 1;
+      },
+
+      // tip sure
+      tipSure() {
+        if (this.tipStatusType == 1) {
+
+        }else {
+            if (this.tipStatus_ == this.tipStatus) {
+              this.$toast({
+                message: "保存成功",
+                iconClass: 'icon ',
+              });
+              this.tipCancel();
+            }else {
+              this.extendUpdate({
+                data: {
+                  mode: this.tipStatus
+                },
+                onsuccess: body => {
+                  if (body.data.code == 0) {
+                    if (body.data.data) {
+                      this.$toast({
+                        message: "续住模式修改成功",
+                        iconClass: 'icon ',
+                      });
+                      this.tipCancel();
+                    }else {
+                      this.$toast({
+                        message: "续住模式修改失败",
+                        iconClass: 'icon ',
+                      });
+                    }
+                  }
+                },
+                onfail: body => {
+
+                },
+                onerror: body => {
+
+                }
+              })
+            }
+        }
+      },
+
       // 语音播报
       speckText(str){
         let url = "http://tts.baidu.com/text2audio?cuid=baiduid&lan=zh&ctp=1&pdt=311&tex=" + encodeURI(str);        // baidu
         let n = new Audio(url);
         n.src = url;
+        n.autoplay = true;
+        n.addEventListener('canplay', function () {
+          n.load();
+          n.play();
+        }, false);
         n.play();
         n = null;
       },
@@ -223,7 +358,7 @@
         this.getTodoList({
           onsuccess: body => {
             if (body.data.code == 0) {
-              if (body.data.data.faka.length == 0 && body.data.data.pmscheckin.length == 0 && body.data.data.pmspay.length == 0 && body.data.data.nativepay.length == 0 &&  body.data.data.checkoutapply == null && body.data.data.lvyeCheckout.length == 0 && body.data.data.creditcheckout.length == 0 && body.data.data.checkoutsuccess.length == 0) {
+              if (body.data.data.pmspay.length == 0 &&  body.data.data.checkoutapply == null && (!body.data.data.LVYECHECKOUT || (body.data.data.LVYECHECKOUT && body.data.data.LVYECHECKOUT.length == 0)) && body.data.data.creditcheckout.length == 0 && (!body.data.data.checkoutsuccess || (body.data.data.checkoutsuccess && body.data.data.checkoutsuccess.length == 0)) && (!body.data.data.AUTO_CREDIT_ACCOUNT || (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length == 0)) && (!body.data.data.AUTO_SETTLE_PAY || (body.data.data.AUTO_SETTLE_PAY && body.data.data.AUTO_SETTLE_PAY.length == 0)) && body.data.data.pmscheckin.length == 0 && (!body.data.data.CONTINUE_LIVE || (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length == 0)) && (!body.data.data.TEMPCHECKIN || (body.data.data.TEMPCHECKIN && body.data.data.TEMPCHECKIN.length == 0)) && (!body.data.data.RULVYE || (body.data.data.RULVYE && body.data.data.RULVYE.length == 0))) {
                   this.speakShow = false;
               }else {
                   this.speakShow = true;
@@ -235,6 +370,12 @@
                         item.doType = 1;
                     });
                     arr = [...body.data.data.checkoutapply, ...arr];
+                  }
+                  if (body.data.data.LVYECHECKOUT && body.data.data.LVYECHECKOUT.length != 0) {
+                    body.data.data.LVYECHECKOUT.forEach(item => {
+                      item.doType = 2;
+                    });
+                    arr = [...body.data.data.LVYECHECKOUT, ...arr];
                   }
                   if (body.data.data.pmspay.length != 0) {
 //                    this.findItem(body.data.data, 4);
@@ -264,7 +405,25 @@
                     });
                     arr = [...body.data.data.checkoutsuccess, ...arr];
                   }
-                  console.log('arr', arr);
+                  if (body.data.data.AUTO_CREDIT_ACCOUNT && body.data.data.AUTO_CREDIT_ACCOUNT.length != 0) {
+                    body.data.data.AUTO_CREDIT_ACCOUNT.forEach(item => {
+                      item.doType = 8;
+                    });
+                    arr = [...body.data.data.AUTO_CREDIT_ACCOUNT, ...arr];
+                  }
+                  if (body.data.data.TEMPCHECKIN && body.data.data.TEMPCHECKIN.length != 0) {
+                    body.data.data.TEMPCHECKIN.forEach(item => {
+                      item.doType = 9;
+                    });
+                    arr = [...body.data.data.TEMPCHECKIN, ...arr];
+                  }
+                  if (body.data.data.CONTINUE_LIVE && body.data.data.CONTINUE_LIVE.length != 0) {
+                    body.data.data.CONTINUE_LIVE.forEach(item => {
+                      item.doType = 10;
+                    });
+                    arr = [...body.data.data.CONTINUE_LIVE, ...arr];
+                  }
+                  console.log('arr', arr, doSthList);
                   if (doSthList.length != 0) {
                     let result = [];
                     for(var i = 0; i < arr.length; i++){
@@ -316,6 +475,8 @@
             this.quithouse = true;
             if (this.onlyItem.doType == 1) {
               this.speckText(checkOutList[0].roomNo+'房间客人申请退房，房卡已回收，请及时处理');
+            }else if (this.onlyItem.doType == 2) {
+              this.speckText('房号'+checkOutList[0].roomNo+'客人旅业退房失败');
             }else if (this.onlyItem.doType == 4) {
               this.speckText('收款成功！收款金额'+checkOutList[0].totalFeeStr+'元，自动入账失败，请手工至PMS系统处理入账');
             }else if (this.onlyItem.doType == 5) {
@@ -324,6 +485,12 @@
               this.speckText('房号'+checkOutList[0].roomNo+'退款计划失败，'+checkOutList[0].remark);
             }else if (this.onlyItem.doType == 7) {
               this.speckText('房号'+checkOutList[0].roomNo+'客人插卡退房成功，房态已改为脏房请及时打扫');
+            }else if (this.onlyItem.doType == 8) {
+              this.speckText('房号'+checkOutList[0].roomNo+'挂帐失败');
+            }else if (this.onlyItem.doType == 9) {
+              this.speckText(checkOutList[0].roomNo+'房间脏房入住，请及时打扫');
+            }else if (this.onlyItem.doType == 10) {
+              this.speckText('房号'+checkOutList[0].roomNo+'续住失败，房费已支付，请及时处理');
             }
           }, 500)
         })
@@ -456,6 +623,30 @@
         this.initWebSocket();
       },
 
+
+      // 是否支持续住
+      isConfigExtend(type) {
+        this.extendInfo({
+          onsuccess: body => {
+            if (body.data.code == 0) {
+              this.extendConfig = body.data.data ? body.data.data.extend == 'true' ? true: false : false;
+              this.tipStatus = body.data.data ? body.data.data.mode : 'EX_PRICE';
+              this.tipStatus_ = body.data.data ? body.data.data.mode : '';
+              if (type == 2) {
+                this.tipStatusType = 2;
+                this.printTip = true;
+              }
+            }
+          },
+          onfail: body => {
+
+          },
+          onerror: body => {
+
+          }
+        })
+      },
+
     },
 
     mounted () {
@@ -486,6 +677,7 @@
         }
       },500);
       this.homeIndexShow = true;
+      this.isConfigExtend(1);
       this.doSthList();
       this.initWebSocket();
       this.timer = setInterval(() => {
@@ -525,7 +717,7 @@
           padding: 0 20px;
           display: flex;
           align-items: center;
-          margin-right: 60px;
+          margin-right: 25px;
           line-height: 1;
           img {
             display: inline-block;
@@ -534,7 +726,7 @@
             margin-right: 10px;
           }
           span {
-            font-size: 26px;
+            font-size: 20px;
             color: #fff;
             font-family: "Microsoft Himalaya";
             margin-top: 10px;
@@ -550,24 +742,25 @@
             height: 100%;
             position: relative;
             color: #909399;
-            font-size: 26px;
+            font-size: 20px;
             display: inline-flex;
             align-items: center;
-            font-weight: bold;
             i {
               font-style:normal;
               background-color: #F5222D;
               border-radius: 50%;
-              font-size: 20px;
+              font-size: 16px;
               color: #fff;
               margin-left: 6px;
               width: 28px;
               height: 28px;
               line-height: 28px;
+              letter-spacing: 0;
             }
           }
           .active {
             color: #303133;
+            font-weight: bold;
           }
           .active:after {
             content: '';
@@ -632,7 +825,7 @@
           .el-dropdown {
             border: 1px solid #9A9A9A;
             padding: 12px 22px;
-            font-size: 26px;
+            font-size: 20px;
             border-radius: 10px;
             color: #1AAD19;
             font-weight: bold;
@@ -657,17 +850,17 @@
       .quit_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 375px;
+        width: 540px;
         position: fixed;
         z-index: 9999999999;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         .quit_title {
-          padding: 50px 30px;
+          padding: 120px 50px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 26px;
+          font-size: 24px;
           text-align: center;
           font-weight: bold;
         }
@@ -679,7 +872,7 @@
             width: 50%;
             position: relative;
             padding: 30px 0;
-            font-size: 24px;
+            font-size: 20px;
             text-align: center;
           }
           span:first-of-type {
@@ -704,7 +897,7 @@
     }
     .quitHouse {
       background: #FFFFFF;
-      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.40);
+      box-shadow: 0 8px 22px 0 rgba(0,0,0,0.2);
       border-radius: 14px;
       width: 676px;
       position: fixed;
@@ -713,7 +906,7 @@
       right: 352px;
       padding: 40px;
       .content {
-        font-size: 24px;
+        font-size: 20px;
         color: #303133;
         text-align: left;
         span {
@@ -728,7 +921,7 @@
           border-radius: 32px;
           width: 160px;
           height: 64px;
-          font-size: 22px;
+          font-size: 20px;
           display: inline-block;
           text-align: center;
           line-height: 64px;
@@ -743,6 +936,127 @@
           color: #fff;
         }
       }
+    }
+    .printTip {
+      .shadow {
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .6);
+      }
+      .tip_content {
+        background: #FFFFFF;
+        border-radius: 13.2px;
+        width: 750px;
+        padding: 67px 74px 60px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 12;
+        .title {
+          font-family: MicrosoftYaHei;
+          font-size: 28px;
+          color: #333333;
+          letter-spacing: 3.27px;
+          margin-bottom: 71px;
+        }
+        .lists {
+          padding: 0 9px;
+          overflow-y: scroll;
+          max-height: 55vh;
+          -webkit-overflow-scrolling: touch;
+          .list {
+            margin-bottom: 23px;
+            /deep/ .el-radio.is-bordered {
+              padding: 35px 72px 39px;
+              background: #F7F7F7;
+              border-radius: 10.4px;
+              height: auto;
+              width: 100%;
+              text-align: left;
+            }
+            /deep/ .el-radio__label {
+              font-size: 20px;
+              font-family: MicrosoftYaHei;
+              letter-spacing: 2px;
+              color: #666666;
+              margin-left: 42px;
+            }
+            /deep/ label {
+              display: flex;
+              align-items: center;
+            }
+            /deep/ .el-radio--medium.is-bordered .el-radio__inner {
+              width: 27px;
+              height: 27px;
+            }
+            /deep/ .el-radio.is-bordered.is-checked {
+              border: 1px solid #1AAD19;
+              color:  #1AAD19;
+              background: #F5FFF5;
+            }
+            /deep/ .el-radio__input.is-checked .el-radio__inner {
+              background: #1AAD19;
+              border-color: #1AAD19;
+            }
+            /deep/ .el-radio__input.is-checked+.el-radio__label {
+              color:  #1AAD19;
+            }
+          }
+        }
+        .lists::-webkit-scrollbar {
+          display: none; // 隐藏滚动条
+        }
+        .btns {
+          margin-top: 80px;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+          button {
+            width: 278px;
+            height: 68px;
+            border-radius: 45px;
+            font-size: 24px;
+            font-family: MicrosoftYaHei-Bold;
+            letter-spacing: 4.04px;
+            border: none;
+            outline: none;
+          }
+          button:first-of-type {
+            background: #EEEEEE;
+            color: #666666;
+          }
+          button:last-of-type {
+            background: #1AAD19;
+            box-shadow: 0 3px 16px 0 rgba(26,173,25,0.64);
+            color: #FFFFFF;
+          }
+        }
+      }
+    }
+  }
+
+  .el-dropdown-menu {
+    width: 260px;
+    z-index: 9 !important;
+    .el-dropdown-menu__item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      font-size: 20px;
+      line-height: 36px;
+      cursor: pointer;
+    }
+    .el-dropdown-menu__item:not(.is-disabled):hover {
+      color: #1AAD19;
+    }
+    /deep/ .el-dropdown-menu__item i {
+      margin-right: 15px;
     }
   }
 

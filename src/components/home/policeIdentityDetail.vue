@@ -483,13 +483,13 @@
           align-items: center;
           img {
             width: 18px;
-            height: 30px;
+            height: 22px;
             display: inline-flex;
-            margin-right: 10px;
+            margin-right: 7px;
           }
           span {
             color: #1AAD19;
-            font-size: 30px;
+            font-size: 20px;
           }
         }
       }
@@ -501,12 +501,12 @@
           display: flex;
           align-items: center;
           span {
-            font-size: 30px;
+            font-size: 20px;
             color: #000;
             text-align: left;
           }
           span:first-of-type {
-            width: 250px;
+            width: 180px;
             margin-right: 12.5px;
           }
           input {
@@ -514,32 +514,32 @@
             height: 72px;
             line-height: 72px;
             padding-left: 30px;
-            width: 480px;
-            font-size: 30px;
+            width: 320px;
+            font-size: 20px;
             color: #000;
             background-color: #fff;
             outline: none;
           }
           .tig {
             margin-left: 44px;
-            font-size: 28px;
+            font-size: 20px;
             color: #F5222D;
           }
         }
         .outTime {
-          font-size: 30px;
+          font-size: 20px;
           color: #000;
           text-align: left;
           margin-bottom: 30px;
           position: relative;
           span {
-            width: 250px;
+            width: 180px;
             display: inline-block;
           }
           .outtime {
             display: inline-block;
             width: 480px;
-            font-size: 30px;
+            font-size: 20px;
             color: #000;
             border: 1px solid #979797;
             height: 72px;
@@ -548,17 +548,17 @@
           }
           i {
             position: absolute;
-            left: 680px;
+            left: 460px;
             top: 50%;
             transform: translateY(-50%);
             img {
-              width: 14px;
+              width: 10px;
               display: inline-block;
             }
           }
         }
         .time_origin {
-          font-size: 28px;
+          font-size: 20px;
           color: #000000;
           opacity: .4;
           text-align: left;
@@ -659,15 +659,15 @@
           }
         }
         .btns {
-          margin-top: 40px;
+          margin-top: 100px;
           width: 100%;
           display: flex;
           justify-content: flex-start;
           .tig_btn {
             margin-right: 80px;
             width: 390px;
-            height: 80px;
-            font-size: 28px;
+            height: 68px;
+            font-size: 24px;
             color: #fff;
             border-radius: 49px;
             border: none;
@@ -712,7 +712,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }
@@ -731,13 +731,14 @@
         }
       }
       .change_tabs {
-        padding: 40px 15px 0;
+        padding: 40px 30px 0;
         .tab {
           .input {
             padding: 30px 0;
             position: relative;
             input {
-              border: 1px solid #9A9A9A;
+              background-color: #f7f7f7;
+              border: none;
               border-radius: 44px;
               padding-left: 30px;
               font-size: 20px;
@@ -784,11 +785,11 @@
           border-radius: 12px;
           width: 78px;
           height: 56px;
-          font-size: 36px;
+          font-size: 24px;
           line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 42px 22px 0;
+          margin: 0 30px 22px 0;
           cursor: pointer;
           -moz-user-select:none;
           -ms-user-select: none;
@@ -800,13 +801,13 @@
           margin-right: 0;
         }
         span:last-of-type {
-          width: 194px;
+          width: 180px;
           margin-right: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -824,7 +825,7 @@
           text-align: center;
           background-color: #f0f0f0;
           border-radius: 12px;
-          font-size: 34px;
+          font-size: 24px;
           margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
@@ -835,15 +836,15 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 28px;
-          color: #EC8B2F;
+          font-size: 20px;
+          color: #666;
         }
         span:last-of-type {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }

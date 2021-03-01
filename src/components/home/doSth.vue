@@ -8,15 +8,14 @@
             <span>返回首页</span>
           </div>
           <div class="tabs">
-            <span>待办事项</span>
+            <span :class="tabIndex == 1 ? 'active' : ''" @click="tabChange(1)">入住<el-badge class="mark" :value="tabNums.checkInNum" v-if="tabNums.checkInNum != 0" :max="99" /></span>
+            <span :class="tabIndex == 2 ? 'active' : ''" @click="tabChange(2)">退房<el-badge class="mark" :value="tabNums.quitNum" v-if="tabNums.quitNum != 0" :max="99" /></span>
+            <span :class="tabIndex == 3 ? 'active' : ''" @click="tabChange(3)">账务<el-badge class="mark" :value="tabNums.payNum" v-if="tabNums.payNum != 0" :max="99" /></span>
+            <span :class="tabIndex == 4 ? 'active' : ''" @click="tabChange(4)">旅业<el-badge class="mark" :value="tabNums.lvyeNum" v-if="tabNums.lvyeNum != 0" :max="99" /></span>
           </div>
         </div>
       </div>
       <div class="doSthContent">
-        <!--<div class="changTabs">-->
-          <!--<span :class="changeTabString == 1 ? 'active' : ''" @click="changeTabClick(1)">待处理</span>-->
-          <!--<span :class="changeTabString == 2 ? 'active' : ''" @click="changeTabClick(2)">已处理</span>-->
-        <!--</div>-->
         <div class="doSthLists" v-if="showList">
           <div class="list" v-for="item in doSthLists">
             <div class="list_header">
@@ -31,7 +30,7 @@
                 <div class="checkOut">客人申请退房，房卡已回收，请及时处理</div>
               </div>
               <div class="list_fr">
-                <!--<span @click="pmsCheckIn(item.id)">处理完成</span>-->
+                <el-button @click="checkoutRoomApply(item.id)" v-if="item.applyBy && item.applyBy == 'PMSINCARDOUT'" :disabled="loadingShow">处理完成</el-button>
               </div>
             </div>
             <div class="list_content" v-else-if="item.doSthTitle=='发卡失败'">
@@ -129,6 +128,39 @@
                 </el-button>
               </div>
             </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='脏房入住'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn">客人已登记，请及时打扫</div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='PMS续住失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn">续住失败，房费已支付，请及时处理</div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
+            <div class="list_content" v-else-if="item.doSthTitle=='旅业登记失败'">
+              <div class="list_fl">
+                <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
+                <div class="roomIn"><span>住客信息：</span><span v-if="item.guestList" v-for="i in item.guestList">【{{i.name}}/{{i.idcard}}/{{i.address}} 】</span></div>
+              </div>
+              <div class="list_fr">
+                <el-button @click="lvyeCheckout(item.id, item.subOrderId)" :disabled="loadingShow">
+                  处理完成
+                </el-button>
+              </div>
+            </div>
           </div>
           <div class="noMsg" v-if="doSthLists.length == 0">
             <div class="img"><img src="../../assets/zanwuneirong.png" alt=""></div>
@@ -153,13 +185,15 @@
         loadingShow: false,  // loading
         loadingText: '加载中...', // loading text
         showList: false,
-        changeTabString: 1,  // tab选中
-        page: 1,  // 当前页数
-        page1: 1,  // 当前页数
-        total: 1, // 总条数
-        total1: 1, // 总条数
         doSthLists: [],  // 代办未处理列表
-        doSthLists1: [],  //代办已处理列表
+        doSthLists_: [],  // 代办未处理列表
+        tabNums: {
+          checkInNum: 0,    // 入住待办数量(PMS入住失败、脏房入住、PMS续住失败)
+          quitNum: 0,       // 退房待办数量(退房申请)
+          payNum: 0,        // 账务待办数量(入账失败、挂账失败、结算失败退款计划失败)
+          lvyeNum: 0,       // 旅业待办数量(旅业登记入住失败、退房失败)
+        },
+        tabIndex: 1,        // tab index active
       }
     },
     filters: {
@@ -167,14 +201,28 @@
     },
     methods: {
       ...mapActions([
-        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay', 'updateCheckpmslvStatus'
+        'goto', 'getTodoList', 'getFaka', 'updateCheckinfailedStatus', 'updateWechatPay', 'updateCheckpmslvStatus', 'updateCheckoutRoomApply'
       ]),
 
       // tab
-      changeTabClick(index) {
-          this.changeTabString = index;
-          this.page = 0;
-          this.page1 = 1;
+      tabChange(index) {
+          this.tabIndex = index;
+          let arr = [];
+          if (this.doSthLists_.length != 0) {
+            this.doSthLists_.forEach(item => {
+                if ((index == 1 && item.doSthTitle == 'PMS入住失败') || (index == 1 && item.doSthTitle == '脏房入住') || (index == 1 && item.doSthTitle == 'PMS续住失败')) {
+                    arr.push(item)
+                }else if (index == 2 && item.doSthTitle == '退房申请') {
+                    arr.push(item)
+                }else if ((index == 3 && item.doSthTitle == '自动挂账失败') || (index == 3 && item.doSthTitle == 'PMS入账失败') || (index == 3 && item.doSthTitle == '退款计划失败')) {
+                    arr.push(item);
+                }else if ((index == 4 && item.doSthTitle == '旅业退房失败') || (index == 4 && item.doSthTitle == '旅业登记失败')) {
+                    arr.push(item);
+                }
+            })
+          }
+          this.doSthLists = arr;
+          this.doSthLists.sort(this.compare('createTime'));
       },
 
       // 分页
@@ -208,15 +256,21 @@
               let lvyeChangeRoom = [];  // 旅业换房
               let autoSettleAccount = [];   // 自动挂账失败
               let autoSettlePay = [];   // 退款计划失败
+              let continueLive = [];    // PMS续住失败
+              let dirtyRoom = [];       // 脏房入住
+              let rulvye = [];          // 旅业登记
               faka = body.data.data.faka;
               pmscheckin = body.data.data.pmscheckin;
               pmspay = body.data.data.pmspay;
               nativepay = body.data.data.nativepay;
               checkoutapply = body.data.data.checkoutapply != null ? body.data.data.checkoutapply : [];
-              lvyeCheckout = body.data.data.lvyeCheckout;
+              lvyeCheckout = body.data.data.LVYECHECKOUT ? body.data.data.LVYECHECKOUT : [];
               lvyeChangeRoom = body.data.data.LVYECHANGEROOM ? body.data.data.LVYECHANGEROOM : [];
               autoSettleAccount = body.data.data.AUTO_CREDIT_ACCOUNT ? body.data.data.AUTO_CREDIT_ACCOUNT : [];
               autoSettlePay = body.data.data.AUTO_SETTLE_PAY ? body.data.data.AUTO_SETTLE_PAY : [];
+              continueLive = body.data.data.CONTINUE_LIVE ? body.data.data.CONTINUE_LIVE : [];
+              dirtyRoom = body.data.data.TEMPCHECKIN ? body.data.data.TEMPCHECKIN : [];
+              rulvye = body.data.data.RULVYE ? body.data.data.RULVYE : [];
               checkoutapply.forEach(item => {
                 item.doSthTitle = '退房申请';
                 item.createTime = item.applyTime;
@@ -245,9 +299,21 @@
               autoSettlePay.forEach(item => {
                 item.doSthTitle = '退款计划失败';
               });
-              this.doSthLists = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay);
-              this.doSthLists.sort(this.compare('createTime'));
-              console.log('this.doSthLists',this.doSthLists);
+              dirtyRoom.forEach(item => {
+                item.doSthTitle = '脏房入住';
+              });
+              continueLive.forEach(item => {
+                item.doSthTitle = 'PMS续住失败';
+              });
+              rulvye.forEach(item => {
+                item.doSthTitle = '旅业登记失败';
+              });
+              this.doSthLists_ = checkoutapply.concat(faka, pmscheckin, pmspay, nativepay, lvyeCheckout, lvyeChangeRoom, autoSettleAccount, autoSettlePay, dirtyRoom, continueLive, rulvye);
+              this.tabChange(this.tabIndex);
+              this.tabNums.checkInNum = pmscheckin.length + dirtyRoom.length + continueLive.length;
+              this.tabNums.quitNum = checkoutapply.length;
+              this.tabNums.payNum = pmspay.length + autoSettleAccount.length + autoSettlePay.length;
+              this.tabNums.lvyeNum = lvyeCheckout.length + rulvye.length;
             }
             this.showList = true;
           },
@@ -291,6 +357,24 @@
       pmsPayDetail(orderId, payFlowId) {
         sessionStorage.setItem('pmsPayDetail', orderId+"-"+payFlowId);
         this.goto(-1);
+      },
+
+      // pms退房申请处理
+      checkoutRoomApply(id) {
+        this.loadingShow = true;
+        this.updateCheckoutRoomApply({
+          id: id,
+          onsuccess: (body) => {
+            if(body.data.code == 0){
+              this.doSthList();
+            }else {
+              this.loadingShow = false;
+            }
+          },
+          onfail: (body, headers) => {
+            this.loadingShow = false;
+          }
+        })
       },
 
       // pms 入住失败处理事件
@@ -351,7 +435,7 @@
         })
       },
 
-      // 旅业退房、换房失败
+      // 旅业退房、换房失败、脏房入住、PMS续住失败、旅业登记失败
       lvyeCheckout(id, subOrderId) {
         this.loadingShow = true;
         this.updateCheckpmslvStatus({
@@ -391,6 +475,7 @@
 
   .doSthIndex {
     width: 100vw;
+    padding-top: 100px;
     .header {
       background: #FFFFFF;
       box-shadow: 0 11px 44px 0 rgba(0,0,0,0.07);
@@ -416,12 +501,12 @@
           margin-right: 60px;
           img {
             display: inline-block;
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
+            width: 18px;
+            height: 22px;
+            margin-right: 7px;
           }
           span {
-            font-size: 26px;
+            font-size: 20px;
             color: #fff;
           }
         }
@@ -431,16 +516,44 @@
             margin-right: 40px;
             height: 100%;
             position: relative;
-            color: #000;
-            font-size: 26px;
+            color: #909399;
+            font-size: 20px;
             display: inline-flex;
             align-items: center;
+            cursor: pointer;
+            /deep/ .el-badge__content {
+              font-size: 16px;
+              min-width: 28px;
+              height: 28px;
+              line-height: 28px;
+              border-radius: 50%;
+              text-align: center;
+              top: 0;
+            }
+            /deep/ .el-badge {
+              display: inline-flex;
+              align-items: center;
+              font-size: 16px;
+            }
+          }
+          .active {
+            color: #1AAD19;
+          }
+          .active:after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            width: 80%;
+            height: 4px;
+            background-color: #1AAD19;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
           }
         }
       }
     }
     .doSthContent {
-      margin-top: 100px;
       .changTabs {
         padding: 40px;
         text-align: left;
@@ -470,7 +583,7 @@
           box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.10);
           border-radius: 6px;
           text-align: left;
-          margin-bottom: 20px;
+          margin-top: 20px;
           .list_header {
             border-bottom: 1px solid #E5E5E5;
             padding: 20px 0;
@@ -483,7 +596,7 @@
                 font-size: 20px;
               }
               .title {
-                font-size: 24px;
+                font-size: 20px;
                 color: #000;
                 font-weight: bold;
                 margin-right: 30px;
@@ -553,7 +666,7 @@
       }
     }
     .noMsg {
-      padding-top: 400px;
+      padding-top: 200px;
       img {
         display: block;
         width: 180px;

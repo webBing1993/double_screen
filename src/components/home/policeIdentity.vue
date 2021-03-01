@@ -648,12 +648,12 @@
             color: #303133;
             font-size: 20px;
             margin-right: 30px;
-            font-weight: bold;
             cursor: pointer;
           }
           span.active {
-            background-color: #C8E1C8;
-            border: 1px solid #1AAD19;
+            font-weight: bold;
+            /*background-color: #C8E1C8;*/
+            /*border: 1px solid #1AAD19;*/
             color: #1AAD19;
           }
         }
@@ -694,7 +694,7 @@
                     display: inline-block;
                   }
                   span:first-of-type {
-                    width: 84px;
+                    width: 90px;
                   }
                   .blue {
                     color: #1AAD19;
@@ -706,7 +706,7 @@
                 .li:first-of-type {
                   width: 220px;
                 }
-                .li:last-of-type {
+                .li:nth-of-type(3) {
                   width: 186px;
                 }
               }
@@ -739,7 +739,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -790,13 +790,14 @@
         }
       }
       .change_tabs {
-        padding: 0 15px;
+        padding: 0 30px;
         .tab {
           .input {
             padding: 30px 0;
             position: relative;
             input {
-              border: 1px solid #9A9A9A;
+              background-color: #f7f7f7;
+              border: none;
               border-radius: 44px;
               padding-left: 30px;
               padding-right: 60px;
@@ -844,11 +845,11 @@
           border-radius: 12px;
           width: 78px;
           height: 56px;
-          font-size: 36px;
+          font-size: 24px;
           line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 42px 22px 0;
+          margin: 0 30px 22px 0;
           cursor: pointer;
           -moz-user-select:none;
           -ms-user-select: none;
@@ -860,13 +861,13 @@
           margin-right: 0;
         }
         span:last-of-type {
-          width: 194px;
+          width: 180px;
           margin-right: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -884,7 +885,7 @@
           text-align: center;
           background-color: #f0f0f0;
           border-radius: 12px;
-          font-size: 34px;
+          font-size: 24px;
           margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
@@ -895,8 +896,8 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 28px;
-          color: #EC8B2F;
+          font-size: 20px;
+          color: #333;
         }
         span:last-of-type {
           display: inline-flex;
@@ -932,7 +933,7 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
     }
   }

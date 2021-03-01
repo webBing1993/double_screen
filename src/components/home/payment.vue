@@ -66,7 +66,7 @@
             </div>
             <div class="list_content">
               <div class="list_fl">
-                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 3 ? '翼支付': item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : item.payFlag == 7 ? '河马支付' : '工行支付'}}<span v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</span></p>
+                <p class="title">{{item.payFlag == 1 ? '微信支付' : item.payFlag == 2 ? '支付宝支付' : item.payFlag == 3 ? '翼支付': item.payFlag == 4 ? "PMS支付宝支付" : item.payFlag == 5 ? 'PMS微信支付' : item.payFlag == 6 ? '银联支付' : item.payFlag == 7 ? '河马支付' : item.payFlag == 8 ? '工行支付' : '昆仑支付'}}<span v-if="item.payFlag != 5 && (item.channel == 4 || item.channel == 5 || item.channel == 6)"> . 预授权</span></p>
                 <div class="rooms"><span>房间号：</span>{{item.roomNo ? item.roomNo : '-'}}</div>
                 <div class="roomIn"><span>入住人：</span>{{item.contactName ? item.contactName : '-'}}</div>
               </div>
@@ -185,7 +185,8 @@
                 <span v-else-if="detailVal.payFlag == 5">PMS微信支付</span>
                 <span v-else-if="detailVal.payFlag == 6">银联</span>
                 <span v-else-if="detailVal.payFlag == 7">河马支付</span>
-                <span v-else>工行支付</span>
+                <span v-else-if="detailVal.payFlag == 8">工行支付</span>
+                <span v-else>昆仑支付</span>
               </div>
               <div class="list">
                 <span>授权时间</span>
@@ -249,7 +250,7 @@
                 <span class="list_content">{{detailVal.refundModel.timeEnd}}</span>
               </div>
             </div>
-            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 8">
+            <div class="btns" v-if="detailVal.channel == 4 && !detailVal.refundModel && detailVal.payFlag < 10">
               <span @click="accountCancelSure1(detailVal)">取消授权</span>
               <span @click="accounts()">结算</span>
             </div>
@@ -283,7 +284,8 @@
                 <span v-else-if="detailVal.payFlag == 3">翼支付</span>
                 <span v-else-if="detailVal.payFlag == 6">银联</span>
                 <span v-else-if="detailVal.payFlag == 7">河马支付</span>
-                <span v-else>工行支付</span>
+                <span v-else-if="detailVal.payFlag == 8">工行支付</span>
+                <span v-else>昆仑支付</span>
               </div>
               <div class="list">
                 <span>交易状态</span>
@@ -317,7 +319,7 @@
                 <span>{{detailVal.refundModel.outTradeNo}}</span>
               </div>
             </div>
-            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 9">
+            <div class="btns" v-if="(((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) != 0) || ((!detailVal.refundModel || detailVal.refundModel == null) && parseFloat(detailVal.refundFeeStr * 100) == 0 && tradeManager)) && detailVal.payFlag < 10">
               <span class="refund" @click="refund">退款</span>
             </div>
           </div>
@@ -580,6 +582,7 @@
         secoundTip: false,     // 完成预授权二次tip
         secoundTip1: false,     // 完成二次tip
         accountItem: {},
+        spTradeBills: false,    // 报表权限
       }
     },
     filters: {
@@ -1051,7 +1054,7 @@
             if (body.data.code == 0 && body.data.data) {
               this.chargeRecordObj = body.data.data
             }
-            this.payMoney = body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0;
+            this.payMoney = body.data.data ? body.data.data.refundFee ? body.data.data.refundFee <= 0 ? '' : (body.data.data.refundFee/100).toFixed(2) : 0 : '';
             this.unionPayInfo({
               payFlowId: this.detailVal.payFlowId,
               onsuccess: body => {
@@ -1080,7 +1083,7 @@
             if (body.data.code == 0 && body.data.data) {
               this.chargeRecordObj = body.data.data
             }
-            this.payMoney = body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0;
+            this.payMoney = body.data.data ? body.data.data.consumeFee ? body.data.data.consumeFee <= 0 ? '' : (body.data.data.consumeFee/100).toFixed(2) : 0 : '';
             this.unionPayInfo({
               payFlowId: this.detailVal.payFlowId,
               onsuccess: body => {
@@ -1182,8 +1185,16 @@
                 this.page = 1;
                 this.paymentList(1);
               }else if(body.data.code == 20003){
-                this.showPmsAbnormal = true;
                 this.secoundTip1 = false;
+                if (this.detailVal.roomNo) {
+                  this.showPmsAbnormal = true;
+                }else {
+                  this.payTig = false;
+                  this.isScreen = true;
+                  this.loadingShow = true;
+                  this.page = 1;
+                  this.paymentList(1);
+                }
               }else if (body.data.code == 10006) {
                 this.$toast({
                   message: body.data.msg,
@@ -1525,6 +1536,8 @@
       list.forEach(item => {
         if (item.tag == 'sp_trade_manager') {
           this.tradeManager = true;
+        }else if (item.tag == 'sp_trade_bills') {
+          this.spTradeBills = true;
         }
       });
       this.paymentList(1);
@@ -1556,7 +1569,6 @@
       span {
         color: #303133;
         font-size: 20px;
-        font-weight: bold;
       }
       .time_change {
         background-color: #FFFFFF;
@@ -1642,7 +1654,7 @@
         }
         .ivu-date-picker-cells {
           width: 420px;
-          margin: 28px;
+          margin: 24px;
         }
         .ivu-picker-panel-icon-btn {
           width: 74px;
@@ -1801,7 +1813,7 @@
               color: #000;
               margin-bottom: 10px;
               span {
-                width: 80px;
+                width: 105px;
                 display: inline-block;
               }
             }
@@ -1872,7 +1884,7 @@
       .corporation {
         text-align: center;
         padding: 10px 0;
-        font-size: 30px;
+        font-size: 24px;
         background-color: #4A90E2;
         color: #fff;
         position: absolute;
@@ -1883,7 +1895,7 @@
       .fast_title {
         position: relative;
         margin: 40px 0;
-        font-size: 28px;
+        font-size: 24px;
         color: #303133;
         text-align: center;
         font-weight: bold;
@@ -1904,7 +1916,7 @@
           display: inline-block;
           position: relative;
           color: #909399;
-          font-size: 24px;
+          font-size: 20px;
           cursor: pointer;
           font-weight: bold;
         }
@@ -1923,13 +1935,14 @@
         }
       }
       .change_tabs {
-        padding: 0 15px;
+        padding: 0 30px;
         .tab {
           .input {
             padding: 30px 0;
             position: relative;
             input {
-              border: 1px solid #9A9A9A;
+              background-color: #f7f7f7;
+              border: none;
               border-radius: 44px;
               padding-left: 30px;
               padding-right: 60px;
@@ -1977,11 +1990,11 @@
           border-radius: 12px;
           width: 78px;
           height: 56px;
-          font-size: 36px;
+          font-size: 24px;
           line-height: 56px;
           text-align: center;
           font-weight: bold;
-          margin: 0 42px 22px 0;
+          margin: 0 30px 22px 0;
           cursor: pointer;
           -moz-user-select:none;
           -ms-user-select: none;
@@ -1993,13 +2006,13 @@
           margin-right: 0;
         }
         span:last-of-type {
-          width: 194px;
+          width: 180px;
           margin-right: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -2017,7 +2030,7 @@
           text-align: center;
           background-color: #f0f0f0;
           border-radius: 12px;
-          font-size: 34px;
+          font-size: 24px;
           margin: 0 25px 25px 0;
           cursor: pointer;
           display: inline-block;
@@ -2028,15 +2041,15 @@
           margin-right: 0;
         }
         span:nth-of-type(10) {
-          font-size: 28px;
-          color: #EC8B2F;
+          font-size: 20px;
+          color: #666;
         }
         span:last-of-type {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           img {
-            width: 50px;
+            width: 44px;
             height: 28px;
             display: inline-block;
           }
@@ -2068,7 +2081,7 @@
       .payTigContent {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -2076,7 +2089,7 @@
         transform: translate(-50%, -50%);
         .payTig_title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           img {
@@ -2096,21 +2109,21 @@
           border-radius: 20px 20px 0 0;
         }
         .payTig_content {
-          width: 680px;
+          width: 620px;
           margin: 0 auto;
           .content_title {
             color: #303133;
-            font-size: 30px;
+            font-size: 24px;
             position: relative;
             padding: 30px 40px;
           }
           .payTig_input {
             input {
-              width: 678px;
+              width: 470px;
               border: 1px solid #979797;
               outline: none;
               text-align: center;
-              font-size: 26px;
+              font-size: 24px;
               height: 68px;
               line-height: 68px;
             }
@@ -2122,35 +2135,36 @@
               -moz-appearance: textfield;
             }
             input:-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input:-ms-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-moz-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
             input::-webkit-input-placeholder {
-              font-size: 26px;
+              font-size: 24px;
               color: #606266;
             }
           }
           .payTig_keyBoard {
             span {
               border-radius: 3.6px;
-              width: 214px;
+              width: 144px;
               height: 70px;
               line-height: 70px;
               text-align: center;
-              background-color: #D8D8D8;
-              font-size: 29px;
+              background-color: #f7f7f7;
+              font-size: 24px;
               margin: 20px 15px 0 0;
               cursor: pointer;
               display: inline-block;
               font-weight: bold;
+              color: #333;
             }
             span:nth-of-type(3n) {
               margin-right: 0;
@@ -2171,9 +2185,9 @@
             background: #1AAD19;
             border-radius: 44px;
             text-align: center;
-            height: 78px;
-            width: 100%;
-            font-size: 26px;
+            height: 68px;
+            width: 70%;
+            font-size: 24px;
             color: #fff;
             cursor: pointer;
           }
@@ -2201,14 +2215,14 @@
         transform: translate(-50%, -50%);
         white-space: pre-wrap;
         .detail_content {
-          width: 960px;
+          width: 620px;
           max-height: 90vh;
           overflow-y: scroll;
           -webkit-overflow-scrolling: touch;
         }
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 0;
           font-weight: bold;
@@ -2225,7 +2239,7 @@
           }
         }
         .title1 {
-          font-size: 30px;
+          font-size: 24px;
           text-align: left;
         }
         .refundTitle {
@@ -2233,7 +2247,7 @@
         }
         .lists {
           .list {
-            margin-top: 30px;
+            /*margin-top: 30px;*/
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2244,7 +2258,7 @@
               color: #4A90E2;
             }
             span {
-              font-size: 26px;
+              font-size: 20px;
               color: #000;
             }
           }
@@ -2260,27 +2274,27 @@
           span:first-of-type {
             border: 1px solid #F5222D;
             border-radius: 44px;
-            width: 280px;
-            height: 78px;
+            width: 240px;
+            height: 68px;
             text-align: center;
-            line-height: 78px;
-            font-size: 30px;
+            line-height: 68px;
+            font-size: 24px;
             color:#F5222D;
           }
           span:last-of-type {
             background: #1AAD19;
             border-radius: 44px;
-            width: 280px;
-            height: 78px;
+            width: 240px;
+            height: 68px;
             text-align: center;
-            line-height: 78px;
-            font-size: 30px;
+            line-height: 68px;
+            font-size: 24px;
             color: #fff;
           }
           span.refund {
             width: 400px;
-            background-color: transparent;
-            color:#F5222D;
+            background-color: #F5222D;
+            color:#fff;
           }
         }
       }
@@ -2301,7 +2315,7 @@
       .sweeping_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 800px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -2322,7 +2336,7 @@
         .content {
           p {
             color: #303133;
-            font-size: 30px;
+            font-size: 20px;
             text-align: center;
             padding: 40px 0;
           }
@@ -2354,7 +2368,7 @@
           padding: 50px 30px;
           border-bottom: 1px solid #D8D8D8;
           color: #0B0B0B;
-          font-size: 26px;
+          font-size: 20px;
           text-align: center;
           font-weight: bold;
         }
@@ -2406,7 +2420,7 @@
         transform: translate(-50%, -50%);
         .pay_title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -2422,12 +2436,12 @@
           }
         }
         .pay_cantiner {
-          width: 680px;
+          width: 620px;
           margin: 0 auto;
           padding: 20px 0 60px;
           p {
             color: #000;
-            font-size: 30px;
+            font-size: 20px;
             padding: 0 40px;
             text-align: left;
             span {
@@ -2443,7 +2457,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -2452,7 +2466,7 @@
       .secoundTip_content {
         background: #FFFFFF;
         border-radius: 20px;
-        width: 960px;
+        width: 620px;
         position: fixed;
         z-index: 12;
         left: 50%;
@@ -2460,7 +2474,7 @@
         transform: translate(-50%, -50%);
         .title {
           color: #303133;
-          font-size: 30px;
+          font-size: 24px;
           position: relative;
           padding: 30px 40px;
           border-bottom: 1px solid #D8D8D8;
@@ -2479,7 +2493,7 @@
           padding: 30px 40px;
           .list {
             padding: 30px 0 0;
-            font-size: 30px;
+            font-size: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2495,7 +2509,7 @@
         .tip {
           padding: 0 35px;
           text-align: left;
-          font-size: 26px;
+          font-size: 20px;
           color: #303133;
         }
         .btn {
@@ -2506,7 +2520,7 @@
           height: 78px;
           cursor: pointer;
           width: 50%;
-          font-size: 26px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -2525,7 +2539,7 @@
     .pmsAbnormal {
       background: #FFFFFF;
       border-radius: 20px;
-      width: 960px;
+      width: 620px;
       position: fixed;
       z-index: 12;
       left: 50%;
@@ -2533,7 +2547,7 @@
       transform: translate(-50%, -50%);
       .title {
         color: #303133;
-        font-size: 30px;
+        font-size: 24px;
         position: relative;
         padding: 30px 40px;
         border-bottom: 1px solid #D8D8D8;
@@ -2542,7 +2556,7 @@
         padding: 0 40px;
         .list {
           padding: 24px 0;
-          font-size: 30px;
+          font-size: 20px;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -2551,7 +2565,7 @@
       }
       p {
         color:#F5222D;
-        font-size: 28px;
+        font-size: 20px;
         padding: 0 40px;
       }
       .btns {
@@ -2562,10 +2576,10 @@
         .btn1 {
           border: 1px solid #F5222D;
           border-radius: 44px;
-          width: 280px;
+          width: 240px;
           height: 78px;
           text-align: center;
-          font-size: 30px;
+          font-size: 24px;
           color:#F5222D;
           background-color: #fff;
         }
@@ -2575,7 +2589,7 @@
           width: 380px;
           height: 78px;
           text-align: center;
-          font-size: 30px;
+          font-size: 24px;
           color: #fff;
         }
       }
@@ -2594,7 +2608,7 @@
     .pmsAbnormal {
       background: #FFFFFF;
       border-radius: 20px;
-      width: 960px;
+      width: 620px;
       position: fixed;
       z-index: 12;
       left: 50%;
@@ -2616,13 +2630,13 @@
         .pmsAbnormal_fr {
           .title {
             color: #000;
-            font-size: 36px;
+            font-size: 24px;
             margin-bottom: 33px;
             text-align: left;
           }
           .content {
             color: #303133;
-            font-size: 30px;
+            font-size: 20px;
             text-align: left;
           }
         }
@@ -2652,7 +2666,7 @@
     .balance_content {
       background: #FFFFFF;
       border-radius: 20px;
-      width: 960px;
+      width: 620px;
       position: fixed;
       z-index: 12;
       left: 50%;
@@ -2667,12 +2681,12 @@
       }
       .title {
         color: #000;
-        font-size: 36px;
+        font-size: 24px;
         margin-bottom: 33px;
       }
       .content {
         color: #303133;
-        font-size: 30px;
+        font-size: 20px;
       }
       .know_btn {
         margin-top: 57px;
@@ -2701,7 +2715,7 @@
   }
 
   /deep/ .el-input__icon {
-    font-size: 24px;
+    font-size: 20px;
     line-height: 56px;
   }
 
@@ -2723,7 +2737,7 @@
   }
 
   /deep/ .el-date-editor.el-input .el-range-input, .el-date-editor.el-input .el-range-separator {
-    font-size: 24px;
+    font-size: 20px;
     font-family: '黑色';
   }
 
@@ -2735,7 +2749,7 @@
       margin: 0 auto;
     }
     p {
-      font-size: 26px;
+      font-size: 20px;
       margin-top: 20px;
     }
   }
@@ -2806,7 +2820,7 @@
   }
   /deep/ .el-date-picker .el-picker-panel__content {
     width: 420px;
-    margin: 28px;
+    margin: 24px;
   }
   /deep/ .el-date-table th , .el-date-table td{
     color: #303133;
@@ -2838,6 +2852,9 @@
           padding: 15px 20px;
           height: auto;
           line-height: inherit;
+        }
+        .el-select-dropdown__item.selected {
+          color: #1AAD19;
         }
       }
     }
