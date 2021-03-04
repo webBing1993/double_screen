@@ -313,13 +313,10 @@
         let url = "http://tts.baidu.com/text2audio?cuid=baiduid&lan=zh&ctp=1&pdt=311&tex=" + encodeURI(str);        // baidu
         let n = new Audio(url);
         n.src = url;
-        n.autoplay = true;
-        n.addEventListener('canplay', function () {
-          n.load();
+        setTimeout(() => {
           n.play();
-        }, false);
-        n.play();
-        n = null;
+          n = null;
+        }, 1500)
       },
 
       // 退出弹框
@@ -488,6 +485,7 @@
             }else if (this.onlyItem.doType == 8) {
               this.speckText('房号'+checkOutList[0].roomNo+'挂帐失败');
             }else if (this.onlyItem.doType == 9) {
+              console.log(99, checkOutList[0]);
               this.speckText(checkOutList[0].roomNo+'房间脏房入住，请及时打扫');
             }else if (this.onlyItem.doType == 10) {
               this.speckText('房号'+checkOutList[0].roomNo+'续住失败，房费已支付，请及时处理');
