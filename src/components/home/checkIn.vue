@@ -568,9 +568,11 @@
               if (body.data.data.cashFeeShow == '免押') {
                 this.cashFee = 0;
                 this.cashFeeTrue = true;
+                this.isFreeDeposit = 1;
               }else {
                 this.cashFeeTrue = false;
                 this.cashFee = body.data.data.cashFeeShow;
+                this.isFreeDeposit = 2;
               }
               if (body.data.data.roomFeeShow == '预付房费') {
                 if (body.data.data.cashFeeShow == '免押') {
@@ -691,14 +693,14 @@
       this.getCard('support_room_card');
       this.getCard('rc_status');
       this.changeItem = JSON.parse(sessionStorage.getItem('changeItem'));
-      if (this.changeItem.isFreeDeposit) {
-        this.isFreeDeposit = 1;
-      }else {
-        this.isFreeDeposit = 2;
-      }
       this.roomsDataLate = false;
       this.getRoomsList();
       if (this.changeItem.type == 0) {
+        if (this.changeItem.isFreeDeposit) {
+          this.isFreeDeposit = 1;
+        }else {
+          this.isFreeDeposit = 2;
+        }
         this.getCheckList();
 //        this.getCode();
       }else {
