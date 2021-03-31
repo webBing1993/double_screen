@@ -612,11 +612,6 @@
           onsuccess: body => {
             if (body.data.code == 0) {
               this.loadingShow = false;
-              if (this.changeItem.isFreeDeposit) {
-                this.isFreeDeposit = 1;
-              }else {
-                this.isFreeDeposit = 2;
-              }
               if (body.data.data == null || !body.data.data) {
                 this.$toast({
                   message: "订单已取消",
@@ -628,7 +623,9 @@
                 if (body.data.data.cashFeeShow == '免押') {
                   this.cashFee = 0;
                   this.cashFeeTrue = true;
+                  this.isFreeDeposit = 1;
                 } else {
+                  this.isFreeDeposit = 2;
                   this.cashFeeTrue = false;
                   this.cashFee = body.data.data.cashFeeShow;
                 }
