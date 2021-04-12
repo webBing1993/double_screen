@@ -737,7 +737,7 @@
         background-color: #fff;
         border-radius: 16px 0 0 16px;
         .goback {
-          padding-left: 52px;
+          padding-left: 56px;
           text-align: left;
           position: relative;
           div {
@@ -865,7 +865,7 @@
                 .title {
                   font-size: 20px;
                   color: #888888;
-                  padding-left: 57px;
+                  padding-left: 60px;
                   text-align: left;
                   .value {
                     font-weight: bold;
@@ -874,7 +874,7 @@
                   }
                 }
                 .tabs {
-                  padding: 0 57px;
+                  padding: 0 60px;
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
