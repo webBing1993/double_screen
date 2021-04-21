@@ -61,17 +61,17 @@
                     <div class="item_tab" @click="changeStatus(1)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="isfaka">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span :class="isfaka ? 'active' : ''">发卡</span>
+                      <span :class="isfaka ? 'active' : ''">发房卡</span>
                     </div>
                     <div class="item_tab" @click="changeStatus(2)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="isrcpdf">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span :class="isrcpdf ? 'active' : ''">RC单</span>
+                      <span :class="isrcpdf ? 'active' : ''">人住单签名</span>
                     </div>
                     <div class="item_tab" @click="changeStatus(3)">
                       <img src="../../assets/xuanzhongle.png" alt="" v-if="isphone">
                       <img src="../../assets/weixuan.png" alt="" v-else>
-                      <span :class="isphone ? 'active' : ''">房间手机号</span>
+                      <span :class="isphone ? 'active' : ''">预留手机号</span>
                     </div>
                   </div>
                 </div>
